@@ -25,3 +25,10 @@ Artifacts: `TestResults/EditMode-results.xml`, `TestResults/PlayMode-results.xml
 ## Core smoke
 
 `tools/run-core-smoke.ps1` → 3/3 passed (unchanged).
+
+## Fish-Net spike (same day)
+
+- Embed 4.7.4 under `Assets/FishNet` (Yak/Demos removed). Compile Exit 0.
+- `FishNetSpikeSceneBuilder.Build` → `Assets/Scenes/FishNet_Spike.unity` with
+  Tugboat HUD + `HostCommandGate` canned flick + settle pose RPC.
+- Dual-instance pose delta: pending operator.

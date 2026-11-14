@@ -17,13 +17,13 @@ P1 物理縦切りの手触りを固めつつ、P2 弾きの juiciness を載せ
 
 まだ終わっていないもの。
 
-- Fish-Net スパイクの Host/Client 2インスタンス姿勢照合と `HostCommandGate` 1フリック配線。
+- Fish-Net スパイクの Host/Client 2インスタンス姿勢照合 (配線済み、実測待ち)。
 - 2人・4人のオペレータ playtests を3試合ずつ記録すること。
 - Localization / ProBuilder / MPM は CS0619 のため保留。
 
 ## 次の3手
 
-1. `FishNet_Spike` で Host + Client を起動し、`HostCommandGate` 経由の1フリック終端姿勢を照合する。
+1. `FishNet_Spike` で Host + Client を起動し、HUD の `Local vs host delta` で終端姿勢を照合する。
 2. `Classroom_Casual` で2人と4人を3試合ずつ遊び、[playtests/](playtests/TEMPLATE.md) に書く。
 3. オンライン縦切りに向けたホスト PhysX 同期の最小経路を固める。
 

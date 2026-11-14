@@ -112,7 +112,7 @@ Fish-Net **4.7.4** is embedded under `Assets/FishNet` (not UPM). See [`Assets/_P
 
 1. `Keshipin > Build Fish-Net Spike Scene` writes `Assets/Scenes/FishNet_Spike.unity`.
 2. Play → **Start Host** (Tugboat). A second Play instance or build can **Start Client**.
-3. Next step: one host `FlickCommand` through `HostCommandGate` and compare settle poses.
+3. **Fire canned flick** runs `HostCommandGate` on the host. A second instance shows `Local vs host delta` for settle-pose eye-check.
 
 ## Build
 

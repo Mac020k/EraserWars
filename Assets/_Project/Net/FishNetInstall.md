@@ -38,5 +38,6 @@ Or batch (Unity closed):
 Scene: `Assets/Scenes/FishNet_Spike.unity` (already generated 2026-11-14)  
 Play → **Start Host** (Tugboat). Optional second instance → **Start Client**.
 
-`HostCommandGate` is ready for the next step: send one `FlickCommand` on the host
-and compare settle poses.
+HUD **Fire canned flick** runs `HostCommandGate` on the server, applies PhysX on the
+host only, then broadcasts settle pose. On a second instance, compare
+`Local vs host delta` in the HUD.

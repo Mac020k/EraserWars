@@ -18,12 +18,13 @@ Yak フォルダは削除済み。LAN は **Tugboat** のみ使う。
 | EditMode tests | 13/13 passed |
 | PlayMode tests | 2/2 passed |
 | Spike scene builder | batch `-executeMethod Keshipin.Editor.FishNetSpikeSceneBuilder.Build` → `Assets/Scenes/FishNet_Spike.unity` (Exit 0) |
-| Dual-instance flick pose match | Pending operator (needs two Play instances) |
+| HostCommandGate canned flick path | Wired in `FishNetSpikeSession` (server PhysX + ObserversRpc settle pose) |
+| Dual-instance flick pose match | Pending operator (needs two Play instances; HUD shows local vs host delta) |
 
 ## 手順 (残作業)
 
-1. Play → Start Host。別プロセスまたはビルドで Start Client。
-2. `HostCommandGate` + ホスト PhysX の1フリック姿勢照合を足す。
+1. Play → Start Host → **Fire canned flick**。別プロセスまたはビルドで Start Client し、HUD の `Local vs host delta` を見る。
+2. 許容差を決め、必要なら自動照合テストを足す。
 
 ## 失敗時メモ
 
