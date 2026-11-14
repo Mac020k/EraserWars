@@ -29,7 +29,7 @@ namespace Keshipin.Gameplay
             var position = eraser.Body.position;
             if (position.y < deskTopY - fallDepth)
             {
-                if (!Physics.Raycast(position + Vector3.up * 0.2f, Vector3.down, 0.5f, deskMask))
+                if (!IsSupportedByDesk(position))
                 {
                     reported = true;
                     Fell?.Invoke(eraser);
@@ -40,6 +40,24 @@ namespace Keshipin.Gameplay
         public void ResetReport()
         {
             reported = false;
+        }
+
+        bool IsSupportedByDesk(Vector3 position)
+        {
+            var origin = position + Vector3.up * 0.2f;
+            var hits = Physics.RaycastAll(origin, Vector3.down, 0.5f, deskMask, QueryTriggerInteraction.Ignore);
+            for (var i = 0; i < hits.Length; i++)
+            {
+                var hitTransform = hits[i].collider.transform;
+                if (hitTransform == transform || hitTransform.IsChildOf(transform))
+                {
+                    continue;
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         void OnTriggerEnter(Collider other)
