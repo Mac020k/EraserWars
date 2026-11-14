@@ -1,10 +1,64 @@
-/.vsconfig
-/Assembly-CSharp-Editor.csproj
-/Assembly-CSharp.csproj
-/EraserWars.sln
-/Library
-/Logs
-/Packages
-/ProjectSettings
-/Temp
-/UserSettings
+# Unity generated
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Asset meta must stay with assets; ignore only loose crash dumps
+sysinfo.txt
+*.stackdump
+
+# IDE / OS
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Builds and packages
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.exe
+*.dll
+!Assets/**/*.dll
+
+# Crash / debug
+crashlytics-build.properties
+mono_crash.*
+
+# Addressables / Burst local cache
+/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Test results from tools/
+/[Tt]est[Rr]esults/
+*.xml.testresults
+/tools/**/bin/
+/tools/**/obj/
+
+# Local Steam app id override (keep template tracked separately if needed)
+# steam_appid.txt stays tracked with placeholder 480 until AppId is issued

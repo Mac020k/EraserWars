@@ -1,0 +1,13 @@
+id,name_key,build_cost,is_signature,max_copies,uses_per_match,cooldown,duration,effects
+1,card.weight,2,0,1,1,0,1,ModifyStat:Mass:1.5:1
+2,card.glue,2,0,1,1,0,2,ModifyStat:Friction:2:2
+3,card.wax,2,0,1,1,0,1,ModifyStat:Friction:0.5:1
+4,card.ruler_guard,3,0,1,1,0,2,PlaceDeskObject:RulerWall:2
+5,card.focus,2,0,1,1,0,1,ModifyFlick:1:0:1
+6,card.power_flick,3,0,1,1,0,1,ModifyFlick:1.4:1:2
+7,card.teacher_patrol,2,0,1,1,0,1,ModifyRule:OpponentTurnTime:0.5:1
+8,card.seat_swap,3,0,1,1,0,1,SwapPositions
+9,card.whiteout_shield,2,0,1,1,0,1,GrantShield:0.5:1
+10,card.lead_core,2,0,1,1,0,1,GrantWeapon:0.15:1
+11,card.eraser_dust,2,0,1,1,0,2,PlaceDeskObject:DustPatch:2
+12,card.prophecy,2,0,1,1,0,1,RevealTrajectory:2

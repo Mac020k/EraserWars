@@ -1,0 +1,19 @@
+{
+    "name": "Keshipin.UI",
+    "rootNamespace": "Keshipin.UI",
+    "references": [
+        "Keshipin.Core",
+        "Keshipin.Cards",
+        "Keshipin.Gameplay",
+        "Keshipin.View"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

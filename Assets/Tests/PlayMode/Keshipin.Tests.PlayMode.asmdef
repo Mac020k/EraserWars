@@ -1,0 +1,22 @@
+{
+    "name": "Keshipin.Tests.PlayMode",
+    "rootNamespace": "Keshipin.Tests.PlayMode",
+    "references": [
+        "Keshipin.Core",
+        "Keshipin.Gameplay",
+        "UnityEngine.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

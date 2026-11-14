@@ -1,0 +1,21 @@
+{
+    "name": "Keshipin.Editor",
+    "rootNamespace": "Keshipin.Editor",
+    "references": [
+        "Keshipin.Core",
+        "Keshipin.Cards",
+        "Keshipin.Gameplay",
+        "Keshipin.CameraRig"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

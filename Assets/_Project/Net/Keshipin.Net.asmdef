@@ -1,0 +1,18 @@
+{
+    "name": "Keshipin.Net",
+    "rootNamespace": "Keshipin.Net",
+    "references": [
+        "Keshipin.Core",
+        "Keshipin.Cards",
+        "Keshipin.Gameplay"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

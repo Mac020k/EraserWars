@@ -1,0 +1,16 @@
+{
+    "Keshipin.AI":  "143fc388ec254362b407dd9f2eb71990",
+    "Keshipin.Gameplay":  "0194a8a1d6d54ad1a0c7ed6a58373845",
+    "Keshipin.Core":  "c5c1affb52e4407a993abb5675c4026c",
+    "Keshipin.Tests.EditMode":  "d5d264d03a934b918a7f1f5749d7ebdb",
+    "Keshipin.Input":  "9d8b3455360e4426bb7c2a276c6392e8",
+    "Keshipin.View":  "79af4204c0df488193989a4dfaa1ddce",
+    "Keshipin.Tests.PlayMode":  "6d0d4bc8cb96410e84dff213535e2a18",
+    "Keshipin.CameraRig":  "e24e744c7fe841f6ba7465ed229d1ee4",
+    "Keshipin.Cards":  "087dab1cb0ba444bad606f5d4a651bd0",
+    "Keshipin.Editor":  "4b406a9e9364456999e01c2605dcc9c7",
+    "Keshipin.Steam":  "91b0745feed2464e93a4cf10f20f1992",
+    "Keshipin.Net":  "2626c83516f446cea629dabe15517a7c",
+    "Keshipin.UI":  "d9cb0f83d33e47b0bddf0ed35957da20",
+    "Keshipin.Persistence":  "15f5aa708d5f4bf1be1ea04b36073077"
+}
