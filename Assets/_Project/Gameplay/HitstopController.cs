@@ -18,6 +18,8 @@ namespace Keshipin.Gameplay
         SimulationMode modeBeforeFreeze;
         bool freezing;
 
+        public bool IsFreezing => freezing;
+
         public void BeginShot()
         {
             usedThisShot = 0;

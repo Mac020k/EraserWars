@@ -15,6 +15,7 @@ namespace Keshipin.Gameplay
         readonly List<EraserBody> erasers = new();
         readonly Dictionary<int, EraserBody> byPlayer = new();
         HitstopController hitstop;
+        EdgeSlowmoWatcher edgeSlowmo;
         MatchState state;
         int activeSeat;
 
@@ -61,6 +62,7 @@ namespace Keshipin.Gameplay
         void Awake()
         {
             hitstop = GetComponent<HitstopController>();
+            EnsureEdgeSlowmo();
             if (settleWatcher != null)
             {
                 settleWatcher.Settled += OnSettled;
@@ -77,6 +79,8 @@ namespace Keshipin.Gameplay
 
         public void StartHotseat(int playerCount)
         {
+            EnsureEdgeSlowmo();
+            edgeSlowmo.BeginMatch();
             ClearErasers();
             state = MatchFactory.CreateHotseat(playerCount, RuleSet.CasualStock);
             for (var i = 0; i < playerCount; i++)
@@ -197,9 +201,22 @@ namespace Keshipin.Gameplay
             relay.Bind(hitstop, IsSimulating);
         }
 
-        bool IsSimulating()
+        public bool IsSimulating()
         {
             return state != null && state.Phase == Phase.Simulating;
+        }
+
+        void EnsureEdgeSlowmo()
+        {
+            if (edgeSlowmo == null)
+            {
+                edgeSlowmo = GetComponent<EdgeSlowmoWatcher>();
+            }
+
+            if (edgeSlowmo == null)
+            {
+                edgeSlowmo = gameObject.AddComponent<EdgeSlowmoWatcher>();
+            }
         }
 
         void ClearErasers()

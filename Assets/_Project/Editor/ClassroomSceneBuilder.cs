@@ -111,6 +111,7 @@ namespace Keshipin.Editor
             var flick = directorGo.AddComponent<FlickApplier>();
             var settle = directorGo.AddComponent<SettleWatcher>();
             directorGo.AddComponent<HitstopController>();
+            directorGo.AddComponent<EdgeSlowmoWatcher>();
             var input = directorGo.AddComponent<HotseatFlickInput>();
             directorGo.AddComponent<PhysicsScaleProbe>();
             var bootstrap = directorGo.AddComponent<ClassroomBootstrap>();
