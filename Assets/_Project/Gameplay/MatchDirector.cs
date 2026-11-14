@@ -14,6 +14,7 @@ namespace Keshipin.Gameplay
 
         readonly List<EraserBody> erasers = new();
         readonly Dictionary<int, EraserBody> byPlayer = new();
+        HitstopController hitstop;
         MatchState state;
         int activeSeat;
 
@@ -59,6 +60,7 @@ namespace Keshipin.Gameplay
 
         void Awake()
         {
+            hitstop = GetComponent<HitstopController>();
             if (settleWatcher != null)
             {
                 settleWatcher.Settled += OnSettled;
@@ -93,6 +95,7 @@ namespace Keshipin.Gameplay
 
                 erasers.Add(eraser);
                 byPlayer[i] = eraser;
+                BindEraserHitstop(eraser);
             }
 
             activeSeat = 0;
@@ -123,6 +126,7 @@ namespace Keshipin.Gameplay
             }
 
             state = MatchReduce.Reduce(state, new Flicked(command));
+            hitstop?.BeginShot();
             flickApplier.Apply(eraser, command);
             settleWatcher.Begin(erasers);
         }
@@ -175,6 +179,27 @@ namespace Keshipin.Gameplay
             eraser.Body.angularVelocity = Vector3.zero;
             eraser.GetComponent<FalloutDetector>()?.ResetReport();
             eraser.gameObject.SetActive(true);
+        }
+
+        void BindEraserHitstop(EraserBody eraser)
+        {
+            if (hitstop == null || eraser == null)
+            {
+                return;
+            }
+
+            var relay = eraser.GetComponent<EraserCollisionRelay>();
+            if (relay == null)
+            {
+                relay = eraser.gameObject.AddComponent<EraserCollisionRelay>();
+            }
+
+            relay.Bind(hitstop, IsSimulating);
+        }
+
+        bool IsSimulating()
+        {
+            return state != null && state.Phase == Phase.Simulating;
         }
 
         void ClearErasers()

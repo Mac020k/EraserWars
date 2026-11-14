@@ -8,9 +8,15 @@ namespace Keshipin.Gameplay
         [SerializeField] int minFrames = 2;
         [SerializeField] int maxFrames = 10;
         [SerializeField] int shotBudgetFrames = 30;
+        [SerializeField] float eraserHitFreezeSeconds = 0.08f;
+        [SerializeField] float eraserHitCooldownSeconds = 0.15f;
 
         int usedThisShot;
+        float nextEraserHitTime;
         Coroutine running;
+        Coroutine freezeRoutine;
+        SimulationMode modeBeforeFreeze;
+        bool freezing;
 
         public void BeginShot()
         {
@@ -34,6 +40,55 @@ namespace Keshipin.Gameplay
             }
 
             running = StartCoroutine(HitstopRoutine(frames, visualRoot));
+        }
+
+        public void NotifyEraserCollision()
+        {
+            if (freezing || Time.time < nextEraserHitTime)
+            {
+                return;
+            }
+
+            nextEraserHitTime = Time.time + Mathf.Max(0f, eraserHitCooldownSeconds);
+            freezeRoutine = StartCoroutine(FreezeRoutine(Mathf.Max(0f, eraserHitFreezeSeconds)));
+        }
+
+        void OnDisable()
+        {
+            if (!freezing)
+            {
+                return;
+            }
+
+            if (freezeRoutine != null)
+            {
+                StopCoroutine(freezeRoutine);
+                freezeRoutine = null;
+            }
+
+            Physics.simulationMode = modeBeforeFreeze;
+            freezing = false;
+        }
+
+        IEnumerator FreezeRoutine(float seconds)
+        {
+            modeBeforeFreeze = Physics.simulationMode;
+            freezing = true;
+            Physics.simulationMode = SimulationMode.Script;
+            var end = Time.time + seconds;
+            while (Time.time < end)
+            {
+                yield return null;
+            }
+
+            if (!freezing)
+            {
+                yield break;
+            }
+
+            Physics.simulationMode = modeBeforeFreeze;
+            freezing = false;
+            freezeRoutine = null;
         }
 
         IEnumerator HitstopRoutine(int frames, Transform visualRoot)

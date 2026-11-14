@@ -98,8 +98,9 @@ The project compiles the `Core` sources directly, so it catches rule regressions
 
 1. In Unity, run `Keshipin > Build Classroom Casual Scene`. It writes `Assets/Scenes/Classroom_Casual.unity` with four desks in a 2x2 block, a kill zone below them and four spawn points.
 2. Enter Play Mode. `ClassroomBootstrap` calls `MatchDirector.StartHotseat` with its `players` field (2 by default).
-3. Press the left mouse button on your own eraser. The press point is where the flick hits the eraser, and an off-center hit adds spin.
-4. Drag away from the direction you want to shoot and release. A longer drag is a stronger flick. Press Space or the on-screen Pass button to pass.
+3. Left-drag anywhere in the Game view (not the debug Pass panel). Pull back to aim, then release. A longer drag is a stronger flick. Space or Pass skips the turn.
+4. Right-drag orbits the camera. Tab toggles top-down. Wheel zooms.
+5. When your eraser hits another during Simulating, physics freezes for 0.08 seconds. Desk and floor hits do not freeze. Another eraser hit inside 0.15 seconds is ignored.
 
 `Keshipin > Import Cards CSV` reads `Assets/Data/Csv/cards.csv` and creates or updates `Assets/Data/Cards/Card_<id>.asset` for each row.
 
