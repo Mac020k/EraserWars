@@ -1,14 +1,17 @@
 # ADR-0008 Fish-Net 導入スパイク
 
-- 状態: Pending
+- 状態: Pending (手順整備済み、パッケージ未導入)
 - 日付: 2026-11-14
+- 手順書: [FishNetInstall.md](../../Assets/_Project/Net/FishNetInstall.md)
 
 ## 手順
 
-1. Unity を閉じる (batchmode と競合するため)。
-2. Asset Store / OpenUPM から Fish-Net 4.x を入れる。
-3. Multiplayer Play Mode で Player 2つを起動。
-4. `HostCommandGate` 経由で Flick を送り、姿勢が揃うことを確認。
+1. Unity を閉じる (`Temp/UnityLockfile` を消す)。
+2. Fish-Net 4.x を Packages または Plugins に入れる。
+3. `FishNet_Spike` シーンで Tugboat Host / Client を起動する。
+4. Host だけが PhysX を回し、`HostCommandGate` 経由の1フリックで両端の終端姿勢を比べる。
+
+Multiplayer Play Mode は 6000.6.9f1 で CS0619 のため保留。スパイクは2つのエディタインスタンスかビルド+エディタでよい。
 
 ## 失敗時
 

@@ -5,30 +5,27 @@ Markdown は GitHub 上でそのまま読めるので、表示用の仕組みは
 
 ## 現在のフェーズ
 
-P0 (土台) の仕上げと、P1 (物理の縦切り、カードなし) の手触り検証中。
+P1 物理縦切りの手触りを固めつつ、P2 弾きの juiciness を載せている (2026-11-14)。
 
-2026-11-14 時点で、次のものがリポにある。
+リポにあるもの。
 
-- Unity 標準の `.gitignore` と、LFS 用の `.gitattributes`。`git-lfs/3.8.0` 導入済み。
-- `Assets/_Project` の asmdef と、依存の向き。
-- `Keshipin.Core` の reducer と EditMode テスト。
-- `tools/run-tests.ps1`、`tools/build.ps1`、`tools/run-core-smoke.ps1`。
-- 教室シーン `Assets/Scenes/Classroom_Casual.unity` (メニュー `Keshipin > Build Classroom Casual Scene`)。ホットシートの Pass まで手触り確認済み。
-- UI モック2案 (`prototypes/` の `.jpg`)。
+- Unity 標準の `.gitignore` と LFS。`Classroom_Casual` ホットシート。
+- 仮想トラックパッド弾き、狙い線ブレ、衝突ヒットストップ、縁際スロー。
+- Core smoke 緑。PlayMode knockoff ゲート追加 (Unity を閉じて `run-tests.ps1` で実行)。
+- UI 方向は broadcast を既定 ([ADR-0006](decisions/ADR-0006-ui-direction.md))。
 
-次のものは、まだ終わっていない。
+まだ終わっていないもの。
 
-- Localization / ProBuilder / Multiplayer Play Mode は Unity `6000.6.9f1` でパッケージ側が CS0619 になるため、いったん `manifest.json` から外している。互換版が出るか、自前グレーボックスに寄せるかは未決。
-- Fish-Net の導入スパイクは手順だけで、未実施 ([ADR-0008](decisions/ADR-0008-fishnet-spike.md))。
-- 物理スケールは仮決め ([ADR-0007](decisions/ADR-0007-physics-scale.md))。
-- P0 の完了条件「別フォルダに clone して開き、`run-tests.ps1` が緑」を、まだ誰も確かめていない。
-- UI 方向はオペレータの選択待ち ([ADR-0006](decisions/ADR-0006-ui-direction.md))。
+- Fish-Net 導入スパイクは未実施 ([ADR-0008](decisions/ADR-0008-fishnet-spike.md)、手順は `Assets/_Project/Net/FishNetInstall.md`)。
+- PlayMode / EditMode の Unity バッチ実行は、開いているエディタのロックで未完。
+- 2人・4人のオペレータ playtests を3試合ずつ記録すること。
+- Localization / ProBuilder / MPM は CS0619 のため保留。
 
 ## 次の3手
 
-1. Unity を閉じて `.\tools\run-tests.ps1 -Platform All` を回し、結果を記録する。別フォルダへの clone でも同じ結果になるか確かめる。
-2. `Classroom_Casual` で2人と4人を3試合ずつ遊び、結果を [playtests/](playtests/TEMPLATE.md) に書く。
-3. UI モック2案から1つを選び、[ADR-0006](decisions/ADR-0006-ui-direction.md) を Accepted にする。
+1. Unity を閉じて `.\tools\run-tests.ps1 -Platform All` を回し、結果を `TestResults/` と playtests に残す。
+2. Fish-Net スパイクを `FishNetInstall.md` どおりに1日で実施し、ADR-0008 を更新する。
+3. `Classroom_Casual` で2人と4人を3試合ずつ遊び、[playtests/](playtests/TEMPLATE.md) に書く。
 
 ## 文書
 
@@ -58,26 +55,20 @@ P0 (土台) の仕上げと、P1 (物理の縦切り、カードなし) の手�
 11. [アート、UI、サウンド](gdd/11_art-ui-audio.md)
 12. [収益化](gdd/12_monetization.md)
 
-### 決定 (ADR)
+### 決定
 
-- [ADR-0001 Fish-Net の listen host](decisions/ADR-0001-fishnet.md)
-- [ADR-0002 ホストだけが物理を計算する](decisions/ADR-0002-host-physics.md)
-- [ADR-0003 無料+DLC、有料ガチャなし](decisions/ADR-0003-monetization.md)
-- [ADR-0004 .gitignore と LFS](decisions/ADR-0004-gitignore-lfs.md)
-- [ADR-0005 reducer で試合を進める](decisions/ADR-0005-reducer.md)
-- [ADR-0006 UI の方向 (選択待ち)](decisions/ADR-0006-ui-direction.md)
-- [ADR-0007 物理スケール (仮)](decisions/ADR-0007-physics-scale.md)
-- [ADR-0008 Fish-Net 導入スパイク (未実施)](decisions/ADR-0008-fishnet-spike.md)
+- [ADR-0001 Fish-Net](decisions/ADR-0001-fishnet.md)
+- [ADR-0002 Host physics](decisions/ADR-0002-host-physics.md)
+- [ADR-0003 Monetization](decisions/ADR-0003-monetization.md)
+- [ADR-0004 gitignore / LFS](decisions/ADR-0004-gitignore-lfs.md)
+- [ADR-0005 Reducer](decisions/ADR-0005-reducer.md)
+- [ADR-0006 UI direction](decisions/ADR-0006-ui-direction.md)
+- [ADR-0007 Physics scale](decisions/ADR-0007-physics-scale.md)
+- [ADR-0008 Fish-Net spike](decisions/ADR-0008-fishnet-spike.md)
 
-### 計画と記録
+### その他
 
 - [マイルストーン](roadmap/milestones.md)
-- [Steam 出荷のオペレータ作業](roadmap/steam-operator-checklist.md)
-- [プレイテスト記録テンプレート](playtests/TEMPLATE.md)
-- [試作と UI モック](prototypes/README.md)
-
-## 書き方
-
-- 決定は ADR に書く。GDD は ADR と回答アーカイブを参照し、同じことを二重に書かない。
-- 推測には「推測」、自分で測った値には「実測」と書く。
-- 設計文書は日本語、ルートの `README.md` は英語で書く。
+- [Steam オペレータ手順](roadmap/steam-operator-checklist.md)
+- [プレイテスト](playtests/TEMPLATE.md)
+- [プロトタイプ](prototypes/README.md)

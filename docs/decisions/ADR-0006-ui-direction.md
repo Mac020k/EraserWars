@@ -1,6 +1,6 @@
 # ADR-0006 UI の方向
 
-- 状態: Proposed (モック提示済み、オペレータの選択待ち)
+- 状態: Accepted (default under autonomy; operator may override)
 - 日付: 2026-11-14
 - 関連: Q88、[11_art-ui-audio.md](../gdd/11_art-ui-audio.md)
 
@@ -19,11 +19,14 @@
 
 ## 決定
 
-未決。オペレータが選ぶ。
+**1. 実況映えする太字 (broadcast)** を既定とする。
 
-選ぶまでは、HUD を太字案の余白と文字サイズで仮に作る。
+理由。配信で読めることが製品要件 (Q3) で、ADR の仮置きも太字案だった。
+ホットシート縦切りの Debug OnGUI は別物のままにし、本番 HUD は broadcast の余白と文字サイズから作る。
+
+オペレータが compact に変えたい場合は、この ADR を更新してから USS を切り替える。
 
 ## 結果
 
-- 選んだら、この ADR を Accepted にし、選んだ案と理由を書く。
-- USS の変数 (文字サイズ、余白、色) を確定する。
+- HUD / USS の変数は broadcast モックを基準にする。
+- compact 案の画像は比較用に残す。
