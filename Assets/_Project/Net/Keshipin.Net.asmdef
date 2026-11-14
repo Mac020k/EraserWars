@@ -4,7 +4,8 @@
     "references": [
         "Keshipin.Core",
         "Keshipin.Cards",
-        "Keshipin.Gameplay"
+        "Keshipin.Gameplay",
+        "FishNet.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

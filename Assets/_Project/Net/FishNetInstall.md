@@ -1,40 +1,42 @@
 # Fish-Net install (P1-5 / P6)
 
-Unity Editor must be closed before package install. Batchmode and the open
-editor share `Temp/UnityLockfile`.
+## Current install (2026-11-14)
 
-## Goal of the spike
+Fish-Net **4.7.4** lives under `Assets/FishNet` (not UPM).
 
-Prove Fish-Net 4.x loads on Unity `6000.6.9f1`, hosts a Tugboat LAN session,
-and can carry one `FlickCommand` through `HostCommandGate` so both peers see
-the same eraser settle hash for one shot.
+Why not UPM git: the free package ships a stripped **Yak** transport that fails
+CS0103 / CS1061 on Unity `6000.6.9f1`. We deleted `Runtime/Plugins/Yak` and use
+**Tugboat** only.
 
-## Steps
+Demos were removed to keep the repo smaller.
 
-1. Quit every Unity process that has this project open. Confirm
-   `Temp/UnityLockfile` is gone.
-2. Install Fish-Net 4.x via one of:
-   - OpenUPM / git package URL into `Packages/manifest.json`
-   - Asset Store import into `Assets/Plugins/FishNet` (prefer Packages)
-3. Open the project. Fix any CS0619 / API break immediately and note it in
-   [ADR-0008](../../../docs/decisions/ADR-0008-fishnet-spike.md).
-4. Create a throwaway scene `Assets/Scenes/FishNet_Spike.unity` with:
-   - NetworkManager + Tugboat
-   - Host button and Client button (debug OnGUI is fine)
-   - A single networked eraser cube owned by the host for physics
-5. On the host, call `HostCommandGate` with a canned `FlickCommand`, apply
-   via existing `FlickApplier` on the host only (ADR-0002 host physics).
-6. Record whether client sees the same end pose within tolerance.
+## Refresh / reinstall
 
-## Out of scope for the spike
+```powershell
+# From repo root, with Unity closed:
+Remove-Item -Recurse -Force Assets\FishNet -ErrorAction SilentlyContinue
+git clone --depth 1 --branch 4.7.4 https://github.com/FirstGearGames/FishNet.git Temp\FishNetClone
+Copy-Item -Recurse Temp\FishNetClone\Assets\FishNet Assets\FishNet
+Remove-Item -Recurse -Force Assets\FishNet\Runtime\Plugins\Yak, Assets\FishNet\Runtime\Plugins\Yak.meta, Assets\FishNet\Demos, Assets\FishNet\Demos.meta -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force Temp\FishNetClone
+```
 
-- Steam transport / FishySteamworks
-- Ranked lockstep
-- Card sync
+Then open Unity once so `.meta` files regenerate.
 
-## Failure path
+## Spike scene
 
-If Fish-Net fails to compile on 6000.6.9f1 within one day, stop and update
-ADR-0008 to evaluate NGO 2.14 + community Steam transport.
+Menu: `Keshipin > Build Fish-Net Spike Scene`  
+Or batch (Unity closed):
 
-`HostCommandGate` already validates phase and player before reducer apply.
+```powershell
+& "C:\Program Files\Unity\Hub\Editor\6000.6.9f1\Editor\Unity.exe" `
+  -batchmode -nographics -projectPath (Resolve-Path .).Path `
+  -executeMethod Keshipin.Editor.FishNetSpikeSceneBuilder.Build `
+  -logFile TestResults\FishNet-spike-compile.log -quit
+```
+
+Scene: `Assets/Scenes/FishNet_Spike.unity` (already generated 2026-11-14)  
+Play → **Start Host** (Tugboat). Optional second instance → **Start Client**.
+
+`HostCommandGate` is ready for the next step: send one `FlickCommand` on the host
+and compare settle poses.

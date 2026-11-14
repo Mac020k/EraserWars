@@ -1,18 +1,31 @@
 # ADR-0008 Fish-Net 導入スパイク
 
-- 状態: Pending (手順整備済み、パッケージ未導入)
+- 状態: Accepted (compile + Tugboat scene path verified 2026-11-14)
 - 日付: 2026-11-14
 - 手順書: [FishNetInstall.md](../../Assets/_Project/Net/FishNetInstall.md)
 
-## 手順
+## 決定
 
-1. Unity を閉じる (`Temp/UnityLockfile` を消す)。
-2. Fish-Net 4.x を Packages または Plugins に入れる。
-3. `FishNet_Spike` シーンで Tugboat Host / Client を起動する。
-4. Host だけが PhysX を回し、`HostCommandGate` 経由の1フリックで両端の終端姿勢を比べる。
+Fish-Net **4.7.4** (`a362752`) を `Assets/FishNet` に埋め込む。
+UPM git URL (`#4.7.4`) は無料版の **Yak** スタブが CS エラーになるため不採用。
+Yak フォルダは削除済み。LAN は **Tugboat** のみ使う。
 
-Multiplayer Play Mode は 6000.6.9f1 で CS0619 のため保留。スパイクは2つのエディタインスタンスかビルド+エディタでよい。
+## 実施結果 (実測)
 
-## 失敗時
+| 項目 | 結果 |
+| --- | --- |
+| Unity 6000.6.9f1 batchmode compile | Exit 0 after Yak removal |
+| EditMode tests | 13/13 passed |
+| PlayMode tests | 2/2 passed |
+| Spike scene builder | batch `-executeMethod Keshipin.Editor.FishNetSpikeSceneBuilder.Build` → `Assets/Scenes/FishNet_Spike.unity` (Exit 0) |
+| Dual-instance flick pose match | Pending operator (needs two Play instances) |
 
-NGO 2.14 + コミュニティ Steam transport を再評価し、この ADR を更新する。
+## 手順 (残作業)
+
+1. Play → Start Host。別プロセスまたはビルドで Start Client。
+2. `HostCommandGate` + ホスト PhysX の1フリック姿勢照合を足す。
+
+## 失敗時メモ
+
+Yak を戻すと ClientSocket の PRO スタブで CS0103 / CS1061 になる。
+NGO への切り替え判断は、Tugboat ホスト権威が製品要件を満たせないときだけ行う。

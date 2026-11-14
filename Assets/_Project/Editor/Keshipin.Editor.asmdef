@@ -5,7 +5,9 @@
         "Keshipin.Core",
         "Keshipin.Cards",
         "Keshipin.Gameplay",
-        "Keshipin.CameraRig"
+        "Keshipin.CameraRig",
+        "Keshipin.Net",
+        "FishNet.Runtime"
     ],
     "includePlatforms": [
         "Editor"

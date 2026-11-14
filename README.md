@@ -42,11 +42,12 @@ Assets/
     View/          VFX, shake, fall cutscene
     UI/            HUD, hand, deck builder (UI Toolkit)
     AI/            CPU shot planner
-    Net/           Network boundary: command validation, disconnect policy
+    Net/           Network boundary: command validation, disconnect policy, Fish-Net spike HUD
     Steam/         Lobby and Steam transport
     Persistence/   Save data, match log
-    Editor/        CSV import, scene builder, debug menus
+    Editor/        CSV import, scene builder, Fish-Net spike builder, debug menus
   Data/            ScriptableObjects and Csv/cards.csv
+  FishNet/         Embedded Fish-Net 4.7.4 (Tugboat only; Yak/Demos removed)
   Plugins/         System.Collections.Immutable.dll, used by Core
   Art/ Audio/ Prefabs/ Scenes/
   Tests/
@@ -104,6 +105,14 @@ The project compiles the `Core` sources directly, so it catches rule regressions
 6. During Simulating, an eraser within 0.05 m of the outer desk edge, or dropping through the 0.05 m slice under the desk marker, slows time to 0.4 for 0.22 seconds. An eraser-hit freeze cancels that slow, and the next one waits until every eraser has left the zone and 0.6 seconds from the start have passed.
 
 `Keshipin > Import Cards CSV` reads `Assets/Data/Csv/cards.csv` and creates or updates `Assets/Data/Cards/Card_<id>.asset` for each row.
+
+## Fish-Net spike
+
+Fish-Net **4.7.4** is embedded under `Assets/FishNet` (not UPM). See [`Assets/_Project/Net/FishNetInstall.md`](Assets/_Project/Net/FishNetInstall.md) and [ADR-0008](docs/decisions/ADR-0008-fishnet-spike.md).
+
+1. `Keshipin > Build Fish-Net Spike Scene` writes `Assets/Scenes/FishNet_Spike.unity`.
+2. Play → **Start Host** (Tugboat). A second Play instance or build can **Start Client**.
+3. Next step: one host `FlickCommand` through `HostCommandGate` and compare settle poses.
 
 ## Build
 

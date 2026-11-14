@@ -11,21 +11,21 @@ P1 物理縦切りの手触りを固めつつ、P2 弾きの juiciness を載せ
 
 - Unity 標準の `.gitignore` と LFS。`Classroom_Casual` ホットシート。
 - 仮想トラックパッド弾き、狙い線ブレ、衝突ヒットストップ、縁際スロー。
-- Core smoke 緑。PlayMode knockoff ゲート追加 (Unity を閉じて `run-tests.ps1` で実行)。
+- Core smoke 緑。EditMode 13/13・PlayMode 2/2 ([playtests/2026-11-14_batch-tests.md](playtests/2026-11-14_batch-tests.md))。
 - UI 方向は broadcast を既定 ([ADR-0006](decisions/ADR-0006-ui-direction.md))。
+- Fish-Net 4.7.4 を `Assets/FishNet` に埋め込み、`FishNet_Spike` + Tugboat HUD まで ([ADR-0008](decisions/ADR-0008-fishnet-spike.md))。
 
 まだ終わっていないもの。
 
-- Fish-Net 導入スパイクは未実施 ([ADR-0008](decisions/ADR-0008-fishnet-spike.md)、手順は `Assets/_Project/Net/FishNetInstall.md`)。
-- PlayMode / EditMode の Unity バッチ実行は、開いているエディタのロックで未完。
+- Fish-Net スパイクの Host/Client 2インスタンス姿勢照合と `HostCommandGate` 1フリック配線。
 - 2人・4人のオペレータ playtests を3試合ずつ記録すること。
 - Localization / ProBuilder / MPM は CS0619 のため保留。
 
 ## 次の3手
 
-1. Unity を閉じて `.\tools\run-tests.ps1 -Platform All` を回し、結果を `TestResults/` と playtests に残す。
-2. Fish-Net スパイクを `FishNetInstall.md` どおりに1日で実施し、ADR-0008 を更新する。
-3. `Classroom_Casual` で2人と4人を3試合ずつ遊び、[playtests/](playtests/TEMPLATE.md) に書く。
+1. `FishNet_Spike` で Host + Client を起動し、`HostCommandGate` 経由の1フリック終端姿勢を照合する。
+2. `Classroom_Casual` で2人と4人を3試合ずつ遊び、[playtests/](playtests/TEMPLATE.md) に書く。
+3. オンライン縦切りに向けたホスト PhysX 同期の最小経路を固める。
 
 ## 文書
 

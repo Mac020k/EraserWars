@@ -15,15 +15,18 @@ function Invoke-UnityTests {
     $log = Join-Path $ResultsDir "$TestPlatform-unity.log"
     if (Test-Path $out) { Remove-Item $out -Force }
     Write-Host "Running $TestPlatform tests..."
-    & $UnityExe `
-        -batchmode `
-        -nographics `
-        -projectPath $ProjectPath `
-        -runTests `
-        -testPlatform $TestPlatform `
-        -testResults $out `
-        -logFile $log
-    $code = $LASTEXITCODE
+    # Start-Process -Wait keeps the script on the editor process until batchmode exits.
+    # Do not pass -quit. With -runTests it can shut down before the runner starts.
+    $proc = Start-Process -FilePath $UnityExe -ArgumentList @(
+        "-batchmode",
+        "-nographics",
+        "-projectPath", "$ProjectPath",
+        "-runTests",
+        "-testPlatform", $TestPlatform,
+        "-testResults", $out,
+        "-logFile", $log
+    ) -PassThru -Wait -NoNewWindow
+    $code = $proc.ExitCode
     if (-not (Test-Path $out)) {
         Write-Error "No results XML at $out. See $log. Exit=$code"
     }
