@@ -512,6 +512,9 @@ MonoBehaviour:
   worldCamera: {fileID: 2002559874}
   maxDragPixels: 180
   aimLineMeters: 0.8
+  amplitude0: 0.35
+  frequency0: 0.8
+  frequencySlope: 2.5
 --- !u!114 &123935317
 MonoBehaviour:
   m_ObjectHideFlags: 0

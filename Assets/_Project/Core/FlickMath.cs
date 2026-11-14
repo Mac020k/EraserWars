@@ -4,6 +4,10 @@ namespace Keshipin.Core
 {
     public static class FlickMath
     {
+        public const float DefaultSwayAmplitude = 0.35f;
+        public const float DefaultSwayFrequency = 0.8f;
+        public const float DefaultSwayFrequencySlope = 2.5f;
+
         public static float Clamp01(float value)
         {
             if (value < 0f) return 0f;
@@ -41,6 +45,21 @@ namespace Keshipin.Core
             float f1)
         {
             return aimRadians + AimAngleWithSway(l, t, sizeFactor, a0, f0, f1);
+        }
+
+        public static (float x, float y) SwayedDirection(
+            float directionX,
+            float directionY,
+            float dragLength01,
+            float releaseTime,
+            float sizeFactor,
+            float a0,
+            float f0,
+            float f1)
+        {
+            var aim = MathF.Atan2(directionY, directionX);
+            var swayed = AimAngleWithSway(aim, dragLength01, releaseTime, sizeFactor, a0, f0, f1);
+            return DirectionFromAngle(swayed);
         }
 
         public static (float x, float y) DirectionFromAngle(float radians)

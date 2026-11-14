@@ -6,22 +6,21 @@ namespace Keshipin.Gameplay
     public sealed class FlickApplier : MonoBehaviour
     {
         [SerializeField] float jMax = 0.12f;
-        [SerializeField] float amplitude0 = 0.35f;
-        [SerializeField] float frequency0 = 0.8f;
-        [SerializeField] float frequencySlope = 2.5f;
+        [SerializeField] float amplitude0 = FlickMath.DefaultSwayAmplitude;
+        [SerializeField] float frequency0 = FlickMath.DefaultSwayFrequency;
+        [SerializeField] float frequencySlope = FlickMath.DefaultSwayFrequencySlope;
 
         public void Apply(EraserBody eraser, FlickCommand command)
         {
-            var aim = Mathf.Atan2(command.DirectionY, command.DirectionX);
-            var swayed = FlickMath.AimAngleWithSway(
-                aim,
+            var (dx, dy) = FlickMath.SwayedDirection(
+                command.DirectionX,
+                command.DirectionY,
                 command.DragLength01,
                 command.ReleaseTime,
                 eraser.SizeFactor,
                 amplitude0,
                 frequency0,
                 frequencySlope);
-            var (dx, dy) = FlickMath.DirectionFromAngle(swayed);
             var impulseMag = FlickMath.Impulse(eraser.Power, jMax, command.DragLength01);
             var impulse = new Vector3(dx, 0f, dy) * impulseMag;
 

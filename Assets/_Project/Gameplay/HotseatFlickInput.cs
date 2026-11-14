@@ -35,6 +35,9 @@ namespace Keshipin.Gameplay
         [SerializeField] Camera worldCamera;
         [SerializeField] float maxDragPixels = 180f;
         [SerializeField] float aimLineMeters = 0.8f;
+        [SerializeField] float amplitude0 = FlickMath.DefaultSwayAmplitude;
+        [SerializeField] float frequency0 = FlickMath.DefaultSwayFrequency;
+        [SerializeField] float frequencySlope = FlickMath.DefaultSwayFrequencySlope;
 
         TrackpadPhase phase;
         EraserBody target;
@@ -298,7 +301,17 @@ namespace Keshipin.Gameplay
 
             EnsureAimLine();
             var origin = target.transform.position + Vector3.up * 0.03f;
-            var end = origin + pull.normalized * (length * Mathf.Max(0.05f, aimLineMeters));
+            var heldSeconds = Time.time - pressTime;
+            var (dx, dz) = FlickMath.SwayedDirection(
+                pull.x,
+                pull.z,
+                length,
+                heldSeconds,
+                target.SizeFactor,
+                amplitude0,
+                frequency0,
+                frequencySlope);
+            var end = origin + new Vector3(dx, 0f, dz) * (length * Mathf.Max(0.05f, aimLineMeters));
             aimLine.enabled = true;
             aimLine.positionCount = 2;
             aimLine.SetPosition(0, origin);
