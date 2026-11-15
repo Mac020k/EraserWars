@@ -39,7 +39,7 @@ namespace EraserWars.Gameplay
             }
 
             // One body owns the pair so both OnCollisionEnter hooks do not double-apply.
-            if (self.GetInstanceID() > other.GetInstanceID())
+            if (self.PlayerIndex > other.PlayerIndex)
             {
                 return;
             }
