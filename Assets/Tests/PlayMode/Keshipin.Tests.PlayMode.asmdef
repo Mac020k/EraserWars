@@ -4,6 +4,7 @@
     "references": [
         "Keshipin.Core",
         "Keshipin.Gameplay",
+        "Keshipin.Net",
         "UnityEngine.TestRunner"
     ],
     "includePlatforms": [],

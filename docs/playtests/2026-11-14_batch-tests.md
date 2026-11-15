@@ -17,7 +17,7 @@ Operator: agent (batchmode after editor closed)
 | Platform | total | passed | failed | notes |
 | --- | --- | --- | --- | --- |
 | EditMode | 13 | 13 | 0 | Includes MatchReduce + FlickMath sway/impulse |
-| PlayMode | 2 | 2 | 0 | Includes ClassroomKnockoffPlayModeTests |
+| PlayMode | 3 | 3 | 0 | Knockoff + HostCommandGate flick settle + sway |
 
 Artifacts: `TestResults/EditMode-results.xml`, `TestResults/PlayMode-results.xml`
 (gitignored).
@@ -32,3 +32,4 @@ Artifacts: `TestResults/EditMode-results.xml`, `TestResults/PlayMode-results.xml
 - `FishNetSpikeSceneBuilder.Build` → `Assets/Scenes/FishNet_Spike.unity` with
   Tugboat HUD + `HostCommandGate` canned flick + settle pose RPC.
 - Dual-instance pose delta: pending operator.
+- PlayMode `HostCommandGateFlickSettlePlayModeTests` covers gate + host PhysX settle without runtime NetworkObjects.
