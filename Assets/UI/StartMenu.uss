@@ -28,9 +28,9 @@
 }
 
 .brand-icon {
-    width: 72px;
-    height: 72px;
-    margin-left: 10px;
+    width: 56px;
+    height: 56px;
+    margin-left: 8px;
     flex-shrink: 0;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .title-ja {
-    font-size: 48px;
+    font-size: 40px;
     -unity-font-style: bold;
     color: rgb(255, 90, 140);
     -unity-text-outline-width: 3px;
@@ -51,37 +51,37 @@
 }
 
 .title-en {
-    font-size: 18px;
+    font-size: 15px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
     -unity-text-outline-width: 2px;
     -unity-text-outline-color: rgb(70, 40, 30);
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     margin: 0;
     padding: 0;
 }
 
 .spacer {
     flex-grow: 1;
-    min-height: 8px;
-    max-height: 48px;
+    min-height: 4px;
+    max-height: 28px;
 }
 
 .cta-button {
-    width: 42%;
-    min-width: 280px;
-    max-width: 520px;
-    height: 64px;
-    font-size: 32px;
+    width: 36%;
+    min-width: 220px;
+    max-width: 420px;
+    height: 52px;
+    font-size: 26px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
     -unity-text-outline-width: 2px;
     -unity-text-outline-color: rgb(20, 50, 110);
     background-color: rgb(52, 130, 235);
-    border-radius: 32px;
-    border-width: 4px;
+    border-radius: 26px;
+    border-width: 3px;
     border-color: rgb(30, 36, 60);
-    margin: 0 0 16px 0;
+    margin: 0 0 12px 0;
     flex-shrink: 0;
 }
 
@@ -104,11 +104,11 @@
 .tile {
     flex-grow: 1;
     flex-basis: 0;
-    height: 96px;
-    margin: 0 6px;
-    padding: 6px;
+    height: 78px;
+    margin: 0 5px;
+    padding: 4px;
     background-color: rgb(255, 252, 244);
-    border-radius: 14px;
+    border-radius: 12px;
     border-width: 3px;
     align-items: center;
     justify-content: center;

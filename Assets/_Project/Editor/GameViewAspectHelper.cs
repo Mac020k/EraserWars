@@ -8,8 +8,23 @@ namespace EraserWars.Editor
     /// <summary>
     /// Fixed Full HD Game view + Scale 1x crops UITK. Prefer free 16:9 so Scale 1x matches the panel.
     /// </summary>
+    [InitializeOnLoad]
     public static class GameViewAspectHelper
     {
+        static GameViewAspectHelper()
+        {
+            EditorApplication.delayCall += () => TrySetAspectRatio(16f, 9f);
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        }
+
+        static void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.EnteredPlayMode || state == PlayModeStateChange.EnteredEditMode)
+            {
+                EditorApplication.delayCall += () => TrySetAspectRatio(16f, 9f);
+            }
+        }
+
         [MenuItem("EraserWars/Use Game View 16:9 Aspect")]
         public static void Apply16x9Aspect()
         {
