@@ -21,6 +21,23 @@ namespace EraserWars.Core
 
         public PlayerState GetPlayer(PlayerId id) => Players.First(p => p.Id.Equals(id));
 
+        // Highest points among survivors; null when nobody survived or the top score is tied.
+        public PlayerId? Winner
+        {
+            get
+            {
+                var survivors = Players.Where(p => p.IsAlive).ToArray();
+                if (survivors.Length == 0)
+                {
+                    return null;
+                }
+
+                var best = survivors.Max(p => p.Points);
+                var leaders = survivors.Where(p => p.Points == best).ToArray();
+                return leaders.Length == 1 ? leaders[0].Id : null;
+            }
+        }
+
         public MatchState WithPlayer(PlayerState updated)
         {
             var builder = Players.ToBuilder();

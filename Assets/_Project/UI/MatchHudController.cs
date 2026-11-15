@@ -26,6 +26,8 @@ namespace EraserWars.UI
         Label phaseLabel;
         Label timerLabel;
         Label turnLabel;
+        VisualElement resultBanner;
+        Label resultText;
 
         sealed class PlayerPill
         {
@@ -51,6 +53,8 @@ namespace EraserWars.UI
             phaseLabel = root.Q<Label>("phase");
             timerLabel = root.Q<Label>("timer");
             turnLabel = root.Q<Label>("turn");
+            resultBanner = root.Q("result-banner");
+            resultText = root.Q<Label>("result-text");
             pills.Clear();
             playersRow?.Clear();
 
@@ -95,6 +99,35 @@ namespace EraserWars.UI
             }
 
             RefreshPills(state);
+            RefreshResultBanner(state);
+        }
+
+        void RefreshResultBanner(MatchState state)
+        {
+            if (resultBanner == null)
+            {
+                return;
+            }
+
+            var ended = state.Phase == Phase.MatchEnd;
+            resultBanner.EnableInClassList("hidden", !ended);
+            if (!ended)
+            {
+                return;
+            }
+
+            var winner = state.Winner;
+            for (var i = 0; i < SeatClassCount; i++)
+            {
+                resultBanner.EnableInClassList($"seat-{i}", winner is PlayerId id && id.Value % SeatClassCount == i);
+            }
+
+            if (resultText != null)
+            {
+                resultText.text = winner is PlayerId w
+                    ? $"P{w.Value + 1} のかち!"
+                    : "ひきわけ!";
+            }
         }
 
         void RefreshPills(MatchState state)

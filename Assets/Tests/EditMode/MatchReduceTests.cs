@@ -76,6 +76,33 @@ namespace EraserWars.Tests.EditMode
         }
 
         [Test]
+        public void WinnerIsLastSurvivor()
+        {
+            var rules = RuleSet.CasualStock with { StockCount = 1 };
+            var state = MatchFactory.CreateHotseat(2, rules);
+            state = MatchReduce.Reduce(state, new TurnStarted(state.CurrentPlayerId));
+            state = MatchReduce.Reduce(state, new Flicked(DummyFlick(state.CurrentPlayerId)));
+            state = MatchReduce.Reduce(state, new EraserFell(new PlayerId(1), new PlayerId(0)));
+            state = MatchReduce.Reduce(state, new SimulationSettled());
+            Assert.AreEqual(Phase.MatchEnd, state.Phase);
+            Assert.AreEqual(new PlayerId(0), state.Winner);
+        }
+
+        [Test]
+        public void WinnerIsNullWhenEveryoneFell()
+        {
+            var rules = RuleSet.CasualStock with { StockCount = 1 };
+            var state = MatchFactory.CreateHotseat(2, rules);
+            state = MatchReduce.Reduce(state, new TurnStarted(state.CurrentPlayerId));
+            state = MatchReduce.Reduce(state, new Flicked(DummyFlick(state.CurrentPlayerId)));
+            state = MatchReduce.Reduce(state, new EraserFell(new PlayerId(0), new PlayerId(0)));
+            state = MatchReduce.Reduce(state, new EraserFell(new PlayerId(1), new PlayerId(0)));
+            state = MatchReduce.Reduce(state, new SimulationSettled());
+            Assert.AreEqual(Phase.MatchEnd, state.Phase);
+            Assert.IsNull(state.Winner);
+        }
+
+        [Test]
         public void RoundContinuesForLaterSeatAfterOneSurvivor()
         {
             var rules = RuleSet.CasualStock with { StockCount = 1 };

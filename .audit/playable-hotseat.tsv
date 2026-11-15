@@ -1,0 +1,6 @@
+ts	phase	decision	why	evidence	result
+2026-11-15T14:15:00Z	start	autonomous run for playable hotseat completion	user granted no check-ins and asked to keep shipping toward a finished game	agent 202669fb	open
+2026-11-15T14:15:30Z	frame	exit predicate set: 2P match Start→flick→settle→turn persist→fall/pass→MatchEnd→Rematch verified in Play Mode	need a checkable done line before iterating	.audit/playable-hotseat.tsv	open
+2026-11-15T14:16:19Z	inventory	P0 gap is turn timer never ticks and TimerExpired never fires	HUD shows time but MatchDirector never decrements TurnTimeLeft	MatchDirector.cs grep TurnTimeLeft	open
+2026-11-15T14:16:19Z	timer	added TickTurnTimer and active-eraser scale cue; CardSelect HUD says �˂炦!	P1 milestone requires auto-pass on timeout; card UI not shipped yet	MatchDirector.cs MatchHudController.cs	open
+2026-11-15T14:19:46Z	timer	committed turn timer tick + eraser cue + HUD phase text	core smoke 5/5 green; Play Mode click still pending domain reload	commit HEAD core-smoke	tests green, play verify open

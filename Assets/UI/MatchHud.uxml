@@ -10,6 +10,9 @@
             <ui:Button name="menu" text="メニュー" class="hud-menu-button" />
         </ui:VisualElement>
         <ui:VisualElement name="players" class="players-row" picking-mode="Ignore" />
+        <ui:VisualElement name="result-banner" class="result-banner hidden" picking-mode="Ignore">
+            <ui:Label name="result-text" text="" class="result-text" picking-mode="Ignore" />
+        </ui:VisualElement>
         <ui:VisualElement class="action-bar">
             <ui:Button name="pass" class="action-chip action-pass">
                 <ui:VisualElement name="pass-icon" class="action-icon" picking-mode="Ignore" />

@@ -1,4 +1,5 @@
 using System.IO;
+using EraserWars.Gameplay;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -15,6 +16,8 @@ namespace EraserWars.Editor
         const string FlagClassroom = "Temp/open-classroom-casual.flag";
         const string FlagStopPlay = "Temp/stop-play.flag";
         const string FlagEnterPlay = "Temp/enter-play.flag";
+        const string FlagUnpause = "Temp/unpause.flag";
+        const string FlagStartHotseat2 = "Temp/start-hotseat-2.flag";
         const string FlagRebuildFishNet = "Temp/rebuild-fishnet-spike.flag";
         const string FlagRebuildClassroom = "Temp/rebuild-classroom.flag";
 
@@ -26,10 +29,12 @@ namespace EraserWars.Editor
         static void PollFlags()
         {
             TryStopPlay();
+            TryUnpause();
             TryRebuild();
             TryOpen(FlagFishNet, "Assets/Scenes/FishNet_Spike.unity");
             TryOpen(FlagClassroom, "Assets/Scenes/Classroom_Casual.unity");
             TryEnterPlay();
+            TryStartHotseat2();
         }
 
         static void TryStopPlay()
@@ -45,6 +50,19 @@ namespace EraserWars.Editor
             }
         }
 
+        static void TryUnpause()
+        {
+            if (!ConsumeFlag(FlagUnpause))
+            {
+                return;
+            }
+
+            if (EditorApplication.isPlaying)
+            {
+                EditorApplication.isPaused = false;
+            }
+        }
+
         static void TryEnterPlay()
         {
             if (!ConsumeFlag(FlagEnterPlay))
@@ -54,8 +72,54 @@ namespace EraserWars.Editor
 
             if (!EditorApplication.isPlaying)
             {
+                EditorApplication.isPaused = false;
                 EditorApplication.isPlaying = true;
             }
+            else
+            {
+                EditorApplication.isPaused = false;
+            }
+        }
+
+        static void TryStartHotseat2()
+        {
+            if (!PeekFlag(FlagStartHotseat2))
+            {
+                return;
+            }
+
+            if (!EditorApplication.isPlaying || EditorApplication.isCompiling)
+            {
+                return;
+            }
+
+            if (!ConsumeFlag(FlagStartHotseat2))
+            {
+                return;
+            }
+
+            EditorApplication.isPaused = false;
+            var director = Object.FindFirstObjectByType<MatchDirector>();
+            if (director == null)
+            {
+                Debug.LogWarning("[EraserWars] start-hotseat-2: MatchDirector missing");
+                return;
+            }
+
+            director.SetDebugChromeVisible(false);
+            director.StartHotseat(2);
+            var docs = Object.FindObjectsByType<UnityEngine.UIElements.UIDocument>(FindObjectsSortMode.None);
+            foreach (var doc in docs)
+            {
+                if (doc.gameObject.name != "StartMenu" || doc.rootVisualElement == null)
+                {
+                    continue;
+                }
+
+                doc.rootVisualElement.style.display = UnityEngine.UIElements.DisplayStyle.None;
+            }
+
+            Debug.Log("[EraserWars] start-hotseat-2: MatchDirector.StartHotseat(2)");
         }
 
         static void TryRebuild()

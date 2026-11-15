@@ -167,6 +167,31 @@
     opacity: 0.4;
 }
 
+.result-banner {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 38%;
+    padding: 18px 24px;
+    align-items: center;
+    background-color: rgba(255, 250, 225, 0.96);
+    border-radius: 24px;
+    border-width: 6px;
+    border-color: rgb(210, 210, 210);
+}
+
+.result-banner.hidden { display: none; }
+.result-banner.seat-0 { border-color: rgb(255, 120, 160); }
+.result-banner.seat-1 { border-color: rgb(70, 130, 240); }
+.result-banner.seat-2 { border-color: rgb(70, 190, 100); }
+.result-banner.seat-3 { border-color: rgb(255, 160, 50); }
+
+.result-text {
+    font-size: 40px;
+    -unity-font-style: bold;
+    color: rgb(70, 60, 80);
+}
+
 .action-bar {
     position: absolute;
     left: 0;
