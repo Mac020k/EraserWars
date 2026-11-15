@@ -21,7 +21,16 @@ namespace EraserWars.Gameplay
         MatchState state;
         int activeSeat;
 
-        static readonly Rect DebugChromeRect = new(12f, 12f, 460f, 340f);
+        // Broadcast-style debug chrome: top banner stays readable on stream, side panel keeps the desk clear.
+        static readonly Rect SidePanelRect = new(12f, 96f, 288f, 318f);
+
+        GUIStyle bannerTitleStyle;
+        GUIStyle bannerHintStyle;
+        GUIStyle bannerStatStyle;
+        GUIStyle seatStyle;
+        GUIStyle stockStyle;
+        GUIStyle panelHeaderStyle;
+        bool stylesReady;
 
         public MatchState State => state;
         public IReadOnlyList<EraserBody> Erasers => erasers;
@@ -58,7 +67,12 @@ namespace EraserWars.Gameplay
 
             // Input System origin is bottom-left. IMGUI origin is top-left.
             var guiPosition = new Vector2(screenPosition.x, Screen.height - screenPosition.y);
-            return DebugChromeRect.Contains(guiPosition);
+            return TopBarRect().Contains(guiPosition) || SidePanelRect.Contains(guiPosition);
+        }
+
+        static Rect TopBarRect()
+        {
+            return new Rect(12f, 12f, Mathf.Max(320f, Screen.width - 24f), 72f);
         }
 
         void Awake()
@@ -106,6 +120,7 @@ namespace EraserWars.Gameplay
 
             activeSeat = 0;
             state = MatchReduce.Reduce(state, new TurnStarted(state.CurrentPlayerId));
+            EnsureOrbitCamera()?.FrameDeskOverview();
         }
 
         public void Rematch()
@@ -149,6 +164,7 @@ namespace EraserWars.Gameplay
         {
             state = MatchReduce.Reduce(state, new SimulationSettled());
             EnsureOrbitCamera()?.ClearChaseTarget();
+            EnsureOrbitCamera()?.FrameDeskOverview();
             SyncActiveSeat();
             RespawnIfNeeded();
         }
@@ -283,40 +299,154 @@ namespace EraserWars.Gameplay
                 return;
             }
 
-            GUILayout.BeginArea(DebugChromeRect);
-            GUILayout.Label($"Phase={state.Phase} Round={state.Round} Seat={activeSeat}");
-            GUILayout.Label($"TurnTime={state.TurnTimeLeft:0.0}");
-            GUILayout.Label("Controls: LMB drag anywhere (pull back to aim) / Space or Pass");
-            foreach (var p in state.Players)
+            EnsureGuiStyles();
+            DrawTopBanner();
+            DrawSidePanel();
+        }
+
+        void EnsureGuiStyles()
+        {
+            if (stylesReady)
             {
-                var colorName = PlayerIndexColorName(p.Id.Value);
-                GUILayout.Label($"{p.Id} ({colorName}) stocks={p.Stocks} pts={p.Points} alive={p.IsAlive}");
+                return;
             }
 
+            bannerTitleStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 24,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleLeft,
+                normal = { textColor = Color.white },
+            };
+            bannerHintStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 12,
+                alignment = TextAnchor.MiddleLeft,
+                normal = { textColor = new Color(0.78f, 0.80f, 0.74f) },
+            };
+            bannerStatStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 17,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleLeft,
+                normal = { textColor = new Color(1f, 0.93f, 0.70f) },
+            };
+            seatStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 18,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleLeft,
+                normal = { textColor = Color.white },
+            };
+            stockStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 14,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleLeft,
+                normal = { textColor = Color.white },
+            };
+            panelHeaderStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 13,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleLeft,
+                normal = { textColor = new Color(0.82f, 0.84f, 0.78f) },
+            };
+            stylesReady = true;
+        }
+
+        void DrawTopBanner()
+        {
+            var bar = TopBarRect();
+            DrawPanel(bar, new Color(0.05f, 0.07f, 0.10f, 0.88f), new Color(0.95f, 0.78f, 0.28f, 0.95f));
+            GUILayout.BeginArea(new Rect(bar.x + 16f, bar.y + 8f, bar.width - 32f, bar.height - 14f));
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Hotseat 2P"))
+            GUILayout.Label("ERASER WARS", bannerTitleStyle, GUILayout.Width(210f));
+            GUILayout.Label($"ROUND {state.Round}", bannerStatStyle, GUILayout.Width(110f));
+            var seatColor = PlayerColors[activeSeat % PlayerColors.Length];
+            var prev = GUI.color;
+            GUI.color = seatColor;
+            GUILayout.Label(
+                $"SEAT {activeSeat}  {PlayerIndexColorName(activeSeat).ToUpperInvariant()}",
+                seatStyle,
+                GUILayout.Width(210f));
+            GUI.color = prev;
+            GUILayout.Label($"TIME {state.TurnTimeLeft:0.0}", bannerStatStyle, GUILayout.Width(110f));
+            GUILayout.Label($"{state.Phase}", bannerStatStyle, GUILayout.Width(150f));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.Label("LMB flick  ·  RMB orbit  ·  Tab top-down  ·  Space / Pass skip", bannerHintStyle);
+            GUILayout.EndArea();
+        }
+
+        void DrawSidePanel()
+        {
+            DrawPanel(SidePanelRect, new Color(0.04f, 0.05f, 0.08f, 0.86f), new Color(1f, 1f, 1f, 0.16f));
+            GUILayout.BeginArea(new Rect(SidePanelRect.x + 14f, SidePanelRect.y + 12f, SidePanelRect.width - 28f, SidePanelRect.height - 24f));
+            GUILayout.Label("STOCKS", panelHeaderStyle);
+            GUILayout.Space(4f);
+            foreach (var p in state.Players)
+            {
+                var idx = p.Id.Value;
+                var color = p.IsAlive ? PlayerColors[idx % PlayerColors.Length] : new Color(0.38f, 0.38f, 0.38f);
+                DrawStockRow(idx, p.Stocks, p.Points, color, idx == activeSeat);
+            }
+
+            GUILayout.Space(12f);
+            GUILayout.Label("MATCH", panelHeaderStyle);
+            GUILayout.Space(4f);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Hotseat 2P", GUILayout.Height(34f)))
             {
                 StartHotseat(2);
             }
 
-            if (GUILayout.Button("Hotseat 4P"))
+            if (GUILayout.Button("Hotseat 4P", GUILayout.Height(34f)))
             {
                 StartHotseat(4);
             }
 
             GUILayout.EndHorizontal();
 
-            if (state.Phase == Phase.MatchEnd && GUILayout.Button("Rematch"))
+            if (state.Phase == Phase.MatchEnd && GUILayout.Button("Rematch", GUILayout.Height(36f)))
             {
                 Rematch();
             }
 
-            if (GUILayout.Button("Pass"))
+            if (GUILayout.Button("PASS", GUILayout.Height(42f)))
             {
                 Pass();
             }
 
             GUILayout.EndArea();
+        }
+
+        void DrawStockRow(int index, int stocks, int points, Color color, bool active)
+        {
+            var row = GUILayoutUtility.GetRect(1f, 28f, GUILayout.ExpandWidth(true));
+            var prev = GUI.color;
+            GUI.color = new Color(1f, 1f, 1f, active ? 0.12f : 0.05f);
+            GUI.DrawTexture(row, Texture2D.whiteTexture);
+            GUI.color = color;
+            GUI.DrawTexture(new Rect(row.x, row.y + 4f, 5f, row.height - 8f), Texture2D.whiteTexture);
+            GUI.color = prev;
+            var mark = active ? "▶" : " ";
+            GUI.Label(
+                new Rect(row.x + 12f, row.y, row.width - 12f, row.height),
+                $"{mark} P{index}   stocks {stocks}   pts {points}",
+                stockStyle);
+        }
+
+        static void DrawPanel(Rect rect, Color fill, Color accent)
+        {
+            var prev = GUI.color;
+            GUI.color = fill;
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = accent;
+            GUI.DrawTexture(new Rect(rect.x, rect.y, rect.width, 3f), Texture2D.whiteTexture);
+            GUI.color = new Color(1f, 1f, 1f, 0.08f);
+            GUI.DrawTexture(new Rect(rect.x, rect.yMax - 1f, rect.width, 1f), Texture2D.whiteTexture);
+            GUI.color = prev;
         }
 
         static string PlayerIndexColorName(int index)

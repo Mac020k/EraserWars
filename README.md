@@ -97,10 +97,10 @@ The project compiles the `Core` sources directly, so it catches rule regressions
 
 ## Classroom scene
 
-1. In Unity, run `EraserWars > Build Classroom Casual Scene`. It writes `Assets/Scenes/Classroom_Casual.unity` with four desks in a 2x2 block, a kill zone below them and four spawn points.
-2. Enter Play Mode. `ClassroomBootstrap` calls `MatchDirector.StartHotseat` with its `players` field (2 by default).
-3. Left-drag anywhere in the Game view (not the debug Pass panel). Pull back to aim, then release. A longer drag is a stronger flick. Space or Pass skips the turn.
-4. Right-drag orbits the camera. Tab toggles top-down. Wheel zooms.
+1. In Unity, run `EraserWars > Build Classroom Casual Scene`. It writes `Assets/Scenes/Classroom_Casual.unity` with one joined `DeskArena` (1.2×0.8), four corner legs sunk into the floor, a room shell (walls, chalkboard, baseboards), warm key + fill light, a kill zone, and four spawn points.
+2. Enter Play Mode. `OrbitCamera.FrameDeskOverview` frames the full desk (distance 4.55, pitch 36, FOV 48) so legs and floor contact stay in view. `ClassroomBootstrap` starts Hotseat with its `players` field (2 by default).
+3. Debug HUD is broadcast-style: top banner for round/seat/time, left STOCKS panel with accent rows. Left-drag in the Game view (outside the chrome) to flick. Space or Pass skips the turn.
+4. Right-drag orbits the camera. Tab toggles top-down. Wheel zooms. Keep Game view Scale at **1x** — a near-zero Scale makes the desk look missing.
 5. When your eraser hits another during Simulating, physics freezes for 0.08 seconds. Desk and floor hits do not freeze. Another eraser hit inside 0.15 seconds is ignored. Close-range Stay contacts project the hit normal onto XZ so the hittee still launches on the desk (vertical PhysX normals would otherwise be wiped).
 6. During Simulating, an eraser within 0.05 m of the outer desk edge, or dropping through the 0.05 m slice under the desk marker, slows time to 0.4 for 0.22 seconds. An eraser-hit freeze cancels that slow, and the next one waits until every eraser has left the zone and 0.6 seconds from the start have passed.
 
@@ -110,9 +110,10 @@ The project compiles the `Core` sources directly, so it catches rule regressions
 
 Fish-Net **4.7.4** is embedded under `Assets/FishNet` (not UPM). See [`Assets/_Project/Net/FishNetInstall.md`](Assets/_Project/Net/FishNetInstall.md) and [ADR-0008](docs/decisions/ADR-0008-fishnet-spike.md).
 
-1. `EraserWars > Build Fish-Net Spike Scene` writes `Assets/Scenes/FishNet_Spike.unity`.
-2. Play → **Start Host** (Tugboat). A second Play instance or build can **Start Client**.
-3. **Fire canned flick** runs `HostCommandGate` on the host. A second instance shows `Local vs host delta` for settle-pose eye-check.
+1. `EraserWars > Build Fish-Net Spike Scene` writes `Assets/Scenes/FishNet_Spike.unity` (SceneIds assigned, NetworkManager at root).
+2. `EraserWars > Build Fish-Net Spike Windows Player` (or `tools/run-fishnet-dual-smoke.ps1 -Build`) writes `Builds/FishNetSpike/EraserWars.exe`.
+3. Play the Editor scene (auto Host + canned flick via `FishNetSpikeAutoSmoke`) and launch the player (auto Client). Results land in `Temp/fishnet-dual-smoke-{host,client}.txt`.
+4. Manual HUD path still works: **Start Host** / **Start Client** / **Fire canned flick**. Dual-smoke on 2026-11-15 recorded **Local vs host delta = 0.0000 m**.
 
 ## Build
 

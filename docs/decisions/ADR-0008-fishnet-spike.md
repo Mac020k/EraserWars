@@ -19,13 +19,14 @@ Yak フォルダは削除済み。LAN は **Tugboat** のみ使う。
 | PlayMode tests | 3/3 passed (includes HostCommandGate settle) |
 | Spike scene builder | batch `-executeMethod EraserWars.Editor.FishNetSpikeSceneBuilder.Build` → `Assets/Scenes/FishNet_Spike.unity` (Exit 0) |
 | HostCommandGate canned flick path | Wired in `FishNetSpikeSession` (server PhysX + ObserversRpc settle pose) |
-| Dual-instance flick pose match | Pending operator (needs two Play instances; HUD shows local vs host delta) |
+| Dual-instance flick pose match | **PASS 2026-11-15** — Local vs host delta **0.0000 m** ([playtest](../playtests/2026-11-15_fishnet-dual-smoke.md)) |
+| Windows player path | `Builds/FishNetSpike/EraserWars.exe` via `FishNetSpikePlayerBuild` |
+| Auto smoke | `FishNetSpikeAutoSmoke` writes `Temp/fishnet-dual-smoke-{host,client}.txt` |
 
-## 手順 (残作業)
+## 手順 (任意の再測)
 
-1. Play → Start Host → **Fire canned flick**。別プロセスまたはビルドで Start Client し、HUD の `Local vs host delta` を見る。
-2. プレイヤービルド: `EraserWars/Build Fish-Net Spike Windows Player` または `tools/run-fishnet-dual-smoke.ps1 -Build` (batchmode 時は Unity を閉じる)。
-3. 許容差を決め、必要なら自動照合テストを足す。
+1. Play `FishNet_Spike` (auto Host) と `Builds/FishNetSpike/EraserWars.exe` (auto Client)。
+2. `Temp/fishnet-dual-smoke-*.txt` の delta を確認。許容差を決め、必要なら EditMode/PlayMode 自動照合を足す。
 
 ## 失敗時メモ
 

@@ -193,6 +193,7 @@ MonoBehaviour:
   speed: 0.65
   maxSpeed: 3.6
   sizeFactor: 1
+  enableMotionTrail: 1
 --- !u!114 &5309381389214956647
 MonoBehaviour:
   m_ObjectHideFlags: 0

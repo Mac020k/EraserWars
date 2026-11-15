@@ -10,9 +10,12 @@ namespace EraserWars.Editor
         const string MatRoot = ArtRoot + "/Materials";
         const string TexRoot = ArtRoot + "/Textures";
 
-        public static Material DeskMaterial => LoadOrCreateMat("Mat_DeskWood", new Color(0.62f, 0.42f, 0.24f), "Tex_Wood");
-        public static Material DeskLegMaterial => LoadOrCreateMat("Mat_DeskLeg", new Color(0.28f, 0.18f, 0.10f), null);
-        public static Material FloorMaterial => LoadOrCreateMat("Mat_Floor", new Color(0.55f, 0.62f, 0.48f), "Tex_FloorTile");
+        public static Material DeskMaterial => LoadOrCreateMat("Mat_DeskWood", new Color(0.58f, 0.38f, 0.22f), "Tex_DeskGrain");
+        public static Material DeskLegMaterial => LoadOrCreateMat("Mat_DeskLeg", new Color(0.22f, 0.14f, 0.08f), null);
+        public static Material FloorMaterial => LoadOrCreateMat("Mat_Floor", new Color(0.48f, 0.58f, 0.42f), "Tex_ClassroomTile");
+        public static Material WallMaterial => LoadOrCreateMat("Mat_Wall", new Color(0.78f, 0.80f, 0.74f), "Tex_WallPlaster");
+        public static Material ChalkboardMaterial => LoadOrCreateMat("Mat_Chalkboard", new Color(0.18f, 0.32f, 0.24f), null);
+        public static Material TrimMaterial => LoadOrCreateMat("Mat_Trim", new Color(0.28f, 0.18f, 0.10f), null);
         public static Material EraserBaseMaterial => LoadOrCreateMat("Mat_EraserBase", new Color(0.92f, 0.55f, 0.62f), "Tex_Rubber");
 
         public static readonly Color[] PlayerColors =
@@ -23,15 +26,26 @@ namespace EraserWars.Editor
             new(0.95f, 0.78f, 0.20f),
         };
 
-        public static void EnsureAssets()
+        public static void EnsureAssets(bool forceRefreshTextures = false)
         {
             EnsureFolder("Assets/Art");
             EnsureFolder(ArtRoot);
             EnsureFolder(MatRoot);
             EnsureFolder(TexRoot);
+            if (forceRefreshTextures)
+            {
+                RefreshTexture("Tex_DeskGrain", MakeWood(new Color(0.58f, 0.38f, 0.22f)));
+                RefreshTexture("Tex_ClassroomTile", MakeTiles(new Color(0.48f, 0.58f, 0.42f)));
+                RefreshTexture("Tex_WallPlaster", MakePlaster(new Color(0.78f, 0.80f, 0.74f)));
+                RefreshTexture("Tex_Rubber", MakeRubber(new Color(0.92f, 0.55f, 0.62f)));
+            }
+
             _ = DeskMaterial;
             _ = DeskLegMaterial;
             _ = FloorMaterial;
+            _ = WallMaterial;
+            _ = ChalkboardMaterial;
+            _ = TrimMaterial;
             _ = EraserBaseMaterial;
             AssetDatabase.SaveAssets();
         }
@@ -98,6 +112,7 @@ namespace EraserWars.Editor
                 if (mat.HasProperty("_BaseMap"))
                 {
                     mat.SetTexture("_BaseMap", tex);
+                    mat.SetTextureScale("_BaseMap", name.Contains("Floor") ? new Vector2(4f, 4f) : Vector2.one);
                 }
 
                 if (mat.HasProperty("_MainTex"))
@@ -121,12 +136,25 @@ namespace EraserWars.Editor
 
             var tex = name switch
             {
-                "Tex_Wood" => MakeWood(baseColor),
-                "Tex_FloorTile" => MakeTiles(baseColor),
+                "Tex_DeskGrain" or "Tex_Wood" => MakeWood(baseColor),
+                "Tex_ClassroomTile" or "Tex_FloorTile" => MakeTiles(baseColor),
+                "Tex_WallPlaster" => MakePlaster(baseColor),
                 "Tex_Rubber" => MakeRubber(baseColor),
                 _ => MakeSolid(baseColor),
             };
 
+            WriteTexture(path, tex);
+            return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+        }
+
+        static void RefreshTexture(string name, Texture2D tex)
+        {
+            var path = $"{TexRoot}/{name}.png";
+            WriteTexture(path, tex);
+        }
+
+        static void WriteTexture(string path, Texture2D tex)
+        {
             var bytes = tex.EncodeToPNG();
             File.WriteAllBytes(Path.GetFullPath(path), bytes);
             AssetDatabase.ImportAsset(path);
@@ -136,20 +164,20 @@ namespace EraserWars.Editor
             importer.filterMode = FilterMode.Bilinear;
             importer.mipmapEnabled = true;
             importer.SaveAndReimport();
-            return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
         }
 
         static Texture2D MakeWood(Color baseColor)
         {
-            const int size = 128;
+            const int size = 256;
             var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
             for (var y = 0; y < size; y++)
             {
                 for (var x = 0; x < size; x++)
                 {
-                    var grain = Mathf.Sin((x + y * 0.15f) * 0.35f) * 0.08f;
-                    var streak = Mathf.Abs(Mathf.Sin(x * 0.12f)) * 0.12f;
-                    var c = baseColor * (0.85f + grain + streak);
+                    var grain = Mathf.Sin((x + y * 0.12f) * 0.28f) * 0.07f;
+                    var streak = Mathf.Abs(Mathf.Sin(x * 0.09f + Mathf.PerlinNoise(x * 0.03f, y * 0.01f))) * 0.14f;
+                    var knot = Mathf.PerlinNoise(x * 0.05f, y * 0.05f) * 0.06f;
+                    var c = baseColor * (0.82f + grain + streak + knot);
                     c.a = 1f;
                     tex.SetPixel(x, y, c);
                 }
@@ -161,20 +189,43 @@ namespace EraserWars.Editor
 
         static Texture2D MakeTiles(Color baseColor)
         {
+            const int size = 256;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            for (var y = 0; y < size; y++)
+            {
+                for (var x = 0; x < size; x++)
+                {
+                    var tileX = x / 32;
+                    var tileY = y / 32;
+                    var tile = (tileX + tileY) % 2 == 0;
+                    var line = x % 32 <= 1 || y % 32 <= 1;
+                    var wear = Mathf.PerlinNoise(x * 0.08f, y * 0.08f) * 0.08f;
+                    var c = tile ? baseColor : baseColor * 0.9f;
+                    c *= 0.94f + wear;
+                    if (line)
+                    {
+                        c *= 0.62f;
+                    }
+
+                    c.a = 1f;
+                    tex.SetPixel(x, y, c);
+                }
+            }
+
+            tex.Apply();
+            return tex;
+        }
+
+        static Texture2D MakePlaster(Color baseColor)
+        {
             const int size = 128;
             var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
             for (var y = 0; y < size; y++)
             {
                 for (var x = 0; x < size; x++)
                 {
-                    var tile = ((x / 16) + (y / 16)) % 2 == 0;
-                    var line = x % 16 == 0 || y % 16 == 0;
-                    var c = tile ? baseColor : baseColor * 0.88f;
-                    if (line)
-                    {
-                        c *= 0.7f;
-                    }
-
+                    var n = Mathf.PerlinNoise(x * 0.07f, y * 0.07f) * 0.08f;
+                    var c = baseColor * (0.96f + n);
                     c.a = 1f;
                     tex.SetPixel(x, y, c);
                 }
@@ -232,7 +283,9 @@ namespace EraserWars.Editor
 
             if (mat.HasProperty("_Smoothness"))
             {
-                mat.SetFloat("_Smoothness", 0.25f);
+                var matName = mat.name;
+                var smooth = matName.Contains("Chalk") ? 0.08f : matName.Contains("Trim") ? 0.18f : 0.22f;
+                mat.SetFloat("_Smoothness", smooth);
             }
         }
 

@@ -43,10 +43,19 @@ namespace EraserWars.Editor
             if (report.summary.result != BuildResult.Succeeded)
             {
                 Debug.LogError($"[EraserWars] Fish-Net spike player build failed: {report.summary.result}");
+                if (Application.isBatchMode)
+                {
+                    EditorApplication.Exit(1);
+                }
+
                 return;
             }
 
             Debug.Log($"[EraserWars] Fish-Net spike player built at {OutputPath}");
+            if (Application.isBatchMode)
+            {
+                EditorApplication.Exit(0);
+            }
         }
     }
 }

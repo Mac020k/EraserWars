@@ -19,15 +19,14 @@ P1 物理縦切りの手触りを固めつつ、P2 弾きの juiciness を載せ
 
 まだ終わっていないもの。
 
-- Fish-Net スパイクの Host/Client 2インスタンス姿勢照合 (配線済み、実測待ち)。
 - 2人・4人のオペレータ playtests を3試合ずつ記録すること。
 - Localization / ProBuilder / MPM は CS0619 のため保留。
 
 ## 次の3手
 
-1. `tools/run-fishnet-dual-smoke.ps1 -Build` で Client プレイヤーを出し、`FishNet_Spike` Host と `Local vs host delta` を照合する。
-2. `Classroom_Casual` の Debug UI から Hotseat 2P/4P で3試合ずつ遊び、[playtests/](playtests/TEMPLATE.md) に書く。
-3. オンライン縦切りに向けたホスト PhysX 同期の最小経路を固める。
+1. `Classroom_Casual` の Hotseat 2P/4P で3試合ずつ遊び、[playtests/](playtests/TEMPLATE.md) に書く。
+2. オンライン縦切りに向けたホスト PhysX 同期の最小経路を固める。
+3. 必要なら Fish-Net dual-smoke の許容差を EditMode/PlayMode テストに落とす。
 
 ## 文書
 
