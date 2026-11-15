@@ -8,9 +8,9 @@ namespace EraserWars.Gameplay
     {
         [SerializeField] float restitution = 1f;
         [SerializeField] float pairCooldownSeconds = 0.04f;
-        [SerializeField] float minClosingSpeed = 1.25f;
-        [SerializeField] float minLaunchSpeed = 1.4f;
-        [SerializeField] float separationMeters = 0.004f;
+        [SerializeField] float minClosingSpeed = 2f;
+        [SerializeField] float minLaunchSpeed = 2.4f;
+        [SerializeField] float separationMeters = 0.012f;
 
         EraserBody self;
         HitstopController hitstop;
@@ -30,6 +30,17 @@ namespace EraserWars.Gameplay
 
         void OnCollisionEnter(Collision collision)
         {
+            TryHandlePair(collision);
+        }
+
+        // Already-touching erasers never re-fire Enter after a flick shove; Stay carries those hits.
+        void OnCollisionStay(Collision collision)
+        {
+            TryHandlePair(collision);
+        }
+
+        void TryHandlePair(Collision collision)
+        {
             if (self == null || simulating == null || !simulating())
             {
                 return;
@@ -41,7 +52,7 @@ namespace EraserWars.Gameplay
                 return;
             }
 
-            // One body owns the pair so both OnCollisionEnter hooks do not double-apply.
+            // One body owns the pair so both hooks do not double-apply.
             if (self.PlayerIndex > other.PlayerIndex)
             {
                 return;
@@ -52,12 +63,12 @@ namespace EraserWars.Gameplay
                 return;
             }
 
-            nextPairTime = Time.time + Mathf.Max(0f, pairCooldownSeconds);
             if (!ApplyRestitutionImpulse(other, collision))
             {
                 return;
             }
 
+            nextPairTime = Time.time + Mathf.Max(0f, pairCooldownSeconds);
             hitstop?.NotifyEraserCollision();
         }
 

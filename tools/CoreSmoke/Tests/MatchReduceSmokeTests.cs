@@ -50,10 +50,10 @@ namespace EraserWars.Core.Smoke
         {
             var v1 = -0.15f;
             var v2 = 0f;
-            CollisionMath.EnsureMinimumClosing(ref v1, ref v2, 1.25f);
+            CollisionMath.EnsureMinimumClosing(ref v1, ref v2, 2f);
             CollisionMath.ResolveNormalSpeeds(1f, 1f, v1, v2, 1f, out var r1, out var r2);
-            CollisionMath.EnsureMinimumLaunch(1f, 1f, v1, v2, ref r1, ref r2, 1.4f);
-            Assert.LessOrEqual(r2, -1.4f + 1e-4f);
+            CollisionMath.EnsureMinimumLaunch(1f, 1f, v1, v2, ref r1, ref r2, 2.4f);
+            Assert.LessOrEqual(r2, -2.4f + 1e-4f);
         }
     }
 }

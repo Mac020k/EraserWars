@@ -57,7 +57,7 @@ namespace EraserWars.Tests.PlayMode
             var n = Vector3.left;
             var v1n = Vector3.Dot(striker.VelocityBeforePhysics, n);
             var v2n = Vector3.Dot(target.VelocityBeforePhysics, n);
-            CollisionMath.EnsureMinimumClosing(ref v1n, ref v2n, 1.25f);
+            CollisionMath.EnsureMinimumClosing(ref v1n, ref v2n, 2f);
             CollisionMath.ResolveNormalSpeeds(
                 striker.Body.mass,
                 target.Body.mass,
@@ -73,9 +73,9 @@ namespace EraserWars.Tests.PlayMode
                 v2n,
                 ref r1,
                 ref r2,
-                1.4f);
+                2.4f);
 
-            Assert.LessOrEqual(r2, -1.4f + 0.05f, "Point-blank hits must still launch the target.");
+            Assert.LessOrEqual(r2, -2.4f + 0.05f, "Point-blank hits must still launch the target.");
             Assert.Greater(Mathf.Abs(r2), Mathf.Abs(v2n) + 0.5f, "Target normal speed must jump after the hit.");
         }
 
