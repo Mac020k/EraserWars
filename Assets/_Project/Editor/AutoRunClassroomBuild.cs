@@ -23,7 +23,9 @@ namespace EraserWars.Editor
                 return;
             }
 
-            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            if (EditorApplication.isPlayingOrWillChangePlaymode
+                || EditorApplication.isCompiling
+                || EditorApplication.isUpdating)
             {
                 EditorApplication.delayCall += RunOnce;
                 return;

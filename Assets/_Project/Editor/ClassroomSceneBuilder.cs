@@ -13,6 +13,12 @@ namespace EraserWars.Editor
         [MenuItem("EraserWars/Build Classroom Casual Scene")]
         public static void Build()
         {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Debug.LogError("[EraserWars] Stop Play Mode before building Classroom_Casual.");
+                return;
+            }
+
             PrototypeLookBuilder.EnsureAssets();
             var deskMat = PrototypeLookBuilder.DeskMaterial;
             var legMat = PrototypeLookBuilder.DeskLegMaterial;

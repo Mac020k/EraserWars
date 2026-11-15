@@ -17,6 +17,12 @@ namespace EraserWars.Editor
         [MenuItem("EraserWars/Build Fish-Net Spike Scene")]
         public static void Build()
         {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                Debug.LogError("[EraserWars] Stop Play Mode before building FishNet_Spike.");
+                return;
+            }
+
             var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
             var root = new GameObject("FishNetSpike");
             root.AddComponent<NetworkObject>();

@@ -11,7 +11,8 @@ P1 物理縦切りの手触りを固めつつ、P2 弾きの juiciness を載せ
 
 - Unity 標準の `.gitignore` と LFS。`Classroom_Casual` ホットシート。
 - 仮想トラックパッド弾き、狙い線ブレ、衝突ヒットストップ、縁際スロー。
-- Core smoke 緑。EditMode 18/18・PlayMode 3/3 ([playtests/2026-11-14_batch-tests.md](playtests/2026-11-14_batch-tests.md))。
+- 弾き飛距離約2倍 (`jMax` 0.24)、消しゴム同士は復元係数付き運動量交換、シミュレーション中カメラ追従とトレイル。
+- Core smoke 緑 (4/4)。EditMode / PlayMode は名前空間リネーム後に再バッチ予定。
 - UI 方向は broadcast を既定 ([ADR-0006](decisions/ADR-0006-ui-direction.md))。
 - Fish-Net 4.7.4 を `Assets/FishNet` に埋め込み、`FishNet_Spike` + Tugboat HUD まで ([ADR-0008](decisions/ADR-0008-fishnet-spike.md))。
 
