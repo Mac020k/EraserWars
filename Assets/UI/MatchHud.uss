@@ -1,5 +1,7 @@
 .hud-root {
     flex-grow: 1;
+    width: 100%;
+    height: 100%;
 }
 
 .hud-root.hidden {
@@ -8,13 +10,15 @@
 
 .top-bar {
     position: absolute;
-    left: 10px;
-    right: 10px;
-    top: 8px;
-    height: 48px;
+    left: 1.2%;
+    right: 1.2%;
+    top: 1.2%;
+    height: 6.5%;
+    min-height: 40px;
+    max-height: 56px;
     flex-direction: row;
     align-items: center;
-    padding: 0 14px;
+    padding: 0 1.2%;
     background-color: rgba(255, 244, 248, 0.94);
     border-radius: 16px;
     border-width: 3px;
@@ -29,6 +33,7 @@
     border-radius: 8px;
     border-bottom-width: 8px;
     border-bottom-color: rgb(70, 130, 240);
+    flex-shrink: 0;
 }
 
 .hud-title {
@@ -36,6 +41,7 @@
     -unity-font-style: bold;
     color: rgb(230, 70, 120);
     margin-right: 18px;
+    flex-shrink: 0;
 }
 
 .hud-phase {
@@ -53,6 +59,7 @@
     border-radius: 12px;
     padding: 4px 12px;
     margin-right: 12px;
+    flex-shrink: 0;
 }
 
 .hud-timer {
@@ -60,28 +67,34 @@
     -unity-font-style: bold;
     color: rgb(230, 70, 120);
     margin-right: 12px;
+    flex-shrink: 0;
 }
 
 .hud-menu-button {
     width: 100px;
-    height: 40px;
+    height: 80%;
+    min-height: 32px;
     font-size: 15px;
     -unity-font-style: bold;
     border-radius: 12px;
+    flex-shrink: 0;
 }
 
 .players-row {
     position: absolute;
-    left: 10px;
-    right: 10px;
-    top: 64px;
+    left: 1.2%;
+    right: 1.2%;
+    top: 9%;
     flex-direction: row;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .player-pill {
-    min-width: 150px;
-    margin: 0 6px;
+    min-width: 140px;
+    width: 18%;
+    max-width: 220px;
+    margin: 0 0.5%;
     padding: 6px 12px 8px 12px;
     align-items: center;
     background-color: rgba(255, 255, 255, 0.92);
@@ -147,7 +160,7 @@
     opacity: 1;
     border-width: 5px;
     background-color: rgb(255, 250, 225);
-    scale: 1.1 1.1;
+    scale: 1.08 1.08;
 }
 
 .player-pill.pill-out {
@@ -158,22 +171,26 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 24px;
+    bottom: 3%;
     flex-direction: row;
     justify-content: center;
 }
 
 .action-chip {
-    height: 48px;
+    height: 6.5%;
+    min-height: 40px;
+    max-height: 56px;
     min-width: 120px;
-    margin: 0 8px;
+    width: 14%;
+    max-width: 200px;
+    margin: 0 0.8%;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     font-size: 18px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
-    border-radius: 24px;
+    border-radius: 999px;
     border-width: 3px;
     border-color: rgb(255, 255, 255);
 }

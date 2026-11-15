@@ -1,16 +1,19 @@
 using System.IO;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEngine;
 
 namespace EraserWars.Editor
 {
     /// <summary>
     /// One-shot scene rebuild when Temp/eraserwars-rebuild.flag appears.
+    /// Temp/eraserwars-recompile.flag forces a domain reload first (needed when Enter Play Mode Options disables reload).
     /// </summary>
     [InitializeOnLoad]
     static class AutoBuildOnce
     {
         const string FlagPath = "Temp/eraserwars-rebuild.flag";
+        const string RecompileFlagPath = "Temp/eraserwars-recompile.flag";
 
         static AutoBuildOnce()
         {
@@ -19,6 +22,22 @@ namespace EraserWars.Editor
 
         static void Poll()
         {
+            if (File.Exists(RecompileFlagPath))
+            {
+                try
+                {
+                    File.Delete(RecompileFlagPath);
+                }
+                catch (IOException)
+                {
+                    return;
+                }
+
+                Debug.Log("[EraserWars] Requesting script compilation before rebuild.");
+                CompilationPipeline.RequestScriptCompilation();
+                return;
+            }
+
             if (!File.Exists(FlagPath))
             {
                 return;

@@ -5,14 +5,12 @@ namespace EraserWars.CameraRig
 {
     public sealed class OrbitCamera : MonoBehaviour
     {
-        // Wide enough that the 2×2 arena (1.2×0.8), legs, and floor contact fit at match start.
-        // Yaw looks toward the chalkboard and the -X window wall so both show with the desk.
-        // Stay inside the 7×9×3 room shell so the start view is not a faded outer wall.
-        const float OverviewDistance = 5.5f;
-        const float OverviewYaw = -50f;
-        const float OverviewPitch = 27f;
-        // Bias the look target toward the floor so legs do not clip out of frame.
-        const float OverviewFocusBiasY = -0.34f;
+        // Default play framing: 2×2 arena fills most of the view (not a wide room overview).
+        const float OverviewDistance = 1.85f;
+        const float OverviewYaw = -22f;
+        const float OverviewPitch = 54f;
+        // Bias slightly toward the desk top so the play surface dominates the frame.
+        const float OverviewFocusBiasY = 0.06f;
 
         [SerializeField] Transform focus;
         [SerializeField] float distance = OverviewDistance;
@@ -23,7 +21,7 @@ namespace EraserWars.CameraRig
         [SerializeField] float zoomSpeed = 0.85f;
         [SerializeField] float chaseLerp = 10f;
         [SerializeField] float chaseDistanceScale = 0.88f;
-        [SerializeField] float minDistance = 1.2f;
+        [SerializeField] float minDistance = 1.0f;
         [SerializeField] float maxDistance = 11f;
 
         Transform chaseTarget;

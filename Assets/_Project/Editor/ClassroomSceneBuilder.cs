@@ -21,10 +21,10 @@ namespace EraserWars.Editor
         const float DeskThickness = 0.04f;
         const float FloorCenterY = 0f;
         const float FloorThickness = 0.08f;
-        const float OverviewDistance = 5.5f;
-        const float OverviewYaw = -50f;
-        const float OverviewPitch = 27f;
-        const float OverviewFocusBiasY = -0.34f;
+        const float OverviewDistance = 1.85f;
+        const float OverviewYaw = -22f;
+        const float OverviewPitch = 54f;
+        const float OverviewFocusBiasY = 0.06f;
 
         // Interior is 7 (X) by 9 (Z) by 3 (Y): chalkboard wall is the short face, room runs deeper.
         const float RoomHalfX = 3.5f;
@@ -104,8 +104,13 @@ namespace EraserWars.Editor
                 BuildArenaDesk(desk.transform, deskMat, legMat, trimMat, legHeight, legCenterLocalY, floorTop - legSink * 0.3f - DeskCenterY);
             }
 
-            CreateSeam(deskRoot.transform, "Seam_X", new Vector3(0f, DeskThickness * 0.55f, 0f), new Vector3(0.02f, 0.006f, ArenaDeskDepth * 2f * 0.98f), trimMat);
-            CreateSeam(deskRoot.transform, "Seam_Z", new Vector3(0f, DeskThickness * 0.55f, 0f), new Vector3(ArenaDeskWidth * 2f * 0.98f, 0.006f, 0.02f), trimMat);
+            // Continuous top hides the 2×2 joint cross so the play surface reads as one table.
+            CreateDecorLocal(
+                deskRoot.transform,
+                "PlayTop",
+                new Vector3(0f, DeskThickness * 0.52f, 0f),
+                new Vector3(ArenaDeskWidth * 2f + 0.01f, 0.008f, ArenaDeskDepth * 2f + 0.01f),
+                deskMat);
 
             BuildPropDeskGrid(desks.transform, deskMat, legMat);
 
@@ -207,49 +212,82 @@ namespace EraserWars.Editor
             var light = Object.FindAnyObjectByType<Light>();
             if (light != null)
             {
-                light.color = new Color(1f, 0.95f, 0.84f);
-                light.intensity = 1.25f;
+                light.color = new Color(1f, 0.97f, 0.90f);
+                light.intensity = 1.55f;
                 light.shadows = LightShadows.Soft;
-                light.transform.rotation = Quaternion.Euler(42f, -25f, 0f);
+                light.transform.rotation = Quaternion.Euler(48f, -35f, 0f);
             }
 
             RenderSettings.ambientMode = AmbientMode.Flat;
-            RenderSettings.ambientLight = new Color(0.68f, 0.62f, 0.52f);
+            RenderSettings.ambientLight = new Color(0.78f, 0.74f, 0.66f);
 
             var fillGo = new GameObject("FillLight");
             fillGo.transform.SetParent(root.transform, false);
-            fillGo.transform.position = new Vector3(0f, 2.4f, -1.4f);
+            fillGo.transform.position = new Vector3(0.6f, 2.5f, -0.8f);
             var fill = fillGo.AddComponent<Light>();
             fill.type = LightType.Point;
-            fill.color = new Color(0.92f, 0.92f, 0.95f);
-            fill.intensity = 0.3f;
-            fill.range = 10f;
+            fill.color = new Color(0.95f, 0.95f, 0.98f);
+            fill.intensity = 0.85f;
+            fill.range = 12f;
 
+            // Sun through the yard windows: light sits outside and shines into the room.
             var windowGo = new GameObject("WindowLight");
             windowGo.transform.SetParent(root.transform, false);
-            windowGo.transform.position = new Vector3(-RoomHalfX + 0.4f, 2.3f, 0f);
+            windowGo.transform.position = new Vector3(-RoomHalfX - 1.6f, 2.15f, 0.4f);
             var windowLight = windowGo.AddComponent<Light>();
-            windowLight.type = LightType.Point;
-            windowLight.color = new Color(1f, 0.88f, 0.70f);
-            windowLight.intensity = 1.4f;
-            windowLight.range = 10f;
-            windowLight.shadows = LightShadows.None;
+            windowLight.type = LightType.Spot;
+            windowLight.color = new Color(1f, 0.92f, 0.75f);
+            windowLight.intensity = 3.2f;
+            windowLight.range = 14f;
+            windowLight.spotAngle = 78f;
+            windowLight.innerSpotAngle = 42f;
+            windowLight.shadows = LightShadows.Soft;
+            windowGo.transform.rotation = Quaternion.LookRotation(new Vector3(1f, -0.18f, -0.05f), Vector3.up);
 
-            // Fluorescents parent under Ceiling so occlusion hide matches the ceiling slab.
-            var ceiling = root.transform.Find("RoomShell/Ceiling");
-            var fluoParent = ceiling != null ? ceiling : root.transform;
-            foreach (var fz in new[] { -2.0f, 0f, 2.0f })
+            // Fluorescent fixtures + real lights parent under CeilingGroup (unscaled) for occlusion.
+            var ceilingGroup = root.transform.Find("RoomShell/CeilingGroup");
+            var fluoParent = ceilingGroup != null ? ceilingGroup : root.transform;
+            foreach (var fz in new[] { -2.4f, 0f, 2.4f })
             {
-                foreach (var fx in new[] { -1.8f, 1.8f })
+                foreach (var fx in new[] { -1.6f, 1.6f })
                 {
-                    CreateDecor(fluoParent, "Fluorescent", new Vector3(fx, CeilingBottom - 0.04f, fz), new Vector3(1.2f, 0.06f, 0.22f), wallMat);
+                    CreateDecor(fluoParent, "Fluorescent", new Vector3(fx, CeilingBottom - 0.04f, fz), new Vector3(1.35f, 0.06f, 0.22f), wallMat);
+                    var lampGo = new GameObject("FluorescentLight");
+                    lampGo.transform.SetParent(fluoParent, false);
+                    lampGo.transform.position = new Vector3(fx, CeilingBottom - 0.12f, fz);
+                    var lamp = lampGo.AddComponent<Light>();
+                    lamp.type = LightType.Point;
+                    lamp.color = new Color(1f, 0.98f, 0.92f);
+                    lamp.intensity = 1.15f;
+                    lamp.range = 6.5f;
+                    lamp.shadows = LightShadows.None;
+                }
+            }
+
+            // Corridor fluorescent strip lights.
+            var corridorParent = root.transform.Find("RoomShell");
+            if (corridorParent != null)
+            {
+                foreach (var zc in new[] { -2.8f, 0f, 2.8f })
+                {
+                    var cx = OuterX + CorridorWidth * 0.5f;
+                    CreateDecor(corridorParent, "CorrFluorescent", new Vector3(cx, CeilingBottom - 0.05f, zc), new Vector3(0.22f, 0.05f, 1.1f), wallMat);
+                    var corrLampGo = new GameObject("CorridorLight");
+                    corrLampGo.transform.SetParent(corridorParent, false);
+                    corrLampGo.transform.position = new Vector3(cx, CeilingBottom - 0.15f, zc);
+                    var corrLamp = corrLampGo.AddComponent<Light>();
+                    corrLamp.type = LightType.Point;
+                    corrLamp.color = new Color(0.95f, 0.95f, 0.90f);
+                    corrLamp.intensity = 1.35f;
+                    corrLamp.range = 5.5f;
+                    corrLamp.shadows = LightShadows.None;
                 }
             }
 
             var cam = Camera.main;
             if (cam != null)
             {
-                cam.fieldOfView = 54f;
+                cam.fieldOfView = 48f;
                 cam.nearClipPlane = 0.05f;
                 cam.backgroundColor = new Color(0.55f, 0.70f, 0.88f);
                 var orbit = cam.gameObject.GetComponent<OrbitCamera>()
@@ -281,8 +319,8 @@ namespace EraserWars.Editor
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             AssetDatabase.SaveAssets();
-            GameViewAspectHelper.TrySetAspectRatio(16f, 9f);
-            Debug.Log($"Built {ScenePath} (Heisei classroom + StartMenu 6B + occlusion fade). Game view → 16:9 Aspect.");
+            GameViewAspectHelper.TrySetFreeAspect();
+            Debug.Log($"Built {ScenePath} (Heisei classroom + StartMenu 6B + occlusion fade). Game view → Free Aspect.");
         }
 
         static void WireUi(Transform root, MatchDirector director)
@@ -328,7 +366,8 @@ namespace EraserWars.Editor
             if (existing != null)
             {
                 existing.scaleMode = PanelScaleMode.ScaleWithScreenSize;
-                existing.screenMatchMode = PanelScreenMatchMode.Shrink;
+                // Expand keeps the whole layout inside the panel for Free Aspect / Full HD / 4K.
+                existing.screenMatchMode = PanelScreenMatchMode.Expand;
                 existing.match = 0.5f;
                 existing.referenceResolution = new Vector2Int(1920, 1080);
                 EditorUtility.SetDirty(existing);
@@ -337,7 +376,7 @@ namespace EraserWars.Editor
 
             var settings = ScriptableObject.CreateInstance<PanelSettings>();
             settings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
-            settings.screenMatchMode = PanelScreenMatchMode.Shrink;
+            settings.screenMatchMode = PanelScreenMatchMode.Expand;
             settings.match = 0.5f;
             settings.referenceResolution = new Vector2Int(1920, 1080);
             AssetDatabase.CreateAsset(settings, PanelSettingsPath);
@@ -420,10 +459,27 @@ namespace EraserWars.Editor
             room.transform.SetParent(parent, false);
 
             // Front = chalkboard wall (+Z), windows on -X, corridor on +X, cleaning locker on -Z.
-            // Wall-mounted props parent under the occluding slab so they hide with it.
-            var frontWall = ShellBox(room.transform, "Wall_Front", V(-OuterX, 0f, RoomHalfZ), V(OuterX, ShellTop, OuterZ), wallMat);
-            ShellBox(room.transform, "Wall_Back", V(-OuterX, 0f, -OuterZ), V(OuterX, ShellTop, -RoomHalfZ), wallMat, false);
-            ShellBox(room.transform, "Ceiling", V(-OuterX, CeilingBottom, -OuterZ), V(OuterX, ShellTop, OuterZ), wallMat, false);
+            // Occlusion groups stay unscaled; scaled wall meshes are children so props keep correct size.
+            var frontGroup = CreateOcclusionGroup(
+                room.transform,
+                "Wall_FrontGroup",
+                new Vector3(0f, 1.5f, RoomHalfZ),
+                Vector3.back);
+            ShellBox(frontGroup.transform, "Wall_Front", V(-OuterX, 0f, RoomHalfZ), V(OuterX, ShellTop, OuterZ), wallMat, occludable: false);
+
+            var backGroup = CreateOcclusionGroup(
+                room.transform,
+                "Wall_BackGroup",
+                new Vector3(0f, 1.5f, -RoomHalfZ),
+                Vector3.forward);
+            ShellBox(backGroup.transform, "Wall_Back", V(-OuterX, 0f, -OuterZ), V(OuterX, ShellTop, -RoomHalfZ), wallMat, false, occludable: false);
+
+            var ceilingGroup = CreateOcclusionGroup(
+                room.transform,
+                "CeilingGroup",
+                new Vector3(0f, CeilingBottom, 0f),
+                Vector3.down);
+            ShellBox(ceilingGroup.transform, "Ceiling", V(-OuterX, CeilingBottom, -OuterZ), V(OuterX, ShellTop, OuterZ), wallMat, false, occludable: false);
 
             var pillarMat = ColorMaterial(new Color(0.90f, 0.84f, 0.70f));
             var frameMat = ColorMaterial(new Color(0.80f, 0.82f, 0.84f));
@@ -431,8 +487,8 @@ namespace EraserWars.Editor
             BuildWindowWall(room.transform, wallMat, pillarMat, frameMat, yardMat);
             BuildCorridorWall(room.transform, wallMat, frameMat);
             BuildCorridorExterior(room.transform, wallMat);
-            BuildChalkboardWall(frontWall.transform, chalkMat, trimMat);
-            BuildBackWall(room.transform, corkMat);
+            BuildChalkboardWall(frontGroup.transform, chalkMat, trimMat);
+            BuildBackWall(backGroup.transform, corkMat);
 
             CreateWall(room.transform, "Base_Front", V(0f, 0.09f, RoomHalfZ - 0.03f), V(RoomHalfX * 2f, 0.12f, 0.06f), trimMat);
             CreateWall(room.transform, "Base_Back", V(0f, 0.09f, -RoomHalfZ + 0.03f), V(RoomHalfX * 2f, 0.12f, 0.06f), trimMat);
@@ -442,8 +498,17 @@ namespace EraserWars.Editor
             CreateWall(room.transform, "Heater", V(RoomHalfX - 0.15f, FloorTop + 0.35f, -1.2f), V(0.25f, 0.7f, 0.9f), trimMat);
 
             var clockMat = ColorMaterial(new Color(0.96f, 0.96f, 0.94f));
-            CreateDecor(frontWall.transform, "Clock_Rim", V(2.2f, 2.65f, RoomHalfZ - 0.015f), V(0.36f, 0.36f, 0.03f), trimMat);
-            CreateDecor(frontWall.transform, "Clock", V(2.2f, 2.65f, RoomHalfZ - 0.04f), V(0.32f, 0.32f, 0.03f), clockMat);
+            CreateDecor(frontGroup.transform, "Clock_Rim", V(2.2f, 2.65f, RoomHalfZ - 0.015f), V(0.36f, 0.36f, 0.03f), trimMat);
+            CreateDecor(frontGroup.transform, "Clock", V(2.2f, 2.65f, RoomHalfZ - 0.04f), V(0.32f, 0.32f, 0.03f), clockMat);
+        }
+
+        static GameObject CreateOcclusionGroup(Transform parent, string name, Vector3 planePoint, Vector3 inwardNormal)
+        {
+            var group = new GameObject(name);
+            group.transform.SetParent(parent, false);
+            var fade = group.AddComponent<OccludableFade>();
+            fade.ConfigureSeparationPlane(planePoint, inwardNormal);
+            return group;
         }
 
         // Four bays with five pillars (both ends included). Curtains/frames parent under the sill so they hide with it.
@@ -460,9 +525,11 @@ namespace EraserWars.Editor
             var xIn = -RoomHalfX;
             var curtainMat = PrototypeLookBuilder.CurtainMaterial;
 
-            var windowGroup = new GameObject("WindowWall");
-            windowGroup.transform.SetParent(room, false);
-            windowGroup.AddComponent<OccludableFade>();
+            var windowGroup = CreateOcclusionGroup(
+                room,
+                "WindowWall",
+                new Vector3(-RoomHalfX, 1.5f, 0f),
+                Vector3.right);
             var windowAttach = windowGroup.transform;
 
             ShellBox(windowAttach, "Wall_Window_Sill", V(xOut, 0f, -RoomHalfZ), V(xIn, sillTop, RoomHalfZ), wallMat, occludable: false);
@@ -518,12 +585,12 @@ namespace EraserWars.Editor
             Object.DestroyImmediate(ground.GetComponent<Collider>());
         }
 
-        // High corridor windows (sill 1.2m) between two sliding doors. The front door is left ajar.
+        // JP classroom corridor wall: 引き違い戸 ~0.9m leaves (≈1.8m bay) front/rear, high 連窓 between.
         static void BuildCorridorWall(Transform room, Material wallMat, Material frameMat)
         {
-            const float doorHalfW = 0.5f;
-            const float doorFrontZ = 2.5f;
-            const float pierW = 0.2f;
+            const float doorHalfW = 0.9f;
+            const float doorFrontZ = 2.55f;
+            const float pierW = 0.28f;
             const int paneCount = 3;
             var xIn = RoomHalfX;
             var xOut = OuterX;
@@ -535,12 +602,19 @@ namespace EraserWars.Editor
             var rearMin = -doorFrontZ - doorHalfW;
             var rearMax = -doorFrontZ + doorHalfW;
 
-            ShellBox(room, "Wall_Corridor_StubFront", V(xIn, 0f, frontMax), V(xOut, ShellTop, RoomHalfZ), wallMat, false);
-            ShellBox(room, "Wall_Corridor_StubRear", V(xIn, 0f, -RoomHalfZ), V(xOut, ShellTop, rearMin), wallMat, false);
-            ShellBox(room, "Wall_Corridor_HeadFront", V(xIn, doorTop, frontMin), V(xOut, ShellTop, frontMax), wallMat, false);
-            ShellBox(room, "Wall_Corridor_HeadRear", V(xIn, doorTop, rearMin), V(xOut, ShellTop, rearMax), wallMat, false);
-            ShellBox(room, "Wall_Corridor_Lower", V(xIn, 0f, rearMax), V(xOut, hiSill, frontMin), wallMat, false);
-            ShellBox(room, "Wall_Corridor_Upper", V(xIn, hiTop, rearMax), V(xOut, ShellTop, frontMin), wallMat, false);
+            var corridorGroup = CreateOcclusionGroup(
+                room,
+                "CorridorWall",
+                new Vector3(RoomHalfX, 1.5f, 0f),
+                Vector3.left);
+            room = corridorGroup.transform;
+
+            ShellBox(room, "Wall_Corridor_StubFront", V(xIn, 0f, frontMax), V(xOut, ShellTop, RoomHalfZ), wallMat, false, occludable: false);
+            ShellBox(room, "Wall_Corridor_StubRear", V(xIn, 0f, -RoomHalfZ), V(xOut, ShellTop, rearMin), wallMat, false, occludable: false);
+            ShellBox(room, "Wall_Corridor_HeadFront", V(xIn, doorTop, frontMin), V(xOut, ShellTop, frontMax), wallMat, false, occludable: false);
+            ShellBox(room, "Wall_Corridor_HeadRear", V(xIn, doorTop, rearMin), V(xOut, ShellTop, rearMax), wallMat, false, occludable: false);
+            ShellBox(room, "Wall_Corridor_Lower", V(xIn, 0f, rearMax), V(xOut, hiSill, frontMin), wallMat, false, occludable: false);
+            ShellBox(room, "Wall_Corridor_Upper", V(xIn, hiTop, rearMax), V(xOut, ShellTop, frontMin), wallMat, false, occludable: false);
 
             var span = frontMin - rearMax;
             var paneW = (span - (paneCount + 1) * pierW) / paneCount;
@@ -548,7 +622,7 @@ namespace EraserWars.Editor
             for (var i = 0; i <= paneCount; i++)
             {
                 var z0 = rearMax + i * step;
-                ShellBox(room, $"Wall_Corridor_Pier{i}", V(xIn, hiSill, z0), V(xOut, hiTop, z0 + pierW), wallMat, false);
+                ShellBox(room, $"Wall_Corridor_Pier{i}", V(xIn, hiSill, z0), V(xOut, hiTop, z0 + pierW), wallMat, false, occludable: false);
             }
 
             for (var j = 0; j < paneCount; j++)
@@ -677,7 +751,7 @@ namespace EraserWars.Editor
             }
         }
 
-        // One cleaning locker on the left, bulletin board over an open storage shelf on the right.
+        // One cleaning locker on the left; long low storage with vertical bays + corkboard above.
         static void BuildBackWall(Transform room, Material corkMat)
         {
             const float unitW = 0.7f;
@@ -705,32 +779,44 @@ namespace EraserWars.Editor
             var bucketMat = ColorMaterial(new Color(0.30f, 0.55f, 0.80f));
             Box(room, "Bucket", V(x1 + 0.12f, FloorTop, backZ + 0.15f), V(x1 + 0.42f, FloorTop + 0.28f, backZ + 0.45f), bucketMat);
 
-            const float shelfX0 = -0.4f;
-            const float shelfX1 = 2.0f;
+            var shelfX0 = x1 + 0.55f;
+            var shelfX1 = RoomHalfX - 0.35f;
             const float shelfH = 0.95f;
             const float shelfD = 0.38f;
+            const int bayCount = 6;
             var shelfMat = PrototypeLookBuilder.DeskMaterial;
+            var shelfW = shelfX1 - shelfX0;
+            var bayW = shelfW / bayCount;
             Box(room, "StorageShelf_Body", V(shelfX0, FloorTop, backZ), V(shelfX1, FloorTop + shelfH, backZ + shelfD), shelfMat);
             foreach (var level in new[] { 0.02f, 0.34f, 0.64f })
             {
-                Box(room, "StorageShelf_Board", V(shelfX0 + 0.04f, FloorTop + level + 0.03f, backZ + 0.04f), V(shelfX1 - 0.04f, FloorTop + level + 0.31f, backZ + shelfD + 0.005f), darkMat);
+                Box(room, "StorageShelf_Board", V(shelfX0 + 0.03f, FloorTop + level + 0.03f, backZ + 0.04f), V(shelfX1 - 0.03f, FloorTop + level + 0.31f, backZ + shelfD + 0.005f), darkMat);
+            }
+
+            for (var i = 1; i < bayCount; i++)
+            {
+                var dx = shelfX0 + i * bayW;
+                Box(room, "StorageShelf_Divider", V(dx - 0.015f, FloorTop + 0.04f, backZ + 0.03f), V(dx + 0.015f, FloorTop + shelfH - 0.04f, backZ + shelfD - 0.02f), darkMat);
             }
 
             var boxColors = new[]
             {
-                new Color(0.80f, 0.70f, 0.50f), new Color(0.55f, 0.65f, 0.80f), new Color(0.85f, 0.55f, 0.45f), new Color(0.60f, 0.75f, 0.55f),
+                new Color(0.80f, 0.70f, 0.50f), new Color(0.55f, 0.65f, 0.80f), new Color(0.85f, 0.55f, 0.45f),
+                new Color(0.60f, 0.75f, 0.55f), new Color(0.90f, 0.75f, 0.45f), new Color(0.70f, 0.55f, 0.75f),
             };
-            for (var i = 0; i < boxColors.Length; i++)
+            for (var i = 0; i < bayCount; i++)
             {
-                var bx = shelfX0 + 0.12f + i * 0.58f;
-                Box(room, "StorageBox", V(bx, FloorTop + 0.37f, backZ + 0.07f), V(bx + 0.45f, FloorTop + 0.6f, backZ + shelfD - 0.03f), ColorMaterial(boxColors[i]));
+                var bx0 = shelfX0 + i * bayW + 0.08f;
+                var bx1 = shelfX0 + (i + 1) * bayW - 0.08f;
+                Box(room, "StorageBox", V(bx0, FloorTop + 0.37f, backZ + 0.07f), V(bx1, FloorTop + 0.6f, backZ + shelfD - 0.03f), ColorMaterial(boxColors[i % boxColors.Length]));
             }
 
-            const float boardCx = 0.8f;
-            CreateDecor(room, "Bulletin_Back", new Vector3(boardCx, 1.9f, backZ + 0.02f), new Vector3(2.0f, 1.2f, 0.04f), corkMat);
-            PlacePaper(room, "Paper_Red", new Vector3(boardCx - 0.55f, 2.05f, backZ + 0.05f), new Color(0.95f, 0.35f, 0.35f));
+            var boardCx = (shelfX0 + shelfX1) * 0.5f;
+            var boardW = Mathf.Min(shelfW - 0.2f, 3.4f);
+            CreateDecor(room, "Bulletin_Back", new Vector3(boardCx, 1.9f, backZ + 0.02f), new Vector3(boardW, 1.2f, 0.04f), corkMat);
+            PlacePaper(room, "Paper_Red", new Vector3(boardCx - boardW * 0.28f, 2.05f, backZ + 0.05f), new Color(0.95f, 0.35f, 0.35f));
             PlacePaper(room, "Paper_Blue", new Vector3(boardCx, 1.8f, backZ + 0.05f), new Color(0.35f, 0.55f, 0.95f));
-            PlacePaper(room, "Paper_Yellow", new Vector3(boardCx + 0.55f, 2.05f, backZ + 0.05f), new Color(0.95f, 0.85f, 0.25f));
+            PlacePaper(room, "Paper_Yellow", new Vector3(boardCx + boardW * 0.28f, 2.05f, backZ + 0.05f), new Color(0.95f, 0.85f, 0.25f));
         }
 
         // Side rows are 2-desk joined pairs stacked along Z. Most chairs tuck under; a few stay pulled out.
@@ -739,7 +825,7 @@ namespace EraserWars.Editor
             var group = new GameObject("PropDesks");
             group.transform.SetParent(parent, false);
             var pairCentersX = new[] { -2.15f, 2.15f };
-            var pairZs = new[] { -3.2f, -1.9f, -0.6f, 1.0f, 2.3f };
+            var pairZs = new[] { -3.4f, -2.2f, -1.0f, 0.2f, 1.4f, 2.6f };
             var index = 0;
             foreach (var cx in pairCentersX)
             {
@@ -856,15 +942,5 @@ namespace EraserWars.Editor
             return wall;
         }
 
-        static void CreateSeam(Transform parent, string name, Vector3 localPosition, Vector3 localScale, Material mat)
-        {
-            var seam = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            seam.name = name;
-            seam.transform.SetParent(parent, false);
-            seam.transform.localPosition = localPosition;
-            seam.transform.localScale = localScale;
-            PrototypeLookBuilder.ApplySharedMaterial(seam, mat);
-            Object.DestroyImmediate(seam.GetComponent<Collider>());
-        }
     }
 }

@@ -1,6 +1,8 @@
 .root {
     flex-grow: 1;
     align-items: stretch;
+    width: 100%;
+    height: 100%;
 }
 
 .backdrop {
@@ -14,9 +16,11 @@
 
 .menu-content {
     flex-grow: 1;
+    width: 100%;
+    height: 100%;
     align-items: center;
     justify-content: space-between;
-    padding: 4% 5% 3% 5%;
+    padding: 3% 4% 2.5% 4%;
     max-height: 100%;
 }
 
@@ -24,23 +28,25 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    max-height: 18%;
 }
 
 .brand-icon {
     width: 56px;
     height: 56px;
-    margin-left: 8px;
+    margin-left: 1%;
     flex-shrink: 0;
 }
 
 .brand-text {
     flex-direction: column;
     align-items: center;
+    flex-shrink: 1;
 }
 
 .title-ja {
-    font-size: 40px;
+    font-size: 42px;
     -unity-font-style: bold;
     color: rgb(255, 90, 140);
     -unity-text-outline-width: 3px;
@@ -48,6 +54,7 @@
     text-shadow: 0 3px 0 rgb(60, 24, 44);
     margin: 0;
     padding: 0;
+    white-space: nowrap;
 }
 
 .title-en {
@@ -63,25 +70,25 @@
 
 .spacer {
     flex-grow: 1;
-    min-height: 4px;
-    max-height: 28px;
+    min-height: 2%;
+    max-height: 8%;
 }
 
 .cta-button {
-    width: 36%;
-    min-width: 220px;
-    max-width: 420px;
+    width: 34%;
+    min-width: 180px;
+    max-width: 480px;
     height: 52px;
-    font-size: 26px;
+    font-size: 24px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
     -unity-text-outline-width: 2px;
     -unity-text-outline-color: rgb(20, 50, 110);
     background-color: rgb(52, 130, 235);
-    border-radius: 26px;
+    border-radius: 999px;
     border-width: 3px;
     border-color: rgb(30, 36, 60);
-    margin: 0 0 12px 0;
+    margin: 0 0 1.5% 0;
     flex-shrink: 0;
 }
 
@@ -95,8 +102,9 @@
 
 .tile-row {
     flex-direction: row;
-    width: 100%;
-    max-width: 900px;
+    width: 92%;
+    max-width: 1100px;
+    height: 88px;
     justify-content: center;
     flex-shrink: 0;
 }
@@ -104,9 +112,9 @@
 .tile {
     flex-grow: 1;
     flex-basis: 0;
-    height: 78px;
-    margin: 0 5px;
-    padding: 4px;
+    height: 100%;
+    margin: 0 0.5%;
+    padding: 6px;
     background-color: rgb(255, 252, 244);
     border-radius: 12px;
     border-width: 3px;
@@ -137,9 +145,13 @@
 }
 
 .tile-icon {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 4px;
+    width: 36%;
+    height: 42%;
+    min-width: 28px;
+    max-width: 48px;
+    min-height: 28px;
+    max-height: 48px;
+    margin-bottom: 2%;
 }
 
 .tile-label {
@@ -152,10 +164,12 @@
 
 .side-panel {
     position: absolute;
-    right: 20px;
-    top: 20px;
-    width: 260px;
-    padding: 16px;
+    right: 2%;
+    top: 3%;
+    width: 22%;
+    min-width: 200px;
+    max-width: 320px;
+    padding: 1.2%;
     background-color: rgba(20, 24, 36, 0.94);
     border-radius: 12px;
     border-top-width: 4px;

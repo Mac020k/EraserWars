@@ -5,6 +5,7 @@ namespace EraserWars.CameraRig
 {
     /// <summary>
     /// Fades walls/ceilings that sit between the camera and the desk focus (ADR-0009 / 5A).
+    /// Sphere-casts catch solid slabs; separation planes catch open window/door bays.
     /// </summary>
     public sealed class CameraOcclusionFader : MonoBehaviour
     {
@@ -60,10 +61,23 @@ namespace EraserWars.CameraRig
                     }
 
                     frameHits.Add(fade);
-                    if (active.Add(fade))
-                    {
-                        fade.SetOccluded(true);
-                    }
+                }
+            }
+
+            for (var i = 0; i < known.Length; i++)
+            {
+                var fade = known[i];
+                if (fade != null && fade.SeparatesCameraFromFocus(origin, target))
+                {
+                    frameHits.Add(fade);
+                }
+            }
+
+            foreach (var fade in frameHits)
+            {
+                if (active.Add(fade))
+                {
+                    fade.SetOccluded(true);
                 }
             }
 
