@@ -29,7 +29,10 @@ namespace EraserWars.UI
         bool matchRunning;
 
         public bool IsMenuVisible =>
-            root != null && root.resolvedStyle.display != DisplayStyle.None;
+            isActiveAndEnabled
+            && (document == null || document.enabled)
+            && root != null
+            && root.resolvedStyle.display != DisplayStyle.None;
 
         void OnEnable()
         {
@@ -141,12 +144,17 @@ namespace EraserWars.UI
 
         public void ShowMenu()
         {
+            if (!gameObject.activeSelf)
+            {
+                gameObject.SetActive(true);
+            }
+
             if (document == null)
             {
                 document = GetComponent<UIDocument>();
             }
 
-            if (document != null)
+            if (document != null && !document.enabled)
             {
                 document.enabled = true;
             }
@@ -172,11 +180,13 @@ namespace EraserWars.UI
                 root.style.display = DisplayStyle.None;
             }
 
-            // Inline style on rootVisualElement can lose to panel rebuild; disable the document.
             if (document != null)
             {
                 document.enabled = false;
             }
+
+            // Whole GameObject off so Game view cannot keep painting the title screen.
+            gameObject.SetActive(false);
         }
 
         void ShowPanel(VisualElement panel)
