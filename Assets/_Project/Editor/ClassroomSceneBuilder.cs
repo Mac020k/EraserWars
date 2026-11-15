@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using EraserWars.CameraRig;
 using EraserWars.Gameplay;
 using EraserWars.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 namespace EraserWars.Editor
@@ -19,10 +21,29 @@ namespace EraserWars.Editor
         const float DeskThickness = 0.04f;
         const float FloorCenterY = 0f;
         const float FloorThickness = 0.08f;
-        const float OverviewDistance = 4.55f;
-        const float OverviewYaw = 28f;
-        const float OverviewPitch = 36f;
+        const float OverviewDistance = 5.5f;
+        const float OverviewYaw = -50f;
+        const float OverviewPitch = 27f;
         const float OverviewFocusBiasY = -0.34f;
+
+        // Interior is 9 (X) by 7 (Z) by 3 (Y). Shell slabs sit outside these faces.
+        const float RoomHalfX = 4.5f;
+        const float RoomHalfZ = 3.5f;
+        const float RoomHeight = 3f;
+        const float ShellT = 0.12f;
+        const float OuterX = RoomHalfX + ShellT;
+        const float OuterZ = RoomHalfZ + ShellT;
+        const float FloorTop = FloorCenterY + FloorThickness * 0.5f;
+        const float CeilingBottom = FloorTop + RoomHeight;
+        const float ShellTop = CeilingBottom + 0.08f;
+        const float CorridorWidth = 2.2f;
+        const float CorridorHalfLength = 4.5f;
+
+        const int ArenaDeskCount = 4;
+        const float ArenaDeskWidth = 0.6f;
+        const float ArenaDeskDepth = 0.4f;
+
+        static readonly Dictionary<Color, Material> ColorMaterials = new();
 
         [MenuItem("EraserWars/Build Classroom Casual Scene")]
         public static void Build()
@@ -33,6 +54,7 @@ namespace EraserWars.Editor
                 return;
             }
 
+            ColorMaterials.Clear();
             PrototypeLookBuilder.EnsureAssets(forceRefreshTextures: true);
             UiIconBuilder.BuildAll();
             var deskMat = PrototypeLookBuilder.DeskMaterial;
@@ -61,73 +83,53 @@ namespace EraserWars.Editor
             deskRoot.transform.SetParent(desks.transform);
             deskRoot.transform.position = new Vector3(0f, DeskCenterY, 0f);
 
-            var top = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            top.name = "Top";
-            top.transform.SetParent(deskRoot.transform, false);
-            top.transform.localScale = new Vector3(1.2f, DeskThickness, 0.8f);
-            PrototypeLookBuilder.ApplySharedMaterial(top, deskMat);
+            // Four school desks side by side along X. Tops are flush and share one collider so erasers never catch on a joint.
+            var playSurface = new GameObject("PlaySurface");
+            playSurface.transform.SetParent(deskRoot.transform, false);
+            var playCol = playSurface.AddComponent<BoxCollider>();
+            playCol.size = new Vector3(ArenaDeskWidth * ArenaDeskCount, DeskThickness, ArenaDeskDepth);
 
-            var apron = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            apron.name = "Apron";
-            apron.transform.SetParent(deskRoot.transform, false);
-            apron.transform.localPosition = new Vector3(0f, -DeskThickness * 0.5f - 0.018f, 0f);
-            apron.transform.localScale = new Vector3(1.16f, 0.03f, 0.76f);
-            PrototypeLookBuilder.ApplySharedMaterial(apron, legMat);
-
-            CreateSeam(deskRoot.transform, "Seam_X", new Vector3(0f, DeskThickness * 0.51f, 0f), new Vector3(0.01f, 0.002f, 0.8f), trimMat);
-            CreateSeam(deskRoot.transform, "Seam_Z", new Vector3(0f, DeskThickness * 0.51f, 0f), new Vector3(1.2f, 0.002f, 0.01f), trimMat);
-
-            foreach (var xz in new[]
-                     {
-                         new Vector2(-0.52f, -0.32f),
-                         new Vector2(0.52f, -0.32f),
-                         new Vector2(-0.52f, 0.32f),
-                         new Vector2(0.52f, 0.32f),
-                     })
+            for (var i = 0; i < ArenaDeskCount; i++)
             {
-                var leg = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                leg.name = "Leg";
-                leg.transform.SetParent(deskRoot.transform, false);
-                leg.transform.localPosition = new Vector3(xz.x, legCenterLocalY, xz.y);
-                leg.transform.localScale = new Vector3(0.045f, legHeight, 0.045f);
-                PrototypeLookBuilder.ApplySharedMaterial(leg, legMat);
-
-                var foot = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                foot.name = "Foot";
-                foot.transform.SetParent(deskRoot.transform, false);
-                foot.transform.localPosition = new Vector3(xz.x, (floorTop - legSink * 0.3f) - DeskCenterY, xz.y);
-                foot.transform.localScale = new Vector3(0.08f, 0.02f, 0.08f);
-                PrototypeLookBuilder.ApplySharedMaterial(foot, trimMat);
+                var desk = new GameObject($"Desk_{i}");
+                desk.transform.SetParent(deskRoot.transform, false);
+                desk.transform.localPosition = new Vector3((i - (ArenaDeskCount - 1) * 0.5f) * ArenaDeskWidth, 0f, 0f);
+                BuildArenaDesk(desk.transform, deskMat, legMat, trimMat, legHeight, legCenterLocalY, floorTop - legSink * 0.3f - DeskCenterY);
             }
 
-            // Atmosphere desks (non-play) so the arena reads as a classroom, not a void arena.
-            PlacePropDesk(desks.transform, new Vector3(-2.1f, DeskCenterY, 1.4f), deskMat, legMat, trimMat);
-            PlacePropDesk(desks.transform, new Vector3(2.1f, DeskCenterY, 1.4f), deskMat, legMat, trimMat);
-            PlacePropDesk(desks.transform, new Vector3(-2.1f, DeskCenterY, -1.5f), deskMat, legMat, trimMat);
+            for (var i = 1; i < ArenaDeskCount; i++)
+            {
+                var seamX = (i - ArenaDeskCount * 0.5f) * ArenaDeskWidth;
+                CreateSeam(deskRoot.transform, $"Seam_{i}", new Vector3(seamX, DeskThickness * 0.55f, 0f), new Vector3(0.02f, 0.006f, ArenaDeskDepth * 0.98f), trimMat);
+            }
+
+            BuildPropDeskGrid(desks.transform, deskMat, legMat);
 
             var floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             floor.name = "ClassroomFloor";
             floor.transform.SetParent(root.transform);
             floor.transform.position = new Vector3(0f, FloorCenterY, 0f);
-            floor.transform.localScale = new Vector3(9f, FloorThickness, 8f);
+            floor.transform.localScale = new Vector3(OuterX * 2f, FloorThickness, OuterZ * 2f);
             PrototypeLookBuilder.ApplySharedMaterial(floor, floorMat);
 
             BuildRoomShell(root.transform, wallMat, chalkMat, trimMat, corkMat, yardMat);
 
+            // Wide enough to catch erasers that tumble off either long edge or either end of the row.
             var kill = new GameObject("KillZone");
             kill.tag = "KillZone";
             kill.transform.SetParent(root.transform);
             kill.transform.position = new Vector3(0f, 0.12f, 0f);
             var killCol = kill.AddComponent<BoxCollider>();
             killCol.isTrigger = true;
-            killCol.size = new Vector3(4f, 0.2f, 4f);
+            killCol.size = new Vector3(ArenaDeskWidth * ArenaDeskCount + 2.8f, 0.2f, ArenaDeskDepth + 2.8f);
 
+            // 2P matches use spawns 0 and 1, so they sit on the outer desks.
             var spawnOffsets = new[]
             {
-                new Vector3(-0.45f, DeskCenterY, -0.28f),
-                new Vector3(0.45f, DeskCenterY, -0.28f),
-                new Vector3(-0.45f, DeskCenterY, 0.28f),
-                new Vector3(0.45f, DeskCenterY, 0.28f),
+                new Vector3(-0.9f, DeskCenterY, 0f),
+                new Vector3(0.9f, DeskCenterY, 0f),
+                new Vector3(-0.3f, DeskCenterY, 0f),
+                new Vector3(0.3f, DeskCenterY, 0f),
             };
             var spawns = new GameObject("Spawns");
             spawns.transform.SetParent(root.transform);
@@ -162,7 +164,12 @@ namespace EraserWars.Editor
             var flick = directorGo.AddComponent<FlickApplier>();
             var settle = directorGo.AddComponent<SettleWatcher>();
             directorGo.AddComponent<HitstopController>();
-            directorGo.AddComponent<EdgeSlowmoWatcher>();
+            var edgeSlowmo = directorGo.AddComponent<EdgeSlowmoWatcher>();
+            var edgeSo = new SerializedObject(edgeSlowmo);
+            edgeSo.FindProperty("deskHalfExtents").vector2Value = new Vector2(
+                ArenaDeskWidth * ArenaDeskCount * 0.5f,
+                ArenaDeskDepth * 0.5f);
+            edgeSo.ApplyModifiedPropertiesWithoutUndo();
             var input = directorGo.AddComponent<HotseatFlickInput>();
             directorGo.AddComponent<PhysicsScaleProbe>();
             var bootstrap = directorGo.AddComponent<ClassroomBootstrap>();
@@ -196,34 +203,49 @@ namespace EraserWars.Editor
             var light = Object.FindAnyObjectByType<Light>();
             if (light != null)
             {
-                light.color = new Color(1f, 0.96f, 0.88f);
-                light.intensity = 1.15f;
+                light.color = new Color(1f, 0.95f, 0.84f);
+                light.intensity = 1.25f;
                 light.shadows = LightShadows.Soft;
-                light.transform.rotation = Quaternion.Euler(42f, -40f, 0f);
+                light.transform.rotation = Quaternion.Euler(42f, -25f, 0f);
             }
+
+            RenderSettings.ambientMode = AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(0.68f, 0.62f, 0.52f);
 
             var fillGo = new GameObject("FillLight");
             fillGo.transform.SetParent(root.transform, false);
-            fillGo.transform.position = new Vector3(-1.4f, 1.7f, -1.6f);
+            fillGo.transform.position = new Vector3(0f, 2.4f, -1.4f);
             var fill = fillGo.AddComponent<Light>();
             fill.type = LightType.Point;
-            fill.color = new Color(0.75f, 0.84f, 0.95f);
-            fill.intensity = 0.6f;
-            fill.range = 7f;
+            fill.color = new Color(0.92f, 0.92f, 0.95f);
+            fill.intensity = 0.3f;
+            fill.range = 10f;
 
-            // Fluorescent strip over the arena (Heisei classroom cue).
-            var fluo = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            fluo.name = "Fluorescent";
-            fluo.transform.SetParent(root.transform, false);
-            fluo.transform.position = new Vector3(0f, 2.7f, 0f);
-            fluo.transform.localScale = new Vector3(2.4f, 0.05f, 0.2f);
-            PrototypeLookBuilder.ApplySharedMaterial(fluo, wallMat);
-            Object.DestroyImmediate(fluo.GetComponent<Collider>());
+            var windowGo = new GameObject("WindowLight");
+            windowGo.transform.SetParent(root.transform, false);
+            windowGo.transform.position = new Vector3(-3.6f, 2.3f, 0f);
+            var windowLight = windowGo.AddComponent<Light>();
+            windowLight.type = LightType.Point;
+            windowLight.color = new Color(1f, 0.88f, 0.70f);
+            windowLight.intensity = 1.4f;
+            windowLight.range = 10f;
+            windowLight.shadows = LightShadows.None;
+
+            // Two rows of three fluorescent fixtures (Heisei classroom cue).
+            var fluoRoot = new GameObject("Fluorescents");
+            fluoRoot.transform.SetParent(root.transform, false);
+            foreach (var fz in new[] { -1.4f, 1.4f })
+            {
+                foreach (var fx in new[] { -2.7f, 0f, 2.7f })
+                {
+                    CreateDecor(fluoRoot.transform, "Fluorescent", new Vector3(fx, CeilingBottom - 0.04f, fz), new Vector3(1.4f, 0.06f, 0.25f), wallMat);
+                }
+            }
 
             var cam = Camera.main;
             if (cam != null)
             {
-                cam.fieldOfView = 48f;
+                cam.fieldOfView = 54f;
                 cam.nearClipPlane = 0.05f;
                 cam.backgroundColor = new Color(0.55f, 0.70f, 0.88f);
                 var orbit = cam.gameObject.GetComponent<OrbitCamera>()
@@ -276,6 +298,7 @@ namespace EraserWars.Editor
             startSo.FindProperty("brandIcon").objectReferenceValue = UiIconBuilder.BrandIcon;
             startSo.FindProperty("icon2P").objectReferenceValue = UiIconBuilder.Icon2P;
             startSo.FindProperty("icon4P").objectReferenceValue = UiIconBuilder.Icon4P;
+            startSo.FindProperty("iconDeck").objectReferenceValue = UiIconBuilder.IconDeck;
             startSo.FindProperty("iconCollection").objectReferenceValue = UiIconBuilder.IconCollection;
             startSo.FindProperty("iconOptions").objectReferenceValue = UiIconBuilder.IconOptions;
             startSo.ApplyModifiedPropertiesWithoutUndo();
@@ -289,6 +312,8 @@ namespace EraserWars.Editor
             var hudSo = new SerializedObject(hud);
             hudSo.FindProperty("director").objectReferenceValue = director;
             hudSo.FindProperty("document").objectReferenceValue = hudDoc;
+            hudSo.FindProperty("iconStock").objectReferenceValue = UiIconBuilder.IconStock;
+            hudSo.FindProperty("iconPass").objectReferenceValue = UiIconBuilder.IconPass;
             hudSo.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -307,6 +332,57 @@ namespace EraserWars.Editor
             return settings;
         }
 
+        static Vector3 V(float x, float y, float z)
+        {
+            return new Vector3(x, y, z);
+        }
+
+        static void BuildArenaDesk(
+            Transform desk,
+            Material deskMat,
+            Material legMat,
+            Material trimMat,
+            float legHeight,
+            float legCenterLocalY,
+            float footLocalY)
+        {
+            var top = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            top.name = "Top";
+            top.transform.SetParent(desk, false);
+            top.transform.localScale = new Vector3(ArenaDeskWidth, DeskThickness, ArenaDeskDepth);
+            PrototypeLookBuilder.ApplySharedMaterial(top, deskMat);
+            Object.DestroyImmediate(top.GetComponent<Collider>());
+
+            CreateDecorLocal(desk, "Apron", new Vector3(0f, -DeskThickness * 0.5f - 0.018f, 0f), new Vector3(ArenaDeskWidth - 0.04f, 0.03f, ArenaDeskDepth - 0.04f), legMat);
+            CreateDecorLocal(desk, "Tray", new Vector3(0f, -0.11f, 0.01f), new Vector3(ArenaDeskWidth - 0.1f, 0.1f, ArenaDeskDepth - 0.08f), legMat);
+
+            var legX = ArenaDeskWidth * 0.5f - 0.04f;
+            var legZ = ArenaDeskDepth * 0.5f - 0.04f;
+            foreach (var sx in new[] { -1f, 1f })
+            {
+                foreach (var sz in new[] { -1f, 1f })
+                {
+                    CreateDecorLocal(desk, "Leg", new Vector3(sx * legX, legCenterLocalY, sz * legZ), new Vector3(0.035f, legHeight, 0.035f), legMat);
+                    CreateDecorLocal(desk, "Foot", new Vector3(sx * legX, footLocalY, sz * legZ), new Vector3(0.06f, 0.02f, 0.06f), trimMat);
+                }
+            }
+        }
+
+        static void ShellBox(Transform parent, string name, Vector3 min, Vector3 max, Material mat, bool castShadow = true)
+        {
+            var wall = CreateWall(parent, name, (min + max) * 0.5f, max - min, mat);
+            wall.AddComponent<OccludableFade>();
+            if (!castShadow)
+            {
+                wall.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+            }
+        }
+
+        static GameObject Box(Transform parent, string name, Vector3 min, Vector3 max, Material mat)
+        {
+            return CreateDecor(parent, name, (min + max) * 0.5f, max - min, mat);
+        }
+
         static void BuildRoomShell(
             Transform parent,
             Material wallMat,
@@ -318,76 +394,412 @@ namespace EraserWars.Editor
             var room = new GameObject("RoomShell");
             room.transform.SetParent(parent, false);
 
-            // Front = blackboard wall (+Z), windows on -X (schoolyard), corridor on +X.
-            CreateOccludableWall(room.transform, "Wall_Front", new Vector3(0f, 1.55f, 3.6f), new Vector3(8.2f, 3.1f, 0.12f), wallMat);
-            CreateOccludableWall(room.transform, "Wall_Back", new Vector3(0f, 1.55f, -3.6f), new Vector3(8.2f, 3.1f, 0.12f), wallMat);
-            CreateOccludableWall(room.transform, "Wall_Corridor", new Vector3(3.9f, 1.55f, 0f), new Vector3(0.12f, 3.1f, 7.2f), wallMat);
-            CreateOccludableWall(room.transform, "Ceiling", new Vector3(0f, 3.05f, 0f), new Vector3(8.2f, 0.08f, 7.2f), wallMat);
+            // Front = blackboard wall (+Z), windows on -X (schoolyard), corridor on +X, cleaning lockers on -Z.
+            // The sun crosses the ceiling, back wall and corridor wall, so those must not shadow the room.
+            ShellBox(room.transform, "Wall_Front", V(-OuterX, 0f, RoomHalfZ), V(OuterX, ShellTop, OuterZ), wallMat);
+            ShellBox(room.transform, "Wall_Back", V(-OuterX, 0f, -OuterZ), V(OuterX, ShellTop, -RoomHalfZ), wallMat, false);
+            ShellBox(room.transform, "Ceiling", V(-OuterX, CeilingBottom, -OuterZ), V(OuterX, ShellTop, OuterZ), wallMat, false);
 
-            // Window wall: three openings framed by wall segments + schoolyard backdrop.
-            CreateOccludableWall(room.transform, "Wall_Window_PillarA", new Vector3(-3.9f, 1.55f, -2.4f), new Vector3(0.12f, 3.1f, 1.6f), wallMat);
-            CreateOccludableWall(room.transform, "Wall_Window_PillarB", new Vector3(-3.9f, 1.55f, 0f), new Vector3(0.12f, 3.1f, 1.0f), wallMat);
-            CreateOccludableWall(room.transform, "Wall_Window_PillarC", new Vector3(-3.9f, 1.55f, 2.4f), new Vector3(0.12f, 3.1f, 1.6f), wallMat);
-            CreateOccludableWall(room.transform, "Wall_Window_Sill", new Vector3(-3.9f, 0.35f, 0f), new Vector3(0.14f, 0.7f, 7.2f), wallMat);
-            CreateOccludableWall(room.transform, "Wall_Window_Header", new Vector3(-3.9f, 2.75f, 0f), new Vector3(0.14f, 0.6f, 7.2f), wallMat);
+            var pillarMat = ColorMaterial(new Color(0.90f, 0.84f, 0.70f));
+            var frameMat = ColorMaterial(new Color(0.80f, 0.82f, 0.84f));
 
-            var yard = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            yard.name = "SchoolyardView";
-            yard.transform.SetParent(room.transform, false);
-            yard.transform.position = new Vector3(-4.3f, 1.55f, 0f);
-            yard.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
-            yard.transform.localScale = new Vector3(7.2f, 2.8f, 1f);
-            PrototypeLookBuilder.ApplySharedMaterial(yard, yardMat);
-            Object.DestroyImmediate(yard.GetComponent<Collider>());
+            BuildWindowWall(room.transform, wallMat, pillarMat, frameMat, yardMat);
+            BuildCorridorWall(room.transform, wallMat, frameMat);
+            BuildCorridorExterior(room.transform, wallMat);
+            BuildChalkboardWall(room.transform, chalkMat, trimMat);
+            BuildBackWall(room.transform, corkMat);
 
-            CreateWall(room.transform, "Chalkboard", new Vector3(0f, 1.55f, 3.52f), new Vector3(3.2f, 1.35f, 0.04f), chalkMat);
-            CreateWall(room.transform, "ChalkFrame", new Vector3(0f, 1.55f, 3.5f), new Vector3(3.4f, 1.5f, 0.03f), trimMat);
-            CreateWall(room.transform, "ChalkLedge", new Vector3(0f, 0.82f, 3.48f), new Vector3(3.3f, 0.06f, 0.1f), trimMat);
-            CreateWall(room.transform, "TimetableBoard", new Vector3(2.2f, 1.9f, 3.52f), new Vector3(0.9f, 0.7f, 0.03f), corkMat);
-
-            CreateWall(room.transform, "Bulletin_Back", new Vector3(0f, 1.6f, -3.52f), new Vector3(2.8f, 1.2f, 0.04f), corkMat);
-            PlacePaper(room.transform, "Paper_Red", new Vector3(-0.7f, 1.75f, -3.48f), new Color(0.95f, 0.35f, 0.35f));
-            PlacePaper(room.transform, "Paper_Blue", new Vector3(0.1f, 1.55f, -3.48f), new Color(0.35f, 0.55f, 0.95f));
-            PlacePaper(room.transform, "Paper_Yellow", new Vector3(0.8f, 1.8f, -3.48f), new Color(0.95f, 0.85f, 0.25f));
-
-            CreateWall(room.transform, "Base_Front", new Vector3(0f, 0.09f, 3.52f), new Vector3(8f, 0.12f, 0.06f), trimMat);
-            CreateWall(room.transform, "Base_Back", new Vector3(0f, 0.09f, -3.52f), new Vector3(8f, 0.12f, 0.06f), trimMat);
-            CreateWall(room.transform, "Base_Corridor", new Vector3(3.82f, 0.09f, 0f), new Vector3(0.06f, 0.12f, 7f), trimMat);
+            CreateWall(room.transform, "Base_Front", V(0f, 0.09f, RoomHalfZ - 0.03f), V(RoomHalfX * 2f, 0.12f, 0.06f), trimMat);
+            CreateWall(room.transform, "Base_Back", V(0f, 0.09f, -RoomHalfZ + 0.03f), V(RoomHalfX * 2f, 0.12f, 0.06f), trimMat);
+            CreateWall(room.transform, "Base_Window", V(-RoomHalfX + 0.03f, 0.09f, 0f), V(0.06f, 0.12f, RoomHalfZ * 2f), trimMat);
 
             // Teacher desk + heater (classroom symbols, non-play).
-            CreateWall(room.transform, "TeacherDesk", new Vector3(0f, 0.55f, 2.55f), new Vector3(1.0f, 0.7f, 0.45f), PrototypeLookBuilder.DeskMaterial);
-            CreateWall(room.transform, "Heater", new Vector3(3.55f, 0.45f, -2.2f), new Vector3(0.25f, 0.7f, 0.9f), trimMat);
+            CreateWall(room.transform, "TeacherDesk", V(2.0f, FloorTop + 0.38f, 2.7f), V(1.2f, 0.76f, 0.5f), PrototypeLookBuilder.DeskMaterial);
+            CreateWall(room.transform, "Heater", V(RoomHalfX - 0.15f, FloorTop + 0.35f, 0f), V(0.25f, 0.7f, 0.9f), trimMat);
+
+            var clockMat = ColorMaterial(new Color(0.96f, 0.96f, 0.94f));
+            CreateDecor(room.transform, "Clock_Rim", V(2.9f, 2.65f, RoomHalfZ - 0.015f), V(0.36f, 0.36f, 0.03f), trimMat);
+            CreateDecor(room.transform, "Clock", V(2.9f, 2.65f, RoomHalfZ - 0.04f), V(0.32f, 0.32f, 0.03f), clockMat);
         }
 
-        static void PlacePropDesk(Transform parent, Vector3 position, Material deskMat, Material legMat, Material trimMat)
+        // Four bays with five pillars (both ends included). Yard backdrop and ground sit well beyond the wall.
+        static void BuildWindowWall(Transform room, Material wallMat, Material pillarMat, Material frameMat, Material yardMat)
+        {
+            const int bayCount = 4;
+            const float pillarW = 0.35f;
+            const float curtainW = 0.32f;
+            var bayW = (RoomHalfZ * 2f - (bayCount + 1) * pillarW) / bayCount;
+            var step = bayW + pillarW;
+            var sillTop = FloorTop + 0.9f;
+            var winTop = FloorTop + 2.5f;
+            var xOut = -OuterX;
+            var xIn = -RoomHalfX;
+            var curtainMat = PrototypeLookBuilder.CurtainMaterial;
+
+            ShellBox(room, "Wall_Window_Sill", V(xOut, 0f, -RoomHalfZ), V(xIn, sillTop, RoomHalfZ), wallMat);
+            ShellBox(room, "Wall_Window_Header", V(xOut, winTop, -RoomHalfZ), V(xIn, ShellTop, RoomHalfZ), wallMat);
+
+            for (var i = 0; i <= bayCount; i++)
+            {
+                var z0 = -RoomHalfZ + i * step;
+                ShellBox(room, $"Wall_Window_Pillar{i}", V(xOut, sillTop, z0), V(xIn, winTop, z0 + pillarW), wallMat);
+                Box(room, $"Pillar_Face{i}", V(xIn, FloorTop, z0), V(xIn + 0.08f, CeilingBottom, z0 + pillarW), pillarMat);
+            }
+
+            for (var j = 0; j < bayCount; j++)
+            {
+                var zMin = -RoomHalfZ + pillarW + j * step;
+                var zMax = zMin + bayW;
+                var zc = (zMin + zMax) * 0.5f;
+                var fx0 = xIn - 0.03f;
+                var fx1 = xIn + 0.02f;
+
+                Box(room, "WinFrame_Sill", V(fx0, sillTop, zMin), V(xIn + 0.1f, sillTop + 0.04f, zMax), frameMat);
+                Box(room, "WinFrame_Head", V(fx0, winTop - 0.05f, zMin), V(fx1, winTop, zMax), frameMat);
+                Box(room, "WinFrame_Rail", V(fx0, sillTop + 1.0f, zMin), V(fx1, sillTop + 1.04f, zMax), frameMat);
+                Box(room, "WinFrame_Stile_A", V(fx0, sillTop, zc - 0.035f), V(fx1, winTop, zc - 0.005f), frameMat);
+                Box(room, "WinFrame_Stile_B", V(fx0, sillTop, zc + 0.005f), V(fx1, winTop, zc + 0.035f), frameMat);
+
+                Box(room, "Curtain_L", V(xIn + 0.075f, 0.45f, zMin), V(xIn + 0.125f, 2.78f, zMin + curtainW), curtainMat);
+                Box(room, "Curtain_L_Fold", V(xIn + 0.10f, 0.5f, zMin + curtainW - 0.06f), V(xIn + 0.15f, 2.74f, zMin + curtainW + 0.06f), curtainMat);
+                Box(room, "Curtain_R", V(xIn + 0.075f, 0.45f, zMax - curtainW), V(xIn + 0.125f, 2.78f, zMax), curtainMat);
+                Box(room, "Curtain_R_Fold", V(xIn + 0.10f, 0.5f, zMax - curtainW - 0.06f), V(xIn + 0.15f, 2.74f, zMax - curtainW + 0.06f), curtainMat);
+            }
+
+            Box(room, "CurtainRod", V(xIn + 0.14f, 2.76f, -RoomHalfZ + 0.05f), V(xIn + 0.18f, 2.80f, RoomHalfZ - 0.05f), PrototypeLookBuilder.TrimMaterial);
+
+            // Quad normal is -Z, so Euler(0,-90,0) turns it to +X and faces the room.
+            var backdrop = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            backdrop.name = "SchoolyardView";
+            backdrop.transform.SetParent(room, false);
+            backdrop.transform.position = new Vector3(-10f, 3.4f, 0f);
+            backdrop.transform.rotation = Quaternion.Euler(0f, -90f, 0f);
+            backdrop.transform.localScale = new Vector3(26f, 8f, 1f);
+            PrototypeLookBuilder.ApplySharedMaterial(backdrop, yardMat);
+            Object.DestroyImmediate(backdrop.GetComponent<Collider>());
+
+            var groundWidth = 10f - OuterX;
+            var ground = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            ground.name = "YardGround";
+            ground.transform.SetParent(room, false);
+            ground.transform.position = new Vector3(-OuterX - groundWidth * 0.5f, -0.1f, 0f);
+            ground.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            ground.transform.localScale = new Vector3(groundWidth, 26f, 1f);
+            PrototypeLookBuilder.ApplySharedMaterial(ground, PrototypeLookBuilder.YardGroundMaterial);
+            Object.DestroyImmediate(ground.GetComponent<Collider>());
+        }
+
+        // High corridor windows (sill 1.2m) between two sliding doors. The front door is left ajar.
+        static void BuildCorridorWall(Transform room, Material wallMat, Material frameMat)
+        {
+            const float doorHalfW = 0.5f;
+            const float doorFrontZ = 2.5f;
+            const float pierW = 0.2f;
+            const int paneCount = 3;
+            var xIn = RoomHalfX;
+            var xOut = OuterX;
+            var doorTop = FloorTop + 2.0f;
+            var hiSill = FloorTop + 1.2f;
+            var hiTop = FloorTop + 2.4f;
+            var frontMin = doorFrontZ - doorHalfW;
+            var frontMax = doorFrontZ + doorHalfW;
+            var rearMin = -doorFrontZ - doorHalfW;
+            var rearMax = -doorFrontZ + doorHalfW;
+
+            ShellBox(room, "Wall_Corridor_StubFront", V(xIn, 0f, frontMax), V(xOut, ShellTop, RoomHalfZ), wallMat, false);
+            ShellBox(room, "Wall_Corridor_StubRear", V(xIn, 0f, -RoomHalfZ), V(xOut, ShellTop, rearMin), wallMat, false);
+            ShellBox(room, "Wall_Corridor_HeadFront", V(xIn, doorTop, frontMin), V(xOut, ShellTop, frontMax), wallMat, false);
+            ShellBox(room, "Wall_Corridor_HeadRear", V(xIn, doorTop, rearMin), V(xOut, ShellTop, rearMax), wallMat, false);
+            ShellBox(room, "Wall_Corridor_Lower", V(xIn, 0f, rearMax), V(xOut, hiSill, frontMin), wallMat, false);
+            ShellBox(room, "Wall_Corridor_Upper", V(xIn, hiTop, rearMax), V(xOut, ShellTop, frontMin), wallMat, false);
+
+            var span = frontMin - rearMax;
+            var paneW = (span - (paneCount + 1) * pierW) / paneCount;
+            var step = paneW + pierW;
+            for (var i = 0; i <= paneCount; i++)
+            {
+                var z0 = rearMax + i * step;
+                ShellBox(room, $"Wall_Corridor_Pier{i}", V(xIn, hiSill, z0), V(xOut, hiTop, z0 + pierW), wallMat, false);
+            }
+
+            for (var j = 0; j < paneCount; j++)
+            {
+                var zMin = rearMax + pierW + j * step;
+                var zMax = zMin + paneW;
+                var zc = (zMin + zMax) * 0.5f;
+                var fx0 = xIn - 0.02f;
+                var fx1 = xIn + 0.03f;
+                Box(room, "CorrFrame_Sill", V(xIn - 0.08f, hiSill, zMin), V(fx1, hiSill + 0.04f, zMax), frameMat);
+                Box(room, "CorrFrame_Head", V(fx0, hiTop - 0.05f, zMin), V(fx1, hiTop, zMax), frameMat);
+                Box(room, "CorrFrame_Stile", V(fx0, hiSill, zc - 0.02f), V(fx1, hiTop, zc + 0.02f), frameMat);
+            }
+
+            var doorMat = PrototypeLookBuilder.DoorMaterial;
+            var paneMat = ColorMaterial(new Color(0.78f, 0.88f, 0.92f));
+            var handleMat = ColorMaterial(new Color(0.25f, 0.27f, 0.30f));
+
+            foreach (var (zMin, zMax) in new[] { (frontMin, frontMax), (rearMin, rearMax) })
+            {
+                Box(room, "DoorFrame_JambA", V(xIn - 0.03f, FloorTop, zMin), V(xOut, doorTop, zMin + 0.05f), frameMat);
+                Box(room, "DoorFrame_JambB", V(xIn - 0.03f, FloorTop, zMax - 0.05f), V(xOut, doorTop, zMax), frameMat);
+                Box(room, "DoorFrame_Head", V(xIn - 0.03f, doorTop - 0.05f, zMin), V(xOut, doorTop, zMax), frameMat);
+            }
+
+            const float outerLeafX = RoomHalfX + 0.06f;
+            const float innerLeafX = RoomHalfX + 0.01f;
+            var mid = doorFrontZ;
+            BuildDoorLeaf(room, "DoorFront_Outer", outerLeafX, frontMin, mid + 0.01f, mid + 0.01f, doorTop, doorMat, paneMat, handleMat);
+            BuildDoorLeaf(room, "DoorFront_Inner", innerLeafX, frontMin, mid + 0.01f, frontMin + 0.04f, doorTop, doorMat, paneMat, handleMat);
+            BuildDoorLeaf(room, "DoorRear_Outer", outerLeafX, rearMin, -mid + 0.01f, -mid + 0.01f, doorTop, doorMat, paneMat, handleMat);
+            BuildDoorLeaf(room, "DoorRear_Inner", innerLeafX, -mid - 0.01f, rearMax, -mid - 0.01f, doorTop, doorMat, paneMat, handleMat);
+        }
+
+        static void BuildDoorLeaf(
+            Transform room,
+            string name,
+            float xCenter,
+            float z0,
+            float z1,
+            float handleZ,
+            float doorTop,
+            Material doorMat,
+            Material paneMat,
+            Material handleMat)
+        {
+            var leaf = new GameObject(name);
+            leaf.transform.SetParent(room, false);
+            Box(leaf.transform, "Leaf", V(xCenter - 0.02f, FloorTop, z0), V(xCenter + 0.02f, doorTop - 0.03f, z1), doorMat);
+            Box(leaf.transform, "Pane", V(xCenter - 0.025f, FloorTop + 1.05f, z0 + 0.07f), V(xCenter + 0.025f, doorTop - 0.12f, z1 - 0.07f), paneMat);
+            Box(leaf.transform, "Handle", V(xCenter - 0.04f, FloorTop + 0.95f, handleZ - 0.03f), V(xCenter + 0.04f, FloorTop + 1.12f, handleZ + 0.03f), handleMat);
+        }
+
+        // Floor strip, far wall and ceiling so the doors and high windows read as a corridor, not a void.
+        static void BuildCorridorExterior(Transform room, Material wallMat)
+        {
+            var far = OuterX + CorridorWidth;
+            var farOut = far + ShellT;
+            var corridorFloorMat = ColorMaterial(new Color(0.74f, 0.72f, 0.66f));
+            Box(room, "Corridor_Floor", V(OuterX, FloorCenterY - FloorThickness * 0.5f, -CorridorHalfLength), V(far, FloorTop, CorridorHalfLength), corridorFloorMat);
+            ShellBox(room, "Wall_CorridorFar", V(far, 0f, -CorridorHalfLength), V(farOut, ShellTop, CorridorHalfLength), wallMat, false);
+            ShellBox(room, "Ceiling_Corridor", V(OuterX, CeilingBottom, -CorridorHalfLength), V(farOut, ShellTop, CorridorHalfLength), wallMat, false);
+            ShellBox(room, "Wall_CorridorEndFront", V(OuterX, 0f, CorridorHalfLength), V(farOut, ShellTop, CorridorHalfLength + ShellT), wallMat, false);
+            ShellBox(room, "Wall_CorridorEndRear", V(OuterX, 0f, -CorridorHalfLength - ShellT), V(farOut, ShellTop, -CorridorHalfLength), wallMat, false);
+
+            var glassMat = ColorMaterial(new Color(0.55f, 0.72f, 0.82f));
+            var doorMat = PrototypeLookBuilder.DoorMaterial;
+            foreach (var zc in new[] { -3.0f, -0.2f, 2.6f })
+            {
+                Box(room, "CorrFar_Window", V(far - 0.02f, FloorTop + 1.2f, zc - 0.8f), V(far, FloorTop + 2.3f, zc + 0.8f), glassMat);
+            }
+
+            Box(room, "CorrFar_Door", V(far - 0.03f, FloorTop, 1.0f), V(far, FloorTop + 2.0f, 2.0f), doorMat);
+        }
+
+        // Board front must sit nearer the room than the frame front, otherwise the frame hides the green.
+        static void BuildChalkboardWall(Transform room, Material chalkMat, Material trimMat)
+        {
+            const float front = RoomHalfZ;
+            const float boardW = 4.5f;
+            const float boardH = 1.3f;
+            var boardBottom = FloorTop + 0.9f;
+            var boardY = boardBottom + boardH * 0.5f;
+            var ledgeTop = boardBottom - 0.015f;
+            CreateDecor(room, "ChalkFrame", new Vector3(0f, boardY, front - 0.02f), new Vector3(boardW + 0.2f, boardH + 0.1f, 0.04f), trimMat);
+            CreateDecor(room, "Chalkboard", new Vector3(0f, boardY, front - 0.04f), new Vector3(boardW, boardH, 0.04f), chalkMat);
+            CreateDecor(room, "ChalkLedge", new Vector3(0f, ledgeTop - 0.025f, front - 0.11f), new Vector3(boardW + 0.1f, 0.05f, 0.14f), trimMat);
+            var chalkY = ledgeTop + 0.0125f;
+            CreateDecor(room, "Chalk_White", new Vector3(-0.8f, chalkY, front - 0.14f), new Vector3(0.09f, 0.025f, 0.025f), ColorMaterial(Color.white));
+            CreateDecor(room, "Chalk_Yellow", new Vector3(-0.6f, chalkY, front - 0.12f), new Vector3(0.08f, 0.025f, 0.025f), ColorMaterial(new Color(0.98f, 0.88f, 0.30f)));
+            CreateDecor(room, "Chalk_Pink", new Vector3(-0.4f, chalkY, front - 0.14f), new Vector3(0.08f, 0.025f, 0.025f), ColorMaterial(new Color(0.98f, 0.60f, 0.70f)));
+            CreateDecor(room, "ChalkEraser_A", new Vector3(0.9f, chalkY + 0.005f, front - 0.12f), new Vector3(0.14f, 0.035f, 0.06f), ColorMaterial(new Color(0.30f, 0.30f, 0.34f)));
+            CreateDecor(room, "ChalkEraser_B", new Vector3(1.15f, chalkY + 0.005f, front - 0.14f), new Vector3(0.14f, 0.035f, 0.06f), ColorMaterial(new Color(0.45f, 0.40f, 0.34f)));
+            CreateDecor(room, "Speaker", new Vector3(0f, 2.78f, front - 0.09f), new Vector3(0.45f, 0.26f, 0.12f), ColorMaterial(new Color(0.38f, 0.38f, 0.40f)));
+
+            var boardGreen = PrototypeLookBuilder.BoardGreenMaterial;
+            const float sideX = 3.35f;
+            foreach (var side in new[] { -1f, 1f })
+            {
+                var x = side * sideX;
+                CreateDecor(room, "Bulletin_Side", new Vector3(x, 1.65f, front - 0.02f), new Vector3(1.1f, 1.4f, 0.04f), boardGreen);
+                PlacePaper(room, "Paper_Side_A", new Vector3(x - 0.2f, 1.9f, front - 0.07f), new Color(0.98f, 0.96f, 0.88f), facePositiveZ: false);
+                PlacePaper(room, "Paper_Side_B", new Vector3(x + 0.2f, 1.45f, front - 0.07f), new Color(0.98f, 0.90f, 0.55f), facePositiveZ: false);
+
+                var shelf = new Vector3(x - side * 0.05f, FloorTop + 0.35f, front - 0.2f);
+                CreateDecor(room, "Shelf", shelf, new Vector3(0.9f, 0.7f, 0.35f), PrototypeLookBuilder.DeskMaterial);
+                CreateDecor(room, "ShelfTop", shelf + new Vector3(0f, 0.36f, 0f), new Vector3(0.95f, 0.03f, 0.4f), PrototypeLookBuilder.TrimMaterial);
+            }
+
+            var shelfTopY = FloorTop + 0.35f + 0.375f;
+            var potTop = new Vector3(-sideX - 0.05f, shelfTopY + 0.1f, front - 0.2f);
+            CreateDecor(room, "PlantPot", potTop, new Vector3(0.2f, 0.2f, 0.2f), ColorMaterial(new Color(0.75f, 0.42f, 0.30f)));
+            var leafMat = ColorMaterial(new Color(0.22f, 0.55f, 0.25f));
+            CreateDecor(room, "PlantLeaves_A", potTop + new Vector3(0f, 0.22f, 0f), new Vector3(0.3f, 0.28f, 0.3f), leafMat);
+            var leavesB = CreateDecor(room, "PlantLeaves_B", potTop + new Vector3(0f, 0.28f, 0f), new Vector3(0.26f, 0.26f, 0.26f), leafMat);
+            leavesB.transform.rotation = Quaternion.Euler(0f, 45f, 0f);
+
+            var bookColors = new[]
+            {
+                new Color(0.85f, 0.30f, 0.30f), new Color(0.30f, 0.45f, 0.85f), new Color(0.95f, 0.80f, 0.30f), new Color(0.35f, 0.65f, 0.40f),
+            };
+            for (var i = 0; i < bookColors.Length; i++)
+            {
+                CreateDecor(room, "Book", new Vector3(sideX - 0.15f + i * 0.09f, shelfTopY + 0.13f + (i % 2) * 0.015f, front - 0.2f), new Vector3(0.07f, 0.24f + (i % 2) * 0.03f, 0.2f), ColorMaterial(bookColors[i]));
+            }
+        }
+
+        // Six cleaning-locker doors on the left, bulletin board over an open storage shelf on the right.
+        static void BuildBackWall(Transform room, Material corkMat)
+        {
+            const int units = 6;
+            const float unitW = 0.5f;
+            const float lockerD = 0.45f;
+            const float lockerH = 1.85f;
+            const float x0 = -3.9f;
+            var x1 = x0 + units * unitW;
+            var backZ = -RoomHalfZ;
+            var frontZ = backZ + lockerD;
+            var bodyMat = ColorMaterial(new Color(0.40f, 0.46f, 0.50f));
+            var doorMat = PrototypeLookBuilder.LockerMaterial;
+            var darkMat = ColorMaterial(new Color(0.25f, 0.28f, 0.30f));
+
+            Box(room, "LockerBody", V(x0, FloorTop, backZ), V(x1, FloorTop + lockerH, frontZ), bodyMat);
+            Box(room, "LockerCap", V(x0 - 0.01f, FloorTop + lockerH, backZ), V(x1 + 0.01f, FloorTop + lockerH + 0.03f, frontZ + 0.01f), doorMat);
+            for (var i = 0; i < units; i++)
+            {
+                var ux = x0 + i * unitW + 0.015f;
+                var uw = unitW - 0.03f;
+                Box(room, "LockerDoor", V(ux, FloorTop + 0.05f, frontZ), V(ux + uw, FloorTop + lockerH - 0.04f, frontZ + 0.02f), doorMat);
+                for (var k = 0; k < 4; k++)
+                {
+                    var y = FloorTop + lockerH - 0.2f - k * 0.05f;
+                    Box(room, "LockerVent", V(ux + 0.07f, y, frontZ + 0.02f), V(ux + uw - 0.07f, y + 0.015f, frontZ + 0.026f), darkMat);
+                }
+
+                Box(room, "LockerHandle", V(ux + uw - 0.1f, FloorTop + 0.85f, frontZ + 0.02f), V(ux + uw - 0.07f, FloorTop + 1.1f, frontZ + 0.05f), darkMat);
+            }
+
+            var bucketMat = ColorMaterial(new Color(0.30f, 0.55f, 0.80f));
+            Box(room, "Bucket", V(x1 + 0.2f, FloorTop, backZ + 0.15f), V(x1 + 0.5f, FloorTop + 0.28f, backZ + 0.45f), bucketMat);
+
+            const float shelfX0 = 0.2f;
+            const float shelfX1 = 2.6f;
+            const float shelfH = 0.95f;
+            const float shelfD = 0.38f;
+            var shelfMat = PrototypeLookBuilder.DeskMaterial;
+            Box(room, "StorageShelf_Body", V(shelfX0, FloorTop, backZ), V(shelfX1, FloorTop + shelfH, backZ + shelfD), shelfMat);
+            foreach (var level in new[] { 0.02f, 0.34f, 0.64f })
+            {
+                Box(room, "StorageShelf_Board", V(shelfX0 + 0.04f, FloorTop + level + 0.03f, backZ + 0.04f), V(shelfX1 - 0.04f, FloorTop + level + 0.31f, backZ + shelfD + 0.005f), darkMat);
+            }
+
+            var boxColors = new[]
+            {
+                new Color(0.80f, 0.70f, 0.50f), new Color(0.55f, 0.65f, 0.80f), new Color(0.85f, 0.55f, 0.45f), new Color(0.60f, 0.75f, 0.55f),
+            };
+            for (var i = 0; i < boxColors.Length; i++)
+            {
+                var bx = shelfX0 + 0.12f + i * 0.58f;
+                Box(room, "StorageBox", V(bx, FloorTop + 0.37f, backZ + 0.07f), V(bx + 0.45f, FloorTop + 0.6f, backZ + shelfD - 0.03f), ColorMaterial(boxColors[i]));
+            }
+
+            const float boardCx = 1.4f;
+            CreateDecor(room, "Bulletin_Back", new Vector3(boardCx, 1.9f, backZ + 0.02f), new Vector3(2.4f, 1.2f, 0.04f), corkMat);
+            PlacePaper(room, "Paper_Red", new Vector3(boardCx - 0.7f, 2.05f, backZ + 0.05f), new Color(0.95f, 0.35f, 0.35f));
+            PlacePaper(room, "Paper_Blue", new Vector3(boardCx, 1.8f, backZ + 0.05f), new Color(0.35f, 0.55f, 0.95f));
+            PlacePaper(room, "Paper_Yellow", new Vector3(boardCx + 0.7f, 2.05f, backZ + 0.05f), new Color(0.95f, 0.85f, 0.25f));
+        }
+
+        // Two three-desk blocks flank the arena. Chairs pull toward -Z, so rows stay clear of the lockers.
+        static void BuildPropDeskGrid(Transform parent, Material deskMat, Material legMat)
+        {
+            var group = new GameObject("PropDesks");
+            group.transform.SetParent(parent, false);
+            var columns = new[] { -3.7f, -3.1f, -2.5f, 2.5f, 3.1f, 3.7f };
+            var rows = new[] { -2.1f, -1.2f, -0.3f, 0.9f, 1.8f };
+            var index = 0;
+            foreach (var x in columns)
+            {
+                foreach (var z in rows)
+                {
+                    PlacePropDesk(group.transform, new Vector3(x, DeskCenterY, z), deskMat, legMat, index);
+                    index++;
+                }
+            }
+        }
+
+        static void PlacePropDesk(Transform parent, Vector3 position, Material deskMat, Material legMat, int index)
         {
             var desk = new GameObject("PropDesk");
             desk.transform.SetParent(parent, false);
             desk.transform.position = position;
-            var top = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            top.name = "Top";
-            top.transform.SetParent(desk.transform, false);
-            top.transform.localScale = new Vector3(0.6f, 0.04f, 0.45f);
-            PrototypeLookBuilder.ApplySharedMaterial(top, deskMat);
-            Object.DestroyImmediate(top.GetComponent<Collider>());
+            CreateDecorLocal(desk.transform, "Top", Vector3.zero, new Vector3(0.6f, 0.04f, 0.45f), deskMat);
+            CreateDecorLocal(desk.transform, "Tray", new Vector3(0f, -0.1f, 0.02f), new Vector3(0.5f, 0.1f, 0.36f), legMat);
             foreach (var xz in new[] { new Vector2(-0.25f, -0.18f), new Vector2(0.25f, -0.18f), new Vector2(-0.25f, 0.18f), new Vector2(0.25f, 0.18f) })
             {
-                var leg = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                leg.transform.SetParent(desk.transform, false);
-                leg.transform.localPosition = new Vector3(xz.x, -0.38f, xz.y);
-                leg.transform.localScale = new Vector3(0.04f, 0.72f, 0.04f);
-                PrototypeLookBuilder.ApplySharedMaterial(leg, legMat);
-                Object.DestroyImmediate(leg.GetComponent<Collider>());
+                CreateDecorLocal(desk.transform, "Leg", new Vector3(xz.x, -0.38f, xz.y), new Vector3(0.04f, 0.72f, 0.04f), legMat);
+            }
+
+            var pull = 0.46f + 0.07f * ((index * 5) % 3);
+            var chair = new GameObject("Chair");
+            chair.transform.SetParent(desk.transform, false);
+            chair.transform.localPosition = new Vector3(0f, 0f, -pull);
+            chair.transform.localRotation = Quaternion.Euler(0f, (((index * 37) % 7) - 3) * 2f, 0f);
+            CreateDecorLocal(chair.transform, "Seat", new Vector3(0f, -0.31f, 0f), new Vector3(0.38f, 0.03f, 0.38f), deskMat);
+            CreateDecorLocal(chair.transform, "Back", new Vector3(0f, -0.155f, -0.175f), new Vector3(0.38f, 0.28f, 0.03f), deskMat);
+            foreach (var xz in new[] { new Vector2(-0.16f, -0.16f), new Vector2(0.16f, -0.16f), new Vector2(-0.16f, 0.16f), new Vector2(0.16f, 0.16f) })
+            {
+                CreateDecorLocal(chair.transform, "ChairLeg", new Vector3(xz.x, -0.5375f, xz.y), new Vector3(0.025f, 0.425f, 0.025f), legMat);
             }
         }
 
-        static void PlacePaper(Transform parent, string name, Vector3 position, Color color)
+        static Material ColorMaterial(Color color)
+        {
+            if (ColorMaterials.TryGetValue(color, out var cached) && cached != null)
+            {
+                return cached;
+            }
+
+            var mat = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"));
+            mat.color = color;
+            if (mat.HasProperty("_BaseColor"))
+            {
+                mat.SetColor("_BaseColor", color);
+            }
+
+            ColorMaterials[color] = mat;
+            return mat;
+        }
+
+        static GameObject CreateDecor(Transform parent, string name, Vector3 position, Vector3 scale, Material mat)
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            go.name = name;
+            go.transform.SetParent(parent, false);
+            go.transform.position = position;
+            go.transform.localScale = scale;
+            PrototypeLookBuilder.ApplySharedMaterial(go, mat);
+            Object.DestroyImmediate(go.GetComponent<Collider>());
+            return go;
+        }
+
+        static void CreateDecorLocal(Transform parent, string name, Vector3 localPosition, Vector3 scale, Material mat)
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            go.name = name;
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = localPosition;
+            go.transform.localScale = scale;
+            PrototypeLookBuilder.ApplySharedMaterial(go, mat);
+            Object.DestroyImmediate(go.GetComponent<Collider>());
+        }
+
+        static void PlacePaper(Transform parent, string name, Vector3 position, Color color, bool facePositiveZ = true)
         {
             var paper = GameObject.CreatePrimitive(PrimitiveType.Quad);
             paper.name = name;
             paper.transform.SetParent(parent, false);
             paper.transform.position = position;
-            paper.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+            paper.transform.rotation = Quaternion.Euler(0f, facePositiveZ ? 180f : 0f, 0f);
             paper.transform.localScale = new Vector3(0.35f, 0.45f, 1f);
             var mat = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"));
             mat.color = color;
@@ -398,12 +810,6 @@ namespace EraserWars.Editor
 
             paper.GetComponent<Renderer>().sharedMaterial = mat;
             Object.DestroyImmediate(paper.GetComponent<Collider>());
-        }
-
-        static void CreateOccludableWall(Transform parent, string name, Vector3 position, Vector3 scale, Material mat)
-        {
-            var wall = CreateWall(parent, name, position, scale, mat);
-            wall.AddComponent<OccludableFade>();
         }
 
         static GameObject CreateWall(Transform parent, string name, Vector3 position, Vector3 scale, Material mat)

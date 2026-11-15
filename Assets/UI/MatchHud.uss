@@ -15,38 +15,50 @@
     flex-direction: row;
     align-items: center;
     padding: 0 14px;
-    background-color: rgba(12, 16, 28, 0.88);
-    border-radius: 10px;
-    border-top-width: 4px;
-    border-top-color: rgb(255, 200, 64);
+    background-color: rgba(255, 244, 248, 0.94);
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: rgb(255, 120, 160);
 }
 
 .brand-chip {
     width: 28px;
     height: 28px;
     margin-right: 10px;
-    background-color: rgb(255, 90, 70);
-    border-radius: 6px;
+    background-color: rgb(255, 120, 160);
+    border-radius: 8px;
+    border-bottom-width: 8px;
+    border-bottom-color: rgb(70, 130, 240);
 }
 
 .hud-title {
     font-size: 22px;
     -unity-font-style: bold;
-    color: rgb(255, 255, 255);
+    color: rgb(230, 70, 120);
     margin-right: 18px;
 }
 
 .hud-phase {
     font-size: 18px;
     -unity-font-style: bold;
-    color: rgb(255, 230, 140);
+    color: rgb(70, 60, 80);
     flex-grow: 1;
 }
 
-.hud-timer {
-    font-size: 20px;
+.hud-turn {
+    font-size: 16px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
+    background-color: rgb(255, 120, 160);
+    border-radius: 12px;
+    padding: 4px 12px;
+    margin-right: 12px;
+}
+
+.hud-timer {
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: rgb(230, 70, 120);
     margin-right: 12px;
 }
 
@@ -55,38 +67,133 @@
     height: 40px;
     font-size: 15px;
     -unity-font-style: bold;
+    border-radius: 12px;
 }
 
-.stock-panel {
+.players-row {
     position: absolute;
     left: 12px;
+    right: 12px;
     top: 90px;
-    width: 240px;
-    padding: 12px;
-    background-color: rgba(10, 12, 20, 0.86);
-    border-radius: 10px;
-    border-top-width: 3px;
-    border-top-color: rgb(255, 255, 255);
+    flex-direction: row;
+    justify-content: center;
 }
 
-.stock-header {
-    font-size: 13px;
-    -unity-font-style: bold;
-    color: rgb(200, 205, 190);
-    margin-bottom: 6px;
+.player-pill {
+    min-width: 150px;
+    margin: 0 6px;
+    padding: 6px 12px 8px 12px;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: rgb(210, 210, 210);
+    opacity: 0.82;
 }
 
-.stock-body {
+.player-pill.seat-0 { border-color: rgb(255, 120, 160); }
+.player-pill.seat-1 { border-color: rgb(70, 130, 240); }
+.player-pill.seat-2 { border-color: rgb(70, 190, 100); }
+.player-pill.seat-3 { border-color: rgb(255, 160, 50); }
+
+.pill-name {
     font-size: 15px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
-    white-space: normal;
-    margin-bottom: 10px;
+    border-radius: 10px;
+    padding: 1px 14px;
+    margin-bottom: 4px;
 }
 
-.hud-action {
-    height: 36px;
-    margin-top: 4px;
-    font-size: 15px;
+.seat-0 .pill-name { background-color: rgb(255, 120, 160); }
+.seat-1 .pill-name { background-color: rgb(70, 130, 240); }
+.seat-2 .pill-name { background-color: rgb(70, 190, 100); }
+.seat-3 .pill-name { background-color: rgb(255, 160, 50); }
+
+.pill-hearts {
+    flex-direction: row;
+    margin-bottom: 2px;
+}
+
+.heart {
+    width: 16px;
+    height: 16px;
+    margin: 0 2px;
+    border-radius: 8px;
+    background-color: rgb(240, 70, 100);
+}
+
+.heart.has-icon {
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+}
+
+.heart.heart-lost {
+    background-color: rgb(200, 200, 205);
+    -unity-background-image-tint-color: rgb(190, 190, 195);
+}
+
+.heart.has-icon.heart-lost {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.pill-points {
+    font-size: 16px;
     -unity-font-style: bold;
+    color: rgb(70, 60, 80);
+}
+
+.player-pill.pill-active {
+    opacity: 1;
+    border-width: 5px;
+    background-color: rgb(255, 250, 225);
+    scale: 1.1 1.1;
+}
+
+.player-pill.pill-out {
+    opacity: 0.4;
+}
+
+.action-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 24px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.action-chip {
+    height: 48px;
+    min-width: 120px;
+    margin: 0 8px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    border-radius: 24px;
+    border-width: 3px;
+    border-color: rgb(255, 255, 255);
+}
+
+.action-pass { background-color: rgb(255, 120, 160); }
+.action-rematch { background-color: rgb(70, 130, 240); }
+
+.action-label {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.action-icon {
+    display: none;
+    width: 22px;
+    height: 22px;
+    margin-right: 6px;
+}
+
+.action-icon.has-icon {
+    display: flex;
 }

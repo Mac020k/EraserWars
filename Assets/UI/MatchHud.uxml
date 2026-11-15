@@ -1,18 +1,21 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <Style src="MatchHud.uss" />
-    <ui:VisualElement name="root" class="hud-root hidden">
+    <ui:VisualElement name="root" class="hud-root hidden" picking-mode="Ignore">
         <ui:VisualElement class="top-bar">
             <ui:VisualElement name="brand-chip" class="brand-chip" />
             <ui:Label name="title" text="ERASER WARS" class="hud-title" />
             <ui:Label name="phase" text="—" class="hud-phase" />
+            <ui:Label name="turn" text="" class="hud-turn" />
             <ui:Label name="timer" text="" class="hud-timer" />
             <ui:Button name="menu" text="メニュー" class="hud-menu-button" />
         </ui:VisualElement>
-        <ui:VisualElement class="stock-panel">
-            <ui:Label text="STOCKS" class="stock-header" />
-            <ui:Label name="stocks" text="" class="stock-body" />
-            <ui:Button name="pass" text="パス" class="hud-action" />
-            <ui:Button name="rematch" text="再戦" class="hud-action" />
+        <ui:VisualElement name="players" class="players-row" picking-mode="Ignore" />
+        <ui:VisualElement class="action-bar">
+            <ui:Button name="pass" class="action-chip action-pass">
+                <ui:VisualElement name="pass-icon" class="action-icon" picking-mode="Ignore" />
+                <ui:Label text="パス" class="action-label" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="rematch" text="再戦" class="action-chip action-rematch" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

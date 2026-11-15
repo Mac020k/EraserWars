@@ -8,11 +8,12 @@ namespace EraserWars.Editor
     {
         const string IconRoot = "Assets/Art/UI/Icons";
 
-        public static Texture2D BrandIcon => LoadOrCreate("icon_brand_eraser", MakeBrand);
-        public static Texture2D Icon2P => LoadOrCreate("icon_mode_2p", () => MakeMode(2));
-        public static Texture2D Icon4P => LoadOrCreate("icon_mode_4p", () => MakeMode(4));
-        public static Texture2D IconCollection => LoadOrCreate("icon_collection", MakeBook);
-        public static Texture2D IconOptions => LoadOrCreate("icon_options", MakeGear);
+        public static Texture2D BrandIcon => LoadOrCreate("icon_brand_eraser_v2", MakeBrand);
+        public static Texture2D Icon2P => LoadOrCreate("icon_mode_2p_v2", () => MakeMode(2));
+        public static Texture2D Icon4P => LoadOrCreate("icon_mode_4p_v2", () => MakeMode(4));
+        public static Texture2D IconDeck => LoadOrCreate("icon_deck", MakeDeck);
+        public static Texture2D IconCollection => LoadOrCreate("icon_collection_v2", MakeFolder);
+        public static Texture2D IconOptions => LoadOrCreate("icon_options_v2", MakeGear);
         public static Texture2D IconStock => LoadOrCreate("icon_stock", MakeHeart);
         public static Texture2D IconPass => LoadOrCreate("icon_pass", MakeSkip);
 
@@ -23,6 +24,7 @@ namespace EraserWars.Editor
             _ = BrandIcon;
             _ = Icon2P;
             _ = Icon4P;
+            _ = IconDeck;
             _ = IconCollection;
             _ = IconOptions;
             _ = IconStock;
@@ -57,12 +59,23 @@ namespace EraserWars.Editor
         static Texture2D MakeBrand()
         {
             const int s = 128;
+            var ink = new Color(0.15f, 0.12f, 0.18f);
+            var pink = new Color(1f, 0.55f, 0.7f);
             var tex = New(s);
             Fill(tex, new Color(0f, 0f, 0f, 0f));
-            FillRect(tex, 16, 28, 96, 72, new Color(1f, 0.42f, 0.38f));
-            FillRect(tex, 24, 36, 80, 16, new Color(1f, 0.85f, 0.75f));
-            FillRect(tex, 40, 58, 48, 28, new Color(0.2f, 0.2f, 0.25f));
-            StrokeRect(tex, 16, 28, 96, 72, new Color(0.15f, 0.12f, 0.18f), 4);
+            FillRoundRect(tex, 22, 4, 84, 120, 16, Color.white);
+            FillRoundRect(tex, 28, 10, 72, 108, 12, ink);
+            FillRoundRect(tex, 31, 13, 66, 102, 10, pink);
+            FillRect(tex, 31, 13, 66, 34, new Color(0.25f, 0.5f, 0.95f));
+            FillRect(tex, 31, 47, 66, 3, ink);
+            FillCircle(tex, 51, 88, 6, ink);
+            FillCircle(tex, 77, 88, 6, ink);
+            FillCircle(tex, 53, 90, 2, Color.white);
+            FillCircle(tex, 79, 90, 2, Color.white);
+            FillCircle(tex, 42, 76, 5, new Color(1f, 0.35f, 0.5f));
+            FillCircle(tex, 86, 76, 5, new Color(1f, 0.35f, 0.5f));
+            FillCircle(tex, 64, 74, 7, ink);
+            FillRect(tex, 56, 74, 16, 8, pink);
             tex.Apply();
             return tex;
         }
@@ -70,8 +83,18 @@ namespace EraserWars.Editor
         static Texture2D MakeMode(int players)
         {
             const int s = 96;
+            var ink = new Color(0.2f, 0.2f, 0.24f);
             var tex = New(s);
             Fill(tex, new Color(0f, 0f, 0f, 0f));
+            FillCircle(tex, 24, 34, 16, ink);
+            FillCircle(tex, 72, 34, 16, ink);
+            FillRoundRect(tex, 8, 36, 80, 40, 18, ink);
+            FillRect(tex, 20, 52, 16, 5, Color.white);
+            FillRect(tex, 25, 47, 6, 15, Color.white);
+            FillCircle(tex, 62, 62, 4, new Color(0.35f, 0.6f, 1f));
+            FillCircle(tex, 78, 62, 4, new Color(1f, 0.85f, 0.25f));
+            FillCircle(tex, 70, 69, 4, new Color(0.35f, 0.85f, 0.5f));
+            FillCircle(tex, 70, 55, 4, new Color(1f, 0.4f, 0.5f));
             var colors = new[]
             {
                 new Color(0.95f, 0.3f, 0.35f),
@@ -81,25 +104,38 @@ namespace EraserWars.Editor
             };
             for (var i = 0; i < players; i++)
             {
-                var x = 14 + (i % 2) * 40;
-                var y = players <= 2 ? 28 : 14 + (i / 2) * 40;
-                FillRect(tex, x, y, 28, 28, colors[i]);
-                StrokeRect(tex, x, y, 28, 28, new Color(0.12f, 0.1f, 0.14f), 3);
+                FillCircle(tex, 48 + (int)((i - (players - 1) * 0.5f) * 14f), 16, 5, colors[i]);
             }
 
             tex.Apply();
             return tex;
         }
 
-        static Texture2D MakeBook()
+        static Texture2D MakeDeck()
         {
             const int s = 96;
+            var ink = new Color(0.12f, 0.1f, 0.14f);
             var tex = New(s);
             Fill(tex, new Color(0f, 0f, 0f, 0f));
-            FillRect(tex, 20, 16, 56, 64, new Color(0.2f, 0.55f, 0.95f));
-            FillRect(tex, 28, 24, 40, 48, new Color(0.95f, 0.95f, 0.9f));
-            FillRect(tex, 46, 16, 6, 64, new Color(0.12f, 0.25f, 0.55f));
-            StrokeRect(tex, 20, 16, 56, 64, new Color(0.1f, 0.1f, 0.14f), 3);
+            FillRoundRect(tex, 12, 14, 44, 62, 6, ink);
+            FillRoundRect(tex, 15, 17, 38, 56, 4, Color.white);
+            FillDiamond(tex, 34, 45, 10, 14, new Color(0.25f, 0.45f, 0.95f));
+            FillRoundRect(tex, 40, 20, 44, 62, 6, ink);
+            FillRoundRect(tex, 43, 23, 38, 56, 4, Color.white);
+            FillDiamond(tex, 62, 51, 10, 14, new Color(0.95f, 0.3f, 0.35f));
+            tex.Apply();
+            return tex;
+        }
+
+        static Texture2D MakeFolder()
+        {
+            const int s = 96;
+            var ink = new Color(0.1f, 0.1f, 0.14f);
+            var tex = New(s);
+            Fill(tex, new Color(0f, 0f, 0f, 0f));
+            FillRoundRect(tex, 8, 56, 36, 20, 5, new Color(0.9f, 0.65f, 0.15f));
+            FillRoundRect(tex, 8, 14, 80, 54, 8, ink);
+            FillRoundRect(tex, 11, 17, 74, 48, 6, new Color(1f, 0.82f, 0.3f));
             tex.Apply();
             return tex;
         }
@@ -109,17 +145,17 @@ namespace EraserWars.Editor
             const int s = 96;
             var tex = New(s);
             Fill(tex, new Color(0f, 0f, 0f, 0f));
-            FillCircle(tex, 48, 48, 28, new Color(0.55f, 0.58f, 0.62f));
-            FillCircle(tex, 48, 48, 12, new Color(0.95f, 0.95f, 0.92f));
+            FillCircle(tex, 48, 48, 28, new Color(0.2f, 0.5f, 0.95f));
+            FillCircle(tex, 48, 48, 12, new Color(1f, 0.99f, 0.96f));
             for (var i = 0; i < 8; i++)
             {
                 var a = i * Mathf.PI * 0.25f;
                 var cx = 48 + Mathf.Cos(a) * 30f;
                 var cy = 48 + Mathf.Sin(a) * 30f;
-                FillRect(tex, (int)cx - 6, (int)cy - 6, 12, 12, new Color(0.55f, 0.58f, 0.62f));
+                FillRect(tex, (int)cx - 6, (int)cy - 6, 12, 12, new Color(0.2f, 0.5f, 0.95f));
             }
 
-            StrokeCircle(tex, 48, 48, 28, new Color(0.12f, 0.1f, 0.14f), 3);
+            StrokeCircle(tex, 48, 48, 12, new Color(0.15f, 0.35f, 0.75f), 2);
             tex.Apply();
             return tex;
         }
@@ -180,6 +216,38 @@ namespace EraserWars.Editor
                 for (var xx = x; xx < x + w; xx++)
                 {
                     if (xx >= 0 && yy >= 0 && xx < tex.width && yy < tex.height)
+                    {
+                        tex.SetPixel(xx, yy, c);
+                    }
+                }
+            }
+        }
+
+        static void FillRoundRect(Texture2D tex, int x, int y, int w, int h, int r, Color c)
+        {
+            for (var yy = y; yy < y + h; yy++)
+            {
+                for (var xx = x; xx < x + w; xx++)
+                {
+                    var dx = Mathf.Max(x + r - xx, 0, xx - (x + w - 1 - r));
+                    var dy = Mathf.Max(y + r - yy, 0, yy - (y + h - 1 - r));
+                    if (dx * dx + dy * dy <= r * r
+                        && xx >= 0 && yy >= 0 && xx < tex.width && yy < tex.height)
+                    {
+                        tex.SetPixel(xx, yy, c);
+                    }
+                }
+            }
+        }
+
+        static void FillDiamond(Texture2D tex, int cx, int cy, int rx, int ry, Color c)
+        {
+            for (var yy = cy - ry; yy <= cy + ry; yy++)
+            {
+                for (var xx = cx - rx; xx <= cx + rx; xx++)
+                {
+                    if (Mathf.Abs(xx - cx) * ry + Mathf.Abs(yy - cy) * rx <= rx * ry
+                        && xx >= 0 && yy >= 0 && xx < tex.width && yy < tex.height)
                     {
                         tex.SetPixel(xx, yy, c);
                     }

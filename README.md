@@ -97,10 +97,10 @@ The project compiles the `Core` sources directly, so it catches rule regressions
 
 ## Classroom scene
 
-1. In Unity, run `EraserWars > Build Classroom Casual Scene` (also builds UI icons). It writes `Assets/Scenes/Classroom_Casual.unity` with a joined `DeskArena`, Heisei-style linoleum floor, green chalkboard, bulletin board, window-wall schoolyard view, corridor wall, prop desks, and soft wall/ceiling fade when the camera is blocked ([ADR-0009](docs/decisions/ADR-0009-start-screen-and-classroom-look.md)).
-2. Enter Play Mode. A full-screen **Start Menu** (UI Toolkit, CoroCoro-energy CTA) appears first. Pick 2P/4P, then **マッチ開始**. Escape returns to the menu.
-3. Match HUD is broadcast-style and only shows after the match starts. Left-drag in the Game view (outside HUD) to flick. Space or Pass skips the turn.
-4. Right-drag orbits the camera. Tab toggles top-down. Wheel zooms. Keep Game view Scale at **1x**. Tone is **コロコロコミック** (magazine), not “ころころ” as onomatopoeia (Q8 clarification).
+1. In Unity, run `EraserWars > Build Classroom Casual Scene` (also builds UI icons). It writes `Assets/Scenes/Classroom_Casual.unity` as a Heisei ordinary classroom at about **9 m × 7 m × 3 m** (standard postwar plan), with a **four-desk side-by-side arena** (0.6×0.4 m each), yard-side windows (4 bays / 5 pillars), corridor high windows and sliding doors, rear cleaning lockers and shelves, chalkboard wall, prop desks, and **full hide** of occluding walls/ceilings ([ADR-0009](docs/decisions/ADR-0009-start-screen-and-classroom-look.md)).
+2. Enter Play Mode. A full-screen **Start Menu** (UI Toolkit, CoroCoro-energy CTA, five icon tiles) appears first. Pick 2P/4P, then **マッチ開始**. Escape returns to the menu.
+3. Match HUD is broadcast-style (player pills with stocks) and only shows after the match starts. Left-drag in the Game view (outside HUD) to flick. Space or Pass skips the turn.
+4. Right-drag orbits the camera. Tab toggles top-down. Wheel zoom is proportional and snappy. Keep Game view Scale at **1x**. Tone is **コロコロコミック** (magazine), not “ころころ” as onomatopoeia (Q8 clarification).
 5. When your eraser hits another during Simulating, physics freezes for 0.08 seconds. Desk and floor hits do not freeze. Another eraser hit inside 0.15 seconds is ignored. Close-range Stay contacts project the hit normal onto XZ so the hittee still launches on the desk (vertical PhysX normals would otherwise be wiped).
 6. During Simulating, an eraser within 0.05 m of the outer desk edge, or dropping through the 0.05 m slice under the desk marker, slows time to 0.4 for 0.22 seconds. An eraser-hit freeze cancels that slow, and the next one waits until every eraser has left the zone and 0.6 seconds from the start have passed.
 

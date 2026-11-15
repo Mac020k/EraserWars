@@ -5,10 +5,12 @@ namespace EraserWars.CameraRig
 {
     public sealed class OrbitCamera : MonoBehaviour
     {
-        // Wide enough that the 1.2×0.8 desk, four legs, and floor contact all fit at match start.
-        const float OverviewDistance = 4.55f;
-        const float OverviewYaw = 28f;
-        const float OverviewPitch = 36f;
+        // Wide enough that the four-desk row (2.4×0.4), legs, and floor contact fit at match start.
+        // Yaw looks toward the chalkboard and the -X window wall so both show with the desk.
+        // Stay inside the 9×7×3 room shell so the start view is not a faded outer wall.
+        const float OverviewDistance = 5.5f;
+        const float OverviewYaw = -50f;
+        const float OverviewPitch = 27f;
         // Bias the look target toward the floor so legs do not clip out of frame.
         const float OverviewFocusBiasY = -0.34f;
 
@@ -17,11 +19,12 @@ namespace EraserWars.CameraRig
         [SerializeField] float yaw = OverviewYaw;
         [SerializeField] float pitch = OverviewPitch;
         [SerializeField] float mouseSensitivity = 0.2f;
-        [SerializeField] float zoomSpeed = 0.12f;
+        // Wheel notches are ~±120; this lands ~0.9–1.2m per notch at mid range.
+        [SerializeField] float zoomSpeed = 0.85f;
         [SerializeField] float chaseLerp = 10f;
         [SerializeField] float chaseDistanceScale = 0.88f;
-        [SerializeField] float minDistance = 1.4f;
-        [SerializeField] float maxDistance = 6.5f;
+        [SerializeField] float minDistance = 1.2f;
+        [SerializeField] float maxDistance = 11f;
 
         Transform chaseTarget;
         Vector3 smoothedFocus;
@@ -100,10 +103,13 @@ namespace EraserWars.CameraRig
                     pitch = Mathf.Clamp(pitch, 16f, 82f);
                 }
 
-                distance = Mathf.Clamp(
-                    distance - mouse.scroll.ReadValue().y * zoomSpeed * 0.01f,
-                    minDistance,
-                    maxDistance);
+                var scroll = mouse.scroll.ReadValue().y;
+                if (Mathf.Abs(scroll) > 0.01f)
+                {
+                    // Proportional zoom: same feel near and far, much snappier than the old *0.01 path.
+                    var step = scroll * zoomSpeed * 0.01f * Mathf.Max(1.2f, distance);
+                    distance = Mathf.Clamp(distance - step, minDistance, maxDistance);
+                }
             }
 
             Apply(immediate: false);

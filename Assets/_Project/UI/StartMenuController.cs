@@ -15,11 +15,13 @@ namespace EraserWars.UI
         [SerializeField] Texture2D brandIcon;
         [SerializeField] Texture2D icon2P;
         [SerializeField] Texture2D icon4P;
+        [SerializeField] Texture2D iconDeck;
         [SerializeField] Texture2D iconCollection;
         [SerializeField] Texture2D iconOptions;
 
         VisualElement root;
         VisualElement optionsPanel;
+        VisualElement deckPanel;
         VisualElement collectionPanel;
         Button mode2P;
         Button mode4P;
@@ -43,6 +45,7 @@ namespace EraserWars.UI
 
             root = document.rootVisualElement;
             optionsPanel = root.Q("options-panel");
+            deckPanel = root.Q("deck-panel");
             collectionPanel = root.Q("collection-panel");
             mode2P = root.Q<Button>("mode-2p");
             mode4P = root.Q<Button>("mode-4p");
@@ -51,13 +54,16 @@ namespace EraserWars.UI
             mode2P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(2));
             mode4P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(4));
             root.Q<Button>("open-options")?.RegisterCallback<ClickEvent>(_ => ShowPanel(optionsPanel));
+            root.Q<Button>("open-deck")?.RegisterCallback<ClickEvent>(_ => ShowPanel(deckPanel));
             root.Q<Button>("open-collection")?.RegisterCallback<ClickEvent>(_ => ShowPanel(collectionPanel));
             root.Q<Button>("close-options")?.RegisterCallback<ClickEvent>(_ => HidePanels());
+            root.Q<Button>("close-deck")?.RegisterCallback<ClickEvent>(_ => HidePanels());
             root.Q<Button>("close-collection")?.RegisterCallback<ClickEvent>(_ => HidePanels());
 
             ApplyIcon(root.Q("brand-icon"), brandIcon);
             ApplyIcon(root.Q("icon-2p"), icon2P);
             ApplyIcon(root.Q("icon-4p"), icon4P);
+            ApplyIcon(root.Q("icon-deck"), iconDeck);
             ApplyIcon(root.Q("icon-collection"), iconCollection);
             ApplyIcon(root.Q("icon-options"), iconOptions);
             SelectPlayers(selectedPlayers);
@@ -75,6 +81,12 @@ namespace EraserWars.UI
             if (keyboard.escapeKey.wasPressedThisFrame)
             {
                 if (optionsPanel != null && !optionsPanel.ClassListContains("hidden"))
+                {
+                    HidePanels();
+                    return;
+                }
+
+                if (deckPanel != null && !deckPanel.ClassListContains("hidden"))
                 {
                     HidePanels();
                     return;
@@ -145,6 +157,7 @@ namespace EraserWars.UI
         void HidePanels()
         {
             optionsPanel?.AddToClassList("hidden");
+            deckPanel?.AddToClassList("hidden");
             collectionPanel?.AddToClassList("hidden");
         }
 

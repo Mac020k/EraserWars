@@ -1,115 +1,66 @@
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace EraserWars.CameraRig
 {
     /// <summary>
-    /// Marks wall/ceiling meshes that should fade when they block the orbit camera.
+    /// Hides wall/ceiling meshes completely while they block the orbit camera (ADR-0009 / 5A).
     /// </summary>
     public sealed class OccludableFade : MonoBehaviour
     {
-        [SerializeField] float occludedAlpha = 0.22f;
-        [SerializeField] float fadeSpeed = 6f;
+        [SerializeField] float hideSpeed = 14f;
 
         Renderer[] renderers;
-        Material[] opaqueMats;
-        Material[] fadeMats;
-        float currentAlpha = 1f;
-        float targetAlpha = 1f;
-        bool usingFade;
+        float currentVisible = 1f;
+        float targetVisible = 1f;
+        bool hidden;
 
         public void SetOccluded(bool occluded)
         {
-            targetAlpha = occluded ? occludedAlpha : 1f;
+            targetVisible = occluded ? 0f : 1f;
         }
 
         void Awake()
         {
+            // Colliders stay enabled so CameraOcclusionFader sphere-casts keep hitting.
             renderers = GetComponentsInChildren<Renderer>(true);
-            opaqueMats = new Material[renderers.Length];
-            fadeMats = new Material[renderers.Length];
-            for (var i = 0; i < renderers.Length; i++)
-            {
-                opaqueMats[i] = renderers[i].sharedMaterial;
-                if (opaqueMats[i] == null)
-                {
-                    continue;
-                }
-
-                fadeMats[i] = new Material(opaqueMats[i])
-                {
-                    name = opaqueMats[i].name + "_Fade",
-                };
-                ConfigureTransparent(fadeMats[i]);
-            }
         }
 
         void LateUpdate()
         {
-            currentAlpha = Mathf.MoveTowards(currentAlpha, targetAlpha, fadeSpeed * Time.unscaledDeltaTime);
-            var wantFade = currentAlpha < 0.995f;
-            if (wantFade != usingFade)
-            {
-                usingFade = wantFade;
-                SwapMaterials(wantFade);
-            }
-
-            if (!usingFade)
+            currentVisible = Mathf.MoveTowards(currentVisible, targetVisible, hideSpeed * Time.unscaledDeltaTime);
+            var wantHidden = currentVisible < 0.05f;
+            if (wantHidden == hidden)
             {
                 return;
             }
 
-            for (var i = 0; i < fadeMats.Length; i++)
-            {
-                var mat = fadeMats[i];
-                if (mat == null)
-                {
-                    continue;
-                }
-
-                if (mat.HasProperty("_BaseColor"))
-                {
-                    var c = mat.GetColor("_BaseColor");
-                    c.a = currentAlpha;
-                    mat.SetColor("_BaseColor", c);
-                }
-
-                if (mat.HasProperty("_Color"))
-                {
-                    var c = mat.GetColor("_Color");
-                    c.a = currentAlpha;
-                    mat.SetColor("_Color", c);
-                }
-            }
+            hidden = wantHidden;
+            ApplyHidden(hidden);
         }
 
-        void SwapMaterials(bool fade)
+        void ApplyHidden(bool hide)
         {
+            if (renderers == null)
+            {
+                return;
+            }
+
             for (var i = 0; i < renderers.Length; i++)
             {
-                if (renderers[i] == null)
+                if (renderers[i] != null)
                 {
-                    continue;
+                    renderers[i].enabled = !hide;
                 }
-
-                renderers[i].sharedMaterial = fade ? fadeMats[i] : opaqueMats[i];
             }
         }
 
-        static void ConfigureTransparent(Material mat)
+        void OnDisable()
         {
-            if (mat.HasProperty("_Surface"))
+            if (hidden)
             {
-                mat.SetFloat("_Surface", 1f);
+                hidden = false;
+                ApplyHidden(false);
             }
-
-            mat.SetOverrideTag("RenderType", "Transparent");
-            mat.SetInt("_ZWrite", 0);
-            mat.SetInt("_SrcBlend", (int)BlendMode.SrcAlpha);
-            mat.SetInt("_DstBlend", (int)BlendMode.OneMinusSrcAlpha);
-            mat.renderQueue = 3000;
-            mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-            mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
         }
     }
 }
