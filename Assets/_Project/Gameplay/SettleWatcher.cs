@@ -27,6 +27,14 @@ namespace EraserWars.Gameplay
             watching = true;
         }
 
+        public void Cancel()
+        {
+            watching = false;
+            erasers.Clear();
+            settledTimer = 0f;
+            simTimer = 0f;
+        }
+
         void FixedUpdate()
         {
             if (!watching)
@@ -38,7 +46,13 @@ namespace EraserWars.Gameplay
             var allSettled = true;
             for (var i = 0; i < erasers.Count; i++)
             {
-                if (!erasers[i].IsSettled(linearEpsilon, angularEpsilon))
+                var eraser = erasers[i];
+                if (eraser == null)
+                {
+                    continue;
+                }
+
+                if (!eraser.IsSettled(linearEpsilon, angularEpsilon))
                 {
                     allSettled = false;
                     break;

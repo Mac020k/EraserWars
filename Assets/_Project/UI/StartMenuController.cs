@@ -114,13 +114,19 @@ namespace EraserWars.UI
 
         void StartMatch()
         {
+            BeginMatch(selectedPlayers);
+        }
+
+        public void BeginMatch(int playerCount)
+        {
             if (director == null)
             {
                 return;
             }
 
+            selectedPlayers = playerCount;
             director.SetDebugChromeVisible(false);
-            director.StartHotseat(selectedPlayers);
+            director.StartHotseat(playerCount);
             matchRunning = true;
             HideMenu();
             HidePanels();

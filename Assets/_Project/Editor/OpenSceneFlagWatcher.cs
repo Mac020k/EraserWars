@@ -1,5 +1,5 @@
 using System.IO;
-using EraserWars.Gameplay;
+using EraserWars.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -99,27 +99,15 @@ namespace EraserWars.Editor
             }
 
             EditorApplication.isPaused = false;
-            var director = Object.FindFirstObjectByType<MatchDirector>();
-            if (director == null)
+            var menu = Object.FindFirstObjectByType<StartMenuController>();
+            if (menu != null)
             {
-                Debug.LogWarning("[EraserWars] start-hotseat-2: MatchDirector missing");
+                menu.BeginMatch(2);
+                Debug.Log("[EraserWars] start-hotseat-2: StartMenuController.BeginMatch(2)");
                 return;
             }
 
-            director.SetDebugChromeVisible(false);
-            director.StartHotseat(2);
-            var docs = Object.FindObjectsByType<UnityEngine.UIElements.UIDocument>(FindObjectsSortMode.None);
-            foreach (var doc in docs)
-            {
-                if (doc.gameObject.name != "StartMenu" || doc.rootVisualElement == null)
-                {
-                    continue;
-                }
-
-                doc.rootVisualElement.style.display = UnityEngine.UIElements.DisplayStyle.None;
-            }
-
-            Debug.Log("[EraserWars] start-hotseat-2: MatchDirector.StartHotseat(2)");
+            Debug.LogWarning("[EraserWars] start-hotseat-2: StartMenuController missing");
         }
 
         static void TryRebuild()

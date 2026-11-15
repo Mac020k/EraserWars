@@ -316,6 +316,7 @@ namespace EraserWars.Gameplay
 
         void ClearErasers()
         {
+            settleWatcher?.Cancel();
             foreach (var eraser in erasers)
             {
                 if (eraser != null)

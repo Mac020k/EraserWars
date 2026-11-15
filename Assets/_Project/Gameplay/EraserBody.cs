@@ -104,6 +104,11 @@ namespace EraserWars.Gameplay
 
         public bool IsSettled(float linearEpsilon, float angularEpsilon)
         {
+            if (body == null)
+            {
+                return true;
+            }
+
             return body.linearVelocity.sqrMagnitude <= linearEpsilon * linearEpsilon
                    && body.angularVelocity.sqrMagnitude <= angularEpsilon * angularEpsilon;
         }
