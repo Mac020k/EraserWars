@@ -121,6 +121,12 @@ namespace EraserWars.UI
         {
             if (director == null)
             {
+                director = FindFirstObjectByType<MatchDirector>();
+            }
+
+            if (director == null)
+            {
+                Debug.LogError("[EraserWars] StartMenu.BeginMatch: MatchDirector missing");
                 return;
             }
 
@@ -130,28 +136,47 @@ namespace EraserWars.UI
             matchRunning = true;
             HideMenu();
             HidePanels();
+            Debug.Log($"[EraserWars] StartMenu.BeginMatch({playerCount}) hid menu, phase={director.State?.Phase}");
         }
 
         public void ShowMenu()
         {
-            if (root == null)
+            if (document == null)
             {
-                return;
+                document = GetComponent<UIDocument>();
             }
 
-            root.style.display = DisplayStyle.Flex;
+            if (document != null)
+            {
+                document.enabled = true;
+            }
+
+            if (root == null && document != null)
+            {
+                root = document.rootVisualElement;
+            }
+
+            if (root != null)
+            {
+                root.style.display = DisplayStyle.Flex;
+            }
+
             matchRunning = false;
             director?.SetDebugChromeVisible(false);
         }
 
         void HideMenu()
         {
-            if (root == null)
+            if (root != null)
             {
-                return;
+                root.style.display = DisplayStyle.None;
             }
 
-            root.style.display = DisplayStyle.None;
+            // Inline style on rootVisualElement can lose to panel rebuild; disable the document.
+            if (document != null)
+            {
+                document.enabled = false;
+            }
         }
 
         void ShowPanel(VisualElement panel)
