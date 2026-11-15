@@ -1,0 +1,47 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="StartMenu.uss" />
+    <ui:VisualElement name="root" class="root">
+        <ui:VisualElement name="backdrop" class="backdrop" />
+        <ui:VisualElement name="center-card" class="center-card">
+            <ui:VisualElement class="brand-row">
+                <ui:VisualElement name="brand-icon" class="brand-icon" />
+                <ui:VisualElement class="brand-text">
+                    <ui:Label text="消しピンウォーズ" class="title-ja" />
+                    <ui:Label text="ERASER WARS" class="title-en" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label text="平成教室の消しピン・パーティ" class="tagline" />
+            <ui:Button name="start-match" text="マッチ開始" class="cta-button" />
+            <ui:VisualElement class="mode-row">
+                <ui:Button name="mode-2p" class="mode-button">
+                    <ui:VisualElement name="icon-2p" class="mode-icon" />
+                    <ui:Label text="Hotseat 2P" class="mode-label" />
+                </ui:Button>
+                <ui:Button name="mode-4p" class="mode-button">
+                    <ui:VisualElement name="icon-4p" class="mode-icon" />
+                    <ui:Label text="Hotseat 4P" class="mode-label" />
+                </ui:Button>
+            </ui:VisualElement>
+            <ui:VisualElement class="utility-row">
+                <ui:Button name="open-collection" class="utility-button">
+                    <ui:VisualElement name="icon-collection" class="utility-icon" />
+                    <ui:Label text="図鑑" class="utility-label" />
+                </ui:Button>
+                <ui:Button name="open-options" class="utility-button">
+                    <ui:VisualElement name="icon-options" class="utility-icon" />
+                    <ui:Label text="設定" class="utility-label" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="options-panel" class="side-panel hidden">
+            <ui:Label text="設定" class="panel-title" />
+            <ui:Label text="音量・言語は後続。Esc で閉じる。" class="panel-body" />
+            <ui:Button name="close-options" text="閉じる" class="panel-close" />
+        </ui:VisualElement>
+        <ui:VisualElement name="collection-panel" class="side-panel hidden">
+            <ui:Label text="図鑑" class="panel-title" />
+            <ui:Label text="消しゴム図鑑は P4 以降。枠だけ先行。" class="panel-body" />
+            <ui:Button name="close-collection" text="閉じる" class="panel-close" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

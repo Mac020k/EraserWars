@@ -1,0 +1,92 @@
+.hud-root {
+    flex-grow: 1;
+}
+
+.hud-root.hidden {
+    display: none;
+}
+
+.top-bar {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 12px;
+    height: 64px;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 14px;
+    background-color: rgba(12, 16, 28, 0.88);
+    border-radius: 10px;
+    border-top-width: 4px;
+    border-top-color: rgb(255, 200, 64);
+}
+
+.brand-chip {
+    width: 28px;
+    height: 28px;
+    margin-right: 10px;
+    background-color: rgb(255, 90, 70);
+    border-radius: 6px;
+}
+
+.hud-title {
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    margin-right: 18px;
+}
+
+.hud-phase {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(255, 230, 140);
+    flex-grow: 1;
+}
+
+.hud-timer {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    margin-right: 12px;
+}
+
+.hud-menu-button {
+    width: 100px;
+    height: 40px;
+    font-size: 15px;
+    -unity-font-style: bold;
+}
+
+.stock-panel {
+    position: absolute;
+    left: 12px;
+    top: 90px;
+    width: 240px;
+    padding: 12px;
+    background-color: rgba(10, 12, 20, 0.86);
+    border-radius: 10px;
+    border-top-width: 3px;
+    border-top-color: rgb(255, 255, 255);
+}
+
+.stock-header {
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(200, 205, 190);
+    margin-bottom: 6px;
+}
+
+.stock-body {
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    white-space: normal;
+    margin-bottom: 10px;
+}
+
+.hud-action {
+    height: 36px;
+    margin-top: 4px;
+    font-size: 15px;
+    -unity-font-style: bold;
+}

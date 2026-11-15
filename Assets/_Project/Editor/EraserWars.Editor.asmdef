@@ -6,8 +6,10 @@
         "EraserWars.Cards",
         "EraserWars.Gameplay",
         "EraserWars.CameraRig",
+        "EraserWars.UI",
         "EraserWars.Net",
-        "FishNet.Runtime"
+        "FishNet.Runtime",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"

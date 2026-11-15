@@ -5,7 +5,8 @@
         "EraserWars.Core",
         "EraserWars.Cards",
         "EraserWars.Gameplay",
-        "EraserWars.View"
+        "EraserWars.View",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

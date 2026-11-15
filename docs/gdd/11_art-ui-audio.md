@@ -33,14 +33,16 @@
 - UI Toolkit で作る。
 - 文字列はすべて Unity Localization のキーで管理する (ja/en)。
 - フォントは M PLUS Rounded 1c (OFL) を候補にする。
-- 方向は2案のモックを作り、選択待ち ([ADR-0006](../decisions/ADR-0006-ui-direction.md))。
+- 試合中 HUD は実況映え太字 ([ADR-0006](../decisions/ADR-0006-ui-direction.md))。
+- 試合前は専用フルスクリーン開始画面 ([ADR-0009](../decisions/ADR-0009-start-screen-and-classroom-look.md)、モック `docs/prototypes/ui-mock-start-fullscreen-6b.jpg`)。
+- トーンはコロコロコミック調の熱量・アイコン先行 (Q8 訂正)。文字だけの Debug OnGUI に依存しない。
 
-| 案 | モック |
-| --- | --- |
-| 実況映えする太字 | `docs/prototypes/ui-mock-broadcast.jpg` |
-| モバイル風のコンパクト | `docs/prototypes/ui-mock-compact.jpg` |
-
-選ぶまでは、HUD を太字案の余白と文字サイズで仮に作る。
+| 案 | モック | 状態 |
+| --- | --- | --- |
+| 実況映えする太字 | `docs/prototypes/ui-mock-broadcast.jpg` | HUD 既定 |
+| モバイル風のコンパクト | `docs/prototypes/ui-mock-compact.jpg` | 比較用 |
+| フルスクリーン開始 | `docs/prototypes/ui-mock-start-fullscreen-6b.jpg` | 開始画面 採用 |
+| オーバーレイ開始 | `docs/prototypes/ui-mock-start-overlay-6a.jpg` | 不採用 |
 
 ### HUD に出すもの
 
@@ -53,7 +55,7 @@
 ## サウンド
 
 - ボイスはない (Q50)。
-- BGM は明るいギャグ調。購入素材で賄う (Q89 の既定)。
+- BGM はコロコロコミック調の明るいバトル／ホビー感。購入素材で賄う (Q89 の既定。Q8 訂正後)。
 - いちばん大事な効果音は、消しゴム同士の衝突と、落ちて床に当たる音 (Q90 の既定)。
 - SE は本物の消しゴムを机で弾いた音を録る。
 - 素材の予算は BGM と SE で約3万円。商用利用と再配布の条件を確かめてから買う ([steam.md](../research/steam.md))。

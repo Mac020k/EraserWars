@@ -6,13 +6,16 @@ namespace EraserWars.Gameplay
     {
         [SerializeField] MatchDirector director;
         [SerializeField] int players = 2;
+        [SerializeField] bool autoStartHotseat;
 
         void Start()
         {
-            if (director != null)
+            if (!autoStartHotseat || director == null)
             {
-                director.StartHotseat(players);
+                return;
             }
+
+            director.StartHotseat(players);
         }
     }
 }

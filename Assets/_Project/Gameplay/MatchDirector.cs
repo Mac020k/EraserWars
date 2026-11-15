@@ -35,6 +35,11 @@ namespace EraserWars.Gameplay
         public MatchState State => state;
         public IReadOnlyList<EraserBody> Erasers => erasers;
 
+        public void SetDebugChromeVisible(bool visible)
+        {
+            showDebug = visible;
+        }
+
         public bool TryGetCurrentEraser(out EraserBody eraser)
         {
             eraser = null;
