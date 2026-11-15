@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Keshipin.Steam
+namespace EraserWars.Steam
 {
     public sealed class SteamLobbyStub : MonoBehaviour
     {

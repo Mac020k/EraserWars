@@ -1,12 +1,12 @@
 {
-    "name": "Keshipin.Editor",
-    "rootNamespace": "Keshipin.Editor",
+    "name": "EraserWars.Editor",
+    "rootNamespace": "EraserWars.Editor",
     "references": [
-        "Keshipin.Core",
-        "Keshipin.Cards",
-        "Keshipin.Gameplay",
-        "Keshipin.CameraRig",
-        "Keshipin.Net",
+        "EraserWars.Core",
+        "EraserWars.Cards",
+        "EraserWars.Gameplay",
+        "EraserWars.CameraRig",
+        "EraserWars.Net",
         "FishNet.Runtime"
     ],
     "includePlatforms": [

@@ -1,7 +1,7 @@
 using System;
-using Keshipin.Core;
+using EraserWars.Core;
 
-namespace Keshipin.Cards
+namespace EraserWars.Cards
 {
     public abstract record EffectSpec;
 

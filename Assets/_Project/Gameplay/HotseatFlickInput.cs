@@ -1,10 +1,10 @@
 using System;
-using Keshipin.Core;
+using EraserWars.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
-namespace Keshipin.Gameplay
+namespace EraserWars.Gameplay
 {
     public sealed class HotseatFlickInput : MonoBehaviour
     {

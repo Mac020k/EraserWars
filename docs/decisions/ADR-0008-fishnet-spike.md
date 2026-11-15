@@ -15,9 +15,9 @@ Yak フォルダは削除済み。LAN は **Tugboat** のみ使う。
 | 項目 | 結果 |
 | --- | --- |
 | Unity 6000.6.9f1 batchmode compile | Exit 0 after Yak removal |
-| EditMode tests | 13/13 passed |
-| PlayMode tests | 2/2 passed |
-| Spike scene builder | batch `-executeMethod Keshipin.Editor.FishNetSpikeSceneBuilder.Build` → `Assets/Scenes/FishNet_Spike.unity` (Exit 0) |
+| EditMode tests | 18/18 passed (includes HostCommandGate) |
+| PlayMode tests | 3/3 passed (includes HostCommandGate settle) |
+| Spike scene builder | batch `-executeMethod EraserWars.Editor.FishNetSpikeSceneBuilder.Build` → `Assets/Scenes/FishNet_Spike.unity` (Exit 0) |
 | HostCommandGate canned flick path | Wired in `FishNetSpikeSession` (server PhysX + ObserversRpc settle pose) |
 | Dual-instance flick pose match | Pending operator (needs two Play instances; HUD shows local vs host delta) |
 

@@ -1,8 +1,11 @@
 {
-    "name": "Keshipin.Persistence",
-    "rootNamespace": "Keshipin.Persistence",
+    "name": "EraserWars.UI",
+    "rootNamespace": "EraserWars.UI",
     "references": [
-        "Keshipin.Core"
+        "EraserWars.Core",
+        "EraserWars.Cards",
+        "EraserWars.Gameplay",
+        "EraserWars.View"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

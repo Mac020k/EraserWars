@@ -31,7 +31,7 @@
 
 | 項目 | 決定 |
 | --- | --- |
-| タイトル | 『消しピンウォーズ』(Q9)。内部名と Unity の productName は `KeshipinWars` |
+| タイトル | 日本語『消しピンウォーズ』(Q9)。英語 `Eraser Wars` (Unity productName・コード名前空間 `EraserWars.*` も同じ系統) |
 | プラットフォーム | まず Windows の Steam。スマホは後 (Q74、Q98) |
 | 言語 | 日本語と英語を同時 (Q6) |
 | 価格 | 無料+DLC (Q7、[ADR-0003](../decisions/ADR-0003-monetization.md)) |
@@ -40,7 +40,7 @@
 
 ## 差別化
 
-競合は keshipin.jp とボクらの消しゴム落とし ([competitors.md](../research/competitors.md))。
+競合は EraserWars.jp とボクらの消しゴム落とし ([competitors.md](../research/competitors.md))。
 本命の差は、キャラに紐づいた消しゴムと、試合前に組むデッキにある。
 英語を同時に出すことと、ランクとシーズンの禁止カードも差になる。
 

@@ -3,7 +3,7 @@ using FishNet.Managing;
 using FishNet.Transporting.Tugboat;
 using UnityEngine;
 
-namespace Keshipin.Net
+namespace EraserWars.Net
 {
     /// <summary>
     /// Minimal Host/Client HUD for the Fish-Net compile and Tugboat smoke check.

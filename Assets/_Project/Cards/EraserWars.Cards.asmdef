@@ -1,8 +1,8 @@
 {
-    "name": "Keshipin.View",
-    "rootNamespace": "Keshipin.View",
+    "name": "EraserWars.Cards",
+    "rootNamespace": "EraserWars.Cards",
     "references": [
-        "Keshipin.Gameplay"
+        "EraserWars.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

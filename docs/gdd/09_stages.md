@@ -27,7 +27,7 @@
 - 4か所の定位置からランダムに置く (Q27)。
 - 机の継ぎ目に引っかかる挙動は味として残す (Q23)。
 - 机の下に床のキルゾーンを置く。
-- Editor の `Keshipin > Build Classroom Casual Scene` が `Assets/Scenes/Classroom_Casual.unity` を作る。
+- Editor の `EraserWars > Build Classroom Casual Scene` が `Assets/Scenes/Classroom_Casual.unity` を作る。
 
 ## 定義
 

@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Keshipin.Cards
+namespace EraserWars.Cards
 {
-    [CreateAssetMenu(menuName = "Keshipin/Character", fileName = "Character_")]
+    [CreateAssetMenu(menuName = "EraserWars/Character", fileName = "Character_")]
     public sealed class CharacterDefinition : ScriptableObject
     {
         public int IdValue;

@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Keshipin.Cards
+namespace EraserWars.Cards
 {
-    [CreateAssetMenu(menuName = "Keshipin/Stage", fileName = "Stage_")]
+    [CreateAssetMenu(menuName = "EraserWars/Stage", fileName = "Stage_")]
     public sealed class StageDefinition : ScriptableObject
     {
         public string NameKey;

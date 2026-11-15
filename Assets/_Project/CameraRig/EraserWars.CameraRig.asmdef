@@ -1,6 +1,6 @@
 {
-    "name": "Keshipin.CameraRig",
-    "rootNamespace": "Keshipin.CameraRig",
+    "name": "EraserWars.CameraRig",
+    "rootNamespace": "EraserWars.CameraRig",
     "references": [
         "Unity.InputSystem"
     ],

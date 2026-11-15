@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Reflection;
-using Keshipin.Gameplay;
+using EraserWars.Gameplay;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Keshipin.Tests.PlayMode
+namespace EraserWars.Tests.PlayMode
 {
     public sealed class ClassroomKnockoffPlayModeTests
     {
@@ -57,10 +57,9 @@ namespace Keshipin.Tests.PlayMode
             var detector = target.GetComponent<FalloutDetector>();
             detector.Fell += _ => fell = true;
 
-            // ApplyFlick clamps linear speed to maxSpeed. The trackpad value is 1.8.
-            // That cap stops this 0.02 kg eraser on default friction before it crosses the desk.
+            // ApplyFlick clamps linear speed to maxSpeed (trackpad default 3.6).
             // This gate raises only the striker cap so the scripted impulse is the speed that leaves A.
-            // FlickApplier.jMax stays 0.12 for trackpad play.
+            // FlickApplier.jMax stays 0.24 for trackpad play.
             SetSpeedCap(striker, GateSpeedCap);
             var impulse = new Vector3(ScriptedImpulseX, 0f, 0f);
             striker.ApplyFlick(impulse, striker.Body.worldCenterOfMass);
@@ -84,7 +83,7 @@ namespace Keshipin.Tests.PlayMode
                 fell,
                 $"B stayed on the desk for {elapsed:0.00}s at y={target.Body.position.y:0.000}. "
                 + $"Scripted impulse was ({ScriptedImpulseX}, 0, 0) with a test-only speed cap of {GateSpeedCap}. "
-                + "Trackpad play still uses maxSpeed 1.8 and jMax 0.12.");
+                + "Trackpad play still uses maxSpeed 3.6 and jMax 0.24.");
         }
 
         void CreateDesk()

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Keshipin.Core
+namespace EraserWars.Core
 {
     public static class MatchFactory
     {

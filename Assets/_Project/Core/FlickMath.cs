@@ -1,6 +1,6 @@
 using System;
 
-namespace Keshipin.Core
+namespace EraserWars.Core
 {
     public static class FlickMath
     {

@@ -16,7 +16,7 @@ Operator: agent (batchmode after editor closed)
 
 | Platform | total | passed | failed | notes |
 | --- | --- | --- | --- | --- |
-| EditMode | 13 | 13 | 0 | Includes MatchReduce + FlickMath sway/impulse |
+| EditMode | 18 | 18 | 0 | MatchReduce + FlickMath + HostCommandGate |
 | PlayMode | 3 | 3 | 0 | Knockoff + HostCommandGate flick settle + sway |
 
 Artifacts: `TestResults/EditMode-results.xml`, `TestResults/PlayMode-results.xml`

@@ -24,7 +24,7 @@
 ### P0 土台 (2026-11 後半)
 
 - `.gitignore` を直し、git-lfs を入れる ([ADR-0004](../decisions/ADR-0004-gitignore-lfs.md))。
-- テンプレートの `TutorialInfo/` と `Readme.asset` を消し、productName を `KeshipinWars` にする。
+- テンプレートの `TutorialInfo/` と `Readme.asset` を消し、productName を設定する (現在の英語名は `Eraser Wars`)。
 - `docs/` と英語の README を作る。
 - `Assets/_Project` と asmdef を作り、パッケージを足す (Test Framework、Cinemachine 3。Localization / ProBuilder / Multiplayer Play Mode は Unity 6000.6.9f1 で CS0619 になるため保留)。
 - `tools/run-tests.ps1` を作る。
@@ -132,4 +132,4 @@ Blender、Cloudflare の無料枠、OFL フォントは0円。
 - 小さな物体の物理はすり抜けや跳ねが起きやすい。P1-1 のスケール試作で先に潰す。
 - 無料の対戦ゲームは人が集まらないと遊べない。CPU 戦とホットシートを常に残す。
 - listen host には、ホストのチートと離脱がある。ランクだけ結果照合で守り、カジュアルは UI で注意を出す。
-- keshipin.jp が近い名前を使っている。商標の確認は遅くとも2027年3月までに行う。
+- EraserWars.jp が近い名前を使っている。商標の確認は遅くとも2027年3月までに行う。

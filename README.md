@@ -1,6 +1,6 @@
-# KeshipinWars (消しピンウォーズ)
+# Eraser Wars (消しピンウォーズ)
 
-KeshipinWars is a 2 to 4 player party game for Steam (Windows).
+Eraser Wars is a 2 to 4 player party game for Steam (Windows).
 Each player owns an eraser tied to a character.
 On your turn you may play one card, then flick your eraser to knock rivals off a classroom desk.
 A fall costs one stock, and the last player with stock wins.
@@ -27,7 +27,7 @@ Design documents live in [`docs/`](docs/00_index.md) and are written in Japanese
 3. Open the `EraserWars` folder in Unity Hub with `6000.6.9f1`.
 4. Wait for the first package resolve. `Packages/` and `ProjectSettings/` are tracked, so a fresh clone opens without manual setup.
 
-The product name is `KeshipinWars` and the company name is `Mac020k`. Both are set in `ProjectSettings/ProjectSettings.asset`.
+The English product name is `Eraser Wars` and the company name is `Mac020k`. Both are set in `ProjectSettings/ProjectSettings.asset`.
 
 ## Folder layout
 
@@ -68,7 +68,7 @@ Assembly references point one way.
 
 ## Match core
 
-`Keshipin.Core` holds the match rules with no UnityEngine reference.
+`EraserWars.Core` holds the match rules with no UnityEngine reference.
 `MatchReduce.Reduce` folds one `MatchEvent` into an immutable `MatchState`.
 A fall spends one stock for the victim whether the last touch was theirs or someone else's.
 Stock that hits zero stamps `EliminatedRound` with the current round, so falls in one round share a rank.
@@ -97,20 +97,20 @@ The project compiles the `Core` sources directly, so it catches rule regressions
 
 ## Classroom scene
 
-1. In Unity, run `Keshipin > Build Classroom Casual Scene`. It writes `Assets/Scenes/Classroom_Casual.unity` with four desks in a 2x2 block, a kill zone below them and four spawn points.
+1. In Unity, run `EraserWars > Build Classroom Casual Scene`. It writes `Assets/Scenes/Classroom_Casual.unity` with four desks in a 2x2 block, a kill zone below them and four spawn points.
 2. Enter Play Mode. `ClassroomBootstrap` calls `MatchDirector.StartHotseat` with its `players` field (2 by default).
 3. Left-drag anywhere in the Game view (not the debug Pass panel). Pull back to aim, then release. A longer drag is a stronger flick. Space or Pass skips the turn.
 4. Right-drag orbits the camera. Tab toggles top-down. Wheel zooms.
 5. When your eraser hits another during Simulating, physics freezes for 0.08 seconds. Desk and floor hits do not freeze. Another eraser hit inside 0.15 seconds is ignored.
 6. During Simulating, an eraser within 0.05 m of the outer desk edge, or dropping through the 0.05 m slice under the desk marker, slows time to 0.4 for 0.22 seconds. An eraser-hit freeze cancels that slow, and the next one waits until every eraser has left the zone and 0.6 seconds from the start have passed.
 
-`Keshipin > Import Cards CSV` reads `Assets/Data/Csv/cards.csv` and creates or updates `Assets/Data/Cards/Card_<id>.asset` for each row.
+`EraserWars > Import Cards CSV` reads `Assets/Data/Csv/cards.csv` and creates or updates `Assets/Data/Cards/Card_<id>.asset` for each row.
 
 ## Fish-Net spike
 
 Fish-Net **4.7.4** is embedded under `Assets/FishNet` (not UPM). See [`Assets/_Project/Net/FishNetInstall.md`](Assets/_Project/Net/FishNetInstall.md) and [ADR-0008](docs/decisions/ADR-0008-fishnet-spike.md).
 
-1. `Keshipin > Build Fish-Net Spike Scene` writes `Assets/Scenes/FishNet_Spike.unity`.
+1. `EraserWars > Build Fish-Net Spike Scene` writes `Assets/Scenes/FishNet_Spike.unity`.
 2. Play → **Start Host** (Tugboat). A second Play instance or build can **Start Client**.
 3. **Fire canned flick** runs `HostCommandGate` on the host. A second instance shows `Local vs host delta` for settle-pose eye-check.
 
@@ -120,7 +120,7 @@ Fish-Net **4.7.4** is embedded under `Assets/FishNet` (not UPM). See [`Assets/_P
 .\tools\build.ps1
 ```
 
-The script writes `Build/Win64/KeshipinWars.exe` and logs to `TestResults/build-Win64.log`.
+The script writes `Build/Win64/Eraser Wars.exe` and logs to `TestResults/build-Win64.log`.
 `Build/` and `TestResults/` are ignored by git.
 
 ## Documentation

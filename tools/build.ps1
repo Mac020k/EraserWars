@@ -10,7 +10,7 @@ $Log = Join-Path $ProjectPath "TestResults\build-$BuildTarget.log"
 New-Item -ItemType Directory -Force -Path $BuildDir | Out-Null
 New-Item -ItemType Directory -Force -Path (Split-Path $Log) | Out-Null
 
-$OutExe = Join-Path $BuildDir "KeshipinWars.exe"
+$OutExe = Join-Path $BuildDir "Eraser Wars.exe"
 Write-Host "Building $BuildTarget to $OutExe"
 
 & $UnityExe `

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Keshipin.CameraRig
+namespace EraserWars.CameraRig
 {
     public sealed class OrbitCamera : MonoBehaviour
     {
@@ -11,6 +11,12 @@ namespace Keshipin.CameraRig
         [SerializeField] float pitch = 45f;
         [SerializeField] float mouseSensitivity = 0.2f;
         [SerializeField] float zoomSpeed = 0.1f;
+        [SerializeField] float chaseLerp = 10f;
+        [SerializeField] float chaseDistanceScale = 0.85f;
+
+        Transform chaseTarget;
+        Vector3 smoothedFocus;
+        bool hasSmoothedFocus;
 
         public enum Mode
         {
@@ -20,6 +26,21 @@ namespace Keshipin.CameraRig
         }
 
         Mode mode = Mode.Orbit;
+
+        public void SetChaseTarget(Transform target)
+        {
+            chaseTarget = target;
+            if (target != null && !hasSmoothedFocus)
+            {
+                smoothedFocus = target.position;
+                hasSmoothedFocus = true;
+            }
+        }
+
+        public void ClearChaseTarget()
+        {
+            chaseTarget = null;
+        }
 
         void Update()
         {
@@ -60,16 +81,38 @@ namespace Keshipin.CameraRig
 
         void Apply()
         {
-            if (focus == null)
+            var anchor = focus != null ? focus.position : Vector3.zero;
+            if (chaseTarget != null)
             {
-                return;
+                if (!hasSmoothedFocus)
+                {
+                    smoothedFocus = chaseTarget.position;
+                    hasSmoothedFocus = true;
+                }
+
+                smoothedFocus = Vector3.Lerp(
+                    smoothedFocus,
+                    chaseTarget.position,
+                    1f - Mathf.Exp(-chaseLerp * Time.deltaTime));
+                anchor = smoothedFocus;
+            }
+            else if (focus != null)
+            {
+                smoothedFocus = focus.position;
+                hasSmoothedFocus = true;
+                anchor = smoothedFocus;
             }
 
             var usePitch = mode == Mode.TopDown ? 85f : mode == Mode.CloseUp ? 35f : pitch;
             var useDistance = mode == Mode.CloseUp ? distance * 0.45f : distance;
+            if (chaseTarget != null && mode == Mode.Orbit)
+            {
+                useDistance *= chaseDistanceScale;
+            }
+
             var rotation = Quaternion.Euler(usePitch, yaw, 0f);
-            transform.position = focus.position + rotation * (Vector3.back * useDistance);
-            transform.LookAt(focus.position);
+            transform.position = anchor + rotation * (Vector3.back * useDistance);
+            transform.LookAt(anchor);
         }
     }
 }

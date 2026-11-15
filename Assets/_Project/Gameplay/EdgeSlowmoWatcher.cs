@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Keshipin.Gameplay
+namespace EraserWars.Gameplay
 {
     [DisallowMultipleComponent]
     public sealed class EdgeSlowmoWatcher : MonoBehaviour

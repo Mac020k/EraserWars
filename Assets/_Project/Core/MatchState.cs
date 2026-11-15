@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Keshipin.Core
+namespace EraserWars.Core
 {
     public sealed record MatchState(
         RuleSet Rules,

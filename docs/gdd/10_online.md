@@ -26,7 +26,7 @@
 ホットシートと同じコマンドの経路を使う。
 
 1. クライアントは `FlickCommand`、`CardPlay`、`Pass` を送る。
-2. ホストが手番、手札、力の上限を検証してから reducer に入れる。境界は `Keshipin.Net` の `HostCommandGate`。
+2. ホストが手番、手札、力の上限を検証してから reducer に入れる。境界は `EraserWars.Net` の `HostCommandGate`。
 3. ホストが物理を回す。姿勢はホストの NetworkTransform で配る。
 4. 止まったら、信頼性ありで静止姿勢を1回だけ送る。
 
@@ -55,7 +55,7 @@
 
 ## 試合ログ
 
-- 最初から記録する (Q81)。`Keshipin.Persistence` の `MatchLogWriter`。
+- 最初から記録する (Q81)。`EraserWars.Persistence` の `MatchLogWriter`。
 - 中身はイベント列と、各ターンの静止姿勢。
 - リプレイ再生とネットの一致確認に使う。
 

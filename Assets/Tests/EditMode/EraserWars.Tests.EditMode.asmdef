@@ -1,8 +1,9 @@
 {
-    "name": "Keshipin.Tests.EditMode",
-    "rootNamespace": "Keshipin.Tests.EditMode",
+    "name": "EraserWars.Tests.EditMode",
+    "rootNamespace": "EraserWars.Tests.EditMode",
     "references": [
-        "Keshipin.Core",
+        "EraserWars.Core",
+        "EraserWars.Net",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

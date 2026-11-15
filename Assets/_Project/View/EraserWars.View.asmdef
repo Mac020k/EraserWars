@@ -1,11 +1,8 @@
 {
-    "name": "Keshipin.Net",
-    "rootNamespace": "Keshipin.Net",
+    "name": "EraserWars.View",
+    "rootNamespace": "EraserWars.View",
     "references": [
-        "Keshipin.Core",
-        "Keshipin.Cards",
-        "Keshipin.Gameplay",
-        "FishNet.Runtime"
+        "EraserWars.Gameplay"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

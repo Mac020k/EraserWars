@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Keshipin.Core;
+using EraserWars.Core;
 using UnityEngine;
 
-namespace Keshipin.Cards
+namespace EraserWars.Cards
 {
-    [CreateAssetMenu(menuName = "Keshipin/Card", fileName = "Card_")]
+    [CreateAssetMenu(menuName = "EraserWars/Card", fileName = "Card_")]
     public sealed class CardDefinition : ScriptableObject
     {
         public int IdValue;

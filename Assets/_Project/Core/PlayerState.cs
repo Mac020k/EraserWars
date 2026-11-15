@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace Keshipin.Core
+namespace EraserWars.Core
 {
     public sealed record PlayerState(
         PlayerId Id,

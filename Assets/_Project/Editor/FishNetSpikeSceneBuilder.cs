@@ -2,19 +2,19 @@ using FishNet.Component.Transforming;
 using FishNet.Managing;
 using FishNet.Object;
 using FishNet.Transporting.Tugboat;
-using Keshipin.Gameplay;
-using Keshipin.Net;
+using EraserWars.Gameplay;
+using EraserWars.Net;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace Keshipin.Editor
+namespace EraserWars.Editor
 {
     public static class FishNetSpikeSceneBuilder
     {
         const string ScenePath = "Assets/Scenes/FishNet_Spike.unity";
 
-        [MenuItem("Keshipin/Build Fish-Net Spike Scene")]
+        [MenuItem("EraserWars/Build Fish-Net Spike Scene")]
         public static void Build()
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);

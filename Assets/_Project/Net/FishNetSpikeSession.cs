@@ -1,9 +1,9 @@
 using FishNet.Object;
-using Keshipin.Core;
-using Keshipin.Gameplay;
+using EraserWars.Core;
+using EraserWars.Gameplay;
 using UnityEngine;
 
-namespace Keshipin.Net
+namespace EraserWars.Net
 {
     /// <summary>
     /// Host-authoritative canned flick for the Fish-Net spike.

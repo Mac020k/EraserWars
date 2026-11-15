@@ -1,6 +1,6 @@
 {
-    "name": "Keshipin.Core",
-    "rootNamespace": "Keshipin.Core",
+    "name": "EraserWars.Core",
+    "rootNamespace": "EraserWars.Core",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

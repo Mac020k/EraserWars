@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Keshipin.Gameplay
+namespace EraserWars.Gameplay
 {
     public sealed class FalloutDetector : MonoBehaviour
     {

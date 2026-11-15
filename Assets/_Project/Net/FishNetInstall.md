@@ -25,13 +25,13 @@ Then open Unity once so `.meta` files regenerate.
 
 ## Spike scene
 
-Menu: `Keshipin > Build Fish-Net Spike Scene`  
+Menu: `EraserWars > Build Fish-Net Spike Scene`  
 Or batch (Unity closed):
 
 ```powershell
 & "C:\Program Files\Unity\Hub\Editor\6000.6.9f1\Editor\Unity.exe" `
   -batchmode -nographics -projectPath (Resolve-Path .).Path `
-  -executeMethod Keshipin.Editor.FishNetSpikeSceneBuilder.Build `
+  -executeMethod EraserWars.Editor.FishNetSpikeSceneBuilder.Build `
   -logFile TestResults\FishNet-spike-compile.log -quit
 ```
 

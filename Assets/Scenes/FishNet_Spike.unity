@@ -153,7 +153,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2cb0d3f12b95b914c98f8f6f08a70eba, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Keshipin.Gameplay::Keshipin.Gameplay.EraserBody
+  m_EditorClassIdentifier: EraserWars.Gameplay::EraserWars.Gameplay.EraserBody
   body: {fileID: 366343083}
   visualRoot: {fileID: 0}
   mass: 0.02
@@ -822,7 +822,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a58a169bb9a98b40a9a0c797456c79e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Keshipin.Net::Keshipin.Net.FishNetSpikeHud
+  m_EditorClassIdentifier: EraserWars.Net::EraserWars.Net.FishNetSpikeHud
   networkManager: {fileID: 1406065372}
   tugboat: {fileID: 0}
   session: {fileID: 1862438675}
@@ -837,7 +837,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d56be1c0f7af43a42ad926237b21cbff, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Keshipin.Gameplay::Keshipin.Gameplay.SettleWatcher
+  m_EditorClassIdentifier: EraserWars.Gameplay::EraserWars.Gameplay.SettleWatcher
   linearEpsilon: 0.02
   angularEpsilon: 0.05
   settleHoldSeconds: 0.3
@@ -853,7 +853,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b97c3d500814894b9c199bdbc371372, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Keshipin.Gameplay::Keshipin.Gameplay.FlickApplier
+  m_EditorClassIdentifier: EraserWars.Gameplay::EraserWars.Gameplay.FlickApplier
   jMax: 0.12
   amplitude0: 0.35
   frequency0: 0.8
@@ -869,7 +869,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6268746966bf424bbcd8fce543b53853, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Keshipin.Net::Keshipin.Net.FishNetSpikeSession
+  m_EditorClassIdentifier: EraserWars.Net::EraserWars.Net.FishNetSpikeSession
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 1862438676}
   _networkObjectCache: {fileID: 0}

@@ -1,8 +1,8 @@
-using Keshipin.Gameplay;
+using EraserWars.Gameplay;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Keshipin.UI
+namespace EraserWars.UI
 {
     public sealed class MatchHudController : MonoBehaviour
     {

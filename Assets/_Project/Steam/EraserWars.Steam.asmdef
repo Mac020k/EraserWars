@@ -1,11 +1,8 @@
 {
-    "name": "Keshipin.UI",
-    "rootNamespace": "Keshipin.UI",
+    "name": "EraserWars.Steam",
+    "rootNamespace": "EraserWars.Steam",
     "references": [
-        "Keshipin.Core",
-        "Keshipin.Cards",
-        "Keshipin.Gameplay",
-        "Keshipin.View"
+        "EraserWars.Net"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

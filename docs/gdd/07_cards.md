@@ -82,12 +82,12 @@ C# には TypeScript の `never` に当たる網羅チェックがないので�
 ## ネットでの扱い
 
 - カードの効果はホストが解決し、ホストのシミュレーションの中でかける ([10_online.md](10_online.md))。
-- カードの解決は `Keshipin.Cards` にあり、ネットなしで EditMode テストできる。
+- カードの解決は `EraserWars.Cards` にあり、ネットなしで EditMode テストできる。
 
 ## バランス調整
 
 - 頻繁なパッチの予定はない。回せるようにはしておく (Q64)。
-- シーズンごとの調整は `cards.csv` の差分で回し、Editor の `Keshipin > Import Cards CSV` で取り込む。
+- シーズンごとの調整は `cards.csv` の差分で回し、Editor の `EraserWars > Import Cards CSV` で取り込む。
 - Slay the Spire の Madness の例のように、勝率の数字だけで強さを判断しない ([sakurai.md](../research/sakurai.md))。
 
 ## 確かめること

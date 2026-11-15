@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Keshipin.Gameplay
+namespace EraserWars.Gameplay
 {
     public sealed class SettleWatcher : MonoBehaviour
     {

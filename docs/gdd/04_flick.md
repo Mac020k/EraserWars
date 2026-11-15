@@ -2,7 +2,7 @@
 
 弾きはこのゲームの手応えの中心である。
 数値は P2 の初期値で、`FlickTuning` という ScriptableObject に出し、プレイ中に調整する。
-式は `Keshipin.Core.FlickMath` にあり、UnityEngine に依存しない。
+式は `EraserWars.Core.FlickMath` にあり、UnityEngine に依存しない。
 
 ## 入力
 
@@ -29,11 +29,23 @@
 - パスは Space か Pass ボタンである。ドラッグ中の Space は狙い線を消してからパスする。
 - 右ボタンのドラッグはカメラの回転のままにする。ホイールでズームする。
 
-`FlickApplier.jMax` の初期値は 0.12 である。
-弾いた直後に `linearVelocity` が 1.8 m/s を超えたら、その長さへ切り詰める。
+`FlickApplier.jMax` の初期値は 0.24 である (フル引きの飛距離を約2倍にするため、以前の 0.12 から倍にした)。
+弾いた直後に `linearVelocity` が 3.6 m/s を超えたら、その長さへ切り詰める。
 `EraserBody.speed` の初期値は 0.65 である。
 `linearDamping` は `1.5 / speed` になり、`angularDamping` は 1.2 である。
-フル引きの滑走は机の半分前後を目安にし、目で追える速度を優先する。
+フル引きは机を大きく横断できる。追従しやすさはカメラのシミュレーション追従とモーショントレイルで補う。
+
+## 消しゴム同士の衝突
+
+PhysX の解決のあと、接触法線方向だけを教科書の 1D 衝突で書き直す。
+
+\[
+v_1' = \frac{m_1 v_1 + m_2 v_2 - m_2 e (v_1 - v_2)}{m_1 + m_2}, \quad
+v_2' = \frac{m_1 v_1 + m_2 v_2 + m_1 e (v_1 - v_2)}{m_1 + m_2}
+\]
+
+復元係数 `e` の既定は 0.92。等質量で `e = 1` なら法線速度を交換する (当てた側が止まり、当てられた側が飛ぶ)。
+実装は `CollisionMath` と `EraserCollisionRelay`。
 
 ### コントローラ
 

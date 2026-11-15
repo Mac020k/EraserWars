@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Keshipin.Gameplay
+namespace EraserWars.Gameplay
 {
     public enum PhysicsScalePreset
     {

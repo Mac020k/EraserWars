@@ -1,4 +1,4 @@
-namespace Keshipin.Editor
+namespace EraserWars.Editor
 {
     public static class BatchBuildClassroom
     {

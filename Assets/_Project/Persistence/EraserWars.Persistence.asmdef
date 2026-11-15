@@ -1,9 +1,8 @@
 {
-    "name": "Keshipin.AI",
-    "rootNamespace": "Keshipin.AI",
+    "name": "EraserWars.Persistence",
+    "rootNamespace": "EraserWars.Persistence",
     "references": [
-        "Keshipin.Core",
-        "Keshipin.Gameplay"
+        "EraserWars.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

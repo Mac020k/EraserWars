@@ -1,10 +1,10 @@
 {
-    "name": "Keshipin.Tests.PlayMode",
-    "rootNamespace": "Keshipin.Tests.PlayMode",
+    "name": "EraserWars.Tests.PlayMode",
+    "rootNamespace": "EraserWars.Tests.PlayMode",
     "references": [
-        "Keshipin.Core",
-        "Keshipin.Gameplay",
-        "Keshipin.Net",
+        "EraserWars.Core",
+        "EraserWars.Gameplay",
+        "EraserWars.Net",
         "UnityEngine.TestRunner"
     ],
     "includePlatforms": [],

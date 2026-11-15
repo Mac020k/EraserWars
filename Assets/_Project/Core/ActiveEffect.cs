@@ -1,4 +1,4 @@
-namespace Keshipin.Core
+namespace EraserWars.Core
 {
     public sealed record ActiveEffect(
         CardId SourceCard,

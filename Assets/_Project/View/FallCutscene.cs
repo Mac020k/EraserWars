@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Keshipin.View
+namespace EraserWars.View
 {
     public sealed class FallCutscene : MonoBehaviour
     {

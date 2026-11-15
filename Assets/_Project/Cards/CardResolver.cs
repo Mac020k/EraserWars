@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using Keshipin.Core;
+using EraserWars.Core;
 
-namespace Keshipin.Cards
+namespace EraserWars.Cards
 {
     public static class CardResolver
     {

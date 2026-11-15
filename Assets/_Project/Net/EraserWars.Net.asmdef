@@ -1,8 +1,11 @@
 {
-    "name": "Keshipin.Steam",
-    "rootNamespace": "Keshipin.Steam",
+    "name": "EraserWars.Net",
+    "rootNamespace": "EraserWars.Net",
     "references": [
-        "Keshipin.Net"
+        "EraserWars.Core",
+        "EraserWars.Cards",
+        "EraserWars.Gameplay",
+        "FishNet.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

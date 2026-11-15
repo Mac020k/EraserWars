@@ -1,6 +1,6 @@
-using Keshipin.Core;
+using EraserWars.Core;
 
-namespace Keshipin.Net
+namespace EraserWars.Net
 {
     public static class HostCommandGate
     {

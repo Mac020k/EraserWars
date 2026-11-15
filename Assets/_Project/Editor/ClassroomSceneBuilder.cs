@@ -1,16 +1,16 @@
-using Keshipin.CameraRig;
-using Keshipin.Gameplay;
+using EraserWars.CameraRig;
+using EraserWars.Gameplay;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace Keshipin.Editor
+namespace EraserWars.Editor
 {
     public static class ClassroomSceneBuilder
     {
         const string ScenePath = "Assets/Scenes/Classroom_Casual.unity";
 
-        [MenuItem("Keshipin/Build Classroom Casual Scene")]
+        [MenuItem("EraserWars/Build Classroom Casual Scene")]
         public static void Build()
         {
             PrototypeLookBuilder.EnsureAssets();

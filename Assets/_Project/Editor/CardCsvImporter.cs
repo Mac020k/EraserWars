@@ -2,13 +2,13 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace Keshipin.Editor
+namespace EraserWars.Editor
 {
     public static class CardCsvImporter
     {
         const string CsvPath = "Assets/Data/Csv/cards.csv";
 
-        [MenuItem("Keshipin/Import Cards CSV")]
+        [MenuItem("EraserWars/Import Cards CSV")]
         public static void Import()
         {
             if (!File.Exists(CsvPath))
@@ -33,10 +33,10 @@ namespace Keshipin.Editor
 
                 var id = cols[0];
                 var assetPath = $"Assets/Data/Cards/Card_{id}.asset";
-                var card = AssetDatabase.LoadAssetAtPath<Keshipin.Cards.CardDefinition>(assetPath);
+                var card = AssetDatabase.LoadAssetAtPath<EraserWars.Cards.CardDefinition>(assetPath);
                 if (card == null)
                 {
-                    card = ScriptableObject.CreateInstance<Keshipin.Cards.CardDefinition>();
+                    card = ScriptableObject.CreateInstance<EraserWars.Cards.CardDefinition>();
                     AssetDatabase.CreateAsset(card, assetPath);
                 }
 

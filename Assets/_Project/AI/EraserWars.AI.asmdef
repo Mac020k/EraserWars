@@ -1,10 +1,9 @@
 {
-    "name": "Keshipin.Gameplay",
-    "rootNamespace": "Keshipin.Gameplay",
+    "name": "EraserWars.AI",
+    "rootNamespace": "EraserWars.AI",
     "references": [
-        "Keshipin.Core",
-        "Keshipin.Cards",
-        "Unity.InputSystem"
+        "EraserWars.Core",
+        "EraserWars.Gameplay"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

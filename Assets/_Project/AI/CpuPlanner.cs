@@ -1,7 +1,7 @@
-using Keshipin.Core;
+using EraserWars.Core;
 using UnityEngine;
 
-namespace Keshipin.AI
+namespace EraserWars.AI
 {
     public sealed class CpuPlanner : MonoBehaviour
     {

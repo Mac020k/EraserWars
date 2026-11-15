@@ -3,13 +3,13 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace Keshipin.Editor
+namespace EraserWars.Editor
 {
     [InitializeOnLoad]
     public static class AutoRunClassroomBuild
     {
         const string ScenePath = "Assets/Scenes/Classroom_Casual.unity";
-        const string FlagKey = "Keshipin.AutoRunClassroomBuild.Done";
+        const string FlagKey = "EraserWars.AutoRunClassroomBuild.Done";
 
         static AutoRunClassroomBuild()
         {
@@ -35,15 +35,15 @@ namespace Keshipin.Editor
                 return;
             }
 
-            var ok = EditorApplication.ExecuteMenuItem("Keshipin/Build Classroom Casual Scene");
+            var ok = EditorApplication.ExecuteMenuItem("EraserWars/Build Classroom Casual Scene");
             if (ok || File.Exists(Path.GetFullPath(ScenePath)))
             {
                 SessionState.SetBool(FlagKey, true);
-                Debug.Log("[Keshipin] Auto-built Classroom Casual Scene.");
+                Debug.Log("[EraserWars] Auto-built Classroom Casual Scene.");
             }
             else
             {
-                Debug.LogWarning("[Keshipin] Auto-build menu item failed; will retry.");
+                Debug.LogWarning("[EraserWars] Auto-build menu item failed; will retry.");
                 EditorApplication.delayCall += RunOnce;
             }
         }

@@ -1,10 +1,10 @@
 using System.Collections;
-using Keshipin.Core;
+using EraserWars.Core;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Keshipin.Tests.PlayMode
+namespace EraserWars.Tests.PlayMode
 {
     public sealed class FlickMathPlayModeTests
     {

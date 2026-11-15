@@ -1,4 +1,4 @@
-namespace Keshipin.Core
+namespace EraserWars.Core
 {
     public readonly record struct PlayerId(int Value)
     {

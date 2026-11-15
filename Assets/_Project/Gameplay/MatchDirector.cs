@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using Keshipin.Core;
+using EraserWars.CameraRig;
+using EraserWars.Core;
 using UnityEngine;
 
-namespace Keshipin.Gameplay
+namespace EraserWars.Gameplay
 {
     public sealed class MatchDirector : MonoBehaviour
     {
@@ -10,6 +11,7 @@ namespace Keshipin.Gameplay
         [SerializeField] SettleWatcher settleWatcher;
         [SerializeField] Transform[] spawnPoints = new Transform[4];
         [SerializeField] EraserBody eraserPrefab;
+        [SerializeField] OrbitCamera orbitCamera;
         [SerializeField] bool showDebug;
 
         readonly List<EraserBody> erasers = new();
@@ -131,6 +133,7 @@ namespace Keshipin.Gameplay
 
             state = MatchReduce.Reduce(state, new Flicked(command));
             hitstop?.BeginShot();
+            EnsureOrbitCamera()?.SetChaseTarget(eraser.transform);
             flickApplier.Apply(eraser, command);
             settleWatcher.Begin(erasers);
         }
@@ -145,8 +148,19 @@ namespace Keshipin.Gameplay
         void OnSettled()
         {
             state = MatchReduce.Reduce(state, new SimulationSettled());
+            EnsureOrbitCamera()?.ClearChaseTarget();
             SyncActiveSeat();
             RespawnIfNeeded();
+        }
+
+        OrbitCamera EnsureOrbitCamera()
+        {
+            if (orbitCamera == null)
+            {
+                orbitCamera = FindAnyObjectByType<OrbitCamera>();
+            }
+
+            return orbitCamera;
         }
 
         void SyncActiveSeat()

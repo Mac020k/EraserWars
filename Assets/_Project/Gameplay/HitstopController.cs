@@ -1,14 +1,14 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Keshipin.Gameplay
+namespace EraserWars.Gameplay
 {
     public sealed class HitstopController : MonoBehaviour
     {
         [SerializeField] int minFrames = 2;
         [SerializeField] int maxFrames = 10;
         [SerializeField] int shotBudgetFrames = 30;
-        [SerializeField] float eraserHitFreezeSeconds = 0.08f;
+        [SerializeField] float eraserHitFreezeSeconds = 0.045f;
         [SerializeField] float eraserHitCooldownSeconds = 0.15f;
 
         int usedThisShot;

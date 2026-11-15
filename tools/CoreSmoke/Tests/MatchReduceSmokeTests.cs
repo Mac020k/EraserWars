@@ -1,7 +1,7 @@
-﻿using Keshipin.Core;
+using EraserWars.Core;
 using NUnit.Framework;
 
-namespace Keshipin.Core.Smoke
+namespace EraserWars.Core.Smoke
 {
     public sealed class MatchReduceSmokeTests
     {
@@ -35,6 +35,14 @@ namespace Keshipin.Core.Smoke
             state = MatchReduce.Reduce(state, new EraserFell(new PlayerId(1), new PlayerId(0)));
             state = MatchReduce.Reduce(state, new SimulationSettled());
             Assert.AreEqual(Phase.MatchEnd, state.Phase);
+        }
+
+        [Test]
+        public void EqualMassElasticHitTransfersSpeed()
+        {
+            CollisionMath.ResolveNormalSpeeds(1f, 1f, 2f, 0f, 1f, out var striker, out var target);
+            Assert.AreEqual(0f, striker, 1e-5f);
+            Assert.AreEqual(2f, target, 1e-5f);
         }
     }
 }

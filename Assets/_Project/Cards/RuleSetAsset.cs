@@ -1,9 +1,9 @@
-using Keshipin.Core;
+using EraserWars.Core;
 using UnityEngine;
 
-namespace Keshipin.Cards
+namespace EraserWars.Cards
 {
-    [CreateAssetMenu(menuName = "Keshipin/RuleSet", fileName = "RuleSet_")]
+    [CreateAssetMenu(menuName = "EraserWars/RuleSet", fileName = "RuleSet_")]
     public sealed class RuleSetAsset : ScriptableObject
     {
         public WinMode WinMode = WinMode.Stock;

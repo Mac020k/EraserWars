@@ -1,11 +1,11 @@
-using Keshipin.Core;
+using EraserWars.Core;
 using UnityEngine;
 
-namespace Keshipin.Gameplay
+namespace EraserWars.Gameplay
 {
     public sealed class FlickApplier : MonoBehaviour
     {
-        [SerializeField] float jMax = 0.12f;
+        [SerializeField] float jMax = 0.24f;
         [SerializeField] float amplitude0 = FlickMath.DefaultSwayAmplitude;
         [SerializeField] float frequency0 = FlickMath.DefaultSwayFrequency;
         [SerializeField] float frequencySlope = FlickMath.DefaultSwayFrequencySlope;

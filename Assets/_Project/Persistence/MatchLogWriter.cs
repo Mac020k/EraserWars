@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Keshipin.Core;
+using EraserWars.Core;
 using UnityEngine;
 
-namespace Keshipin.Persistence
+namespace EraserWars.Persistence
 {
     public sealed class MatchLogWriter : MonoBehaviour
     {
@@ -14,7 +14,7 @@ namespace Keshipin.Persistence
         public void ResetLog()
         {
             lines.Clear();
-            lines.Add($"# KeshipinWars match {DateTime.UtcNow:O}");
+            lines.Add($"# Eraser Wars match {DateTime.UtcNow:O}");
         }
 
         public void Append(MatchEvent ev)

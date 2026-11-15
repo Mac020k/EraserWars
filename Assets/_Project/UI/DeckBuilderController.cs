@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Keshipin.Cards;
+using EraserWars.Cards;
 using UnityEngine;
 
-namespace Keshipin.UI
+namespace EraserWars.UI
 {
     public sealed class DeckBuilderController : MonoBehaviour
     {

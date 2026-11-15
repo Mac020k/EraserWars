@@ -1,12 +1,12 @@
 using System.Collections;
-using Keshipin.Core;
-using Keshipin.Gameplay;
-using Keshipin.Net;
+using EraserWars.Core;
+using EraserWars.Gameplay;
+using EraserWars.Net;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Keshipin.Tests.PlayMode
+namespace EraserWars.Tests.PlayMode
 {
     /// <summary>
     /// Host-authoritative canned flick path without Fish-Net scene objects

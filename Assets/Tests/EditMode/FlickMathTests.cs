@@ -1,8 +1,8 @@
 using System;
-using Keshipin.Core;
+using EraserWars.Core;
 using NUnit.Framework;
 
-namespace Keshipin.Tests.EditMode
+namespace EraserWars.Tests.EditMode
 {
     public sealed class FlickMathTests
     {

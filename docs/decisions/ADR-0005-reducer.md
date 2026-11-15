@@ -17,7 +17,7 @@ Q18 の同順位のように、細かい裁定が多い。
 - `MatchState` と `PlayerState` は不変の record で、`System.Collections.Immutable` を使う。
 - `MatchEvent` は抽象 record の階層。`TurnStarted`、`CardPlayed`、`Flicked`、`Passed`、`EraserFell`、`SimulationSettled`、`TimerExpired`、`PlayerDisconnected`、`PlayerReconnected`。
 - フェーズは `TurnStart`、`CardSelect`、`Aim`、`Simulating`、`Resolve`、`RoundEnd`、`MatchEnd` の7つ。
-- reducer は `Keshipin.Core` にあり、UnityEngine、Fish-Net、Steam を参照しない。
+- reducer は `EraserWars.Core` にあり、UnityEngine、Fish-Net、Steam を参照しない。
 
 ## 結果
 
