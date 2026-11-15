@@ -165,7 +165,8 @@ namespace EraserWars.UI
             return phase switch
             {
                 Phase.TurnStart => "じゅんびちゅう",
-                Phase.CardSelect => "カードえらび",
+                // Card play is not wired into hotseat yet; CardSelect is the aiming seat.
+                Phase.CardSelect => "ねらえ!",
                 Phase.Aim => "ねらえ!",
                 Phase.Simulating => "ころがり中...",
                 Phase.Resolve => "けっか",

@@ -90,6 +90,66 @@ namespace EraserWars.Gameplay
             }
         }
 
+        void Update()
+        {
+            TickTurnTimer(Time.unscaledDeltaTime);
+            RefreshActiveEraserCue();
+        }
+
+        void RefreshActiveEraserCue()
+        {
+            var cueSeat = -1;
+            if (state != null && state.Phase is Phase.Aim or Phase.CardSelect or Phase.TurnStart)
+            {
+                cueSeat = state.CurrentPlayerId.Value;
+            }
+
+            for (var i = 0; i < erasers.Count; i++)
+            {
+                var eraser = erasers[i];
+                if (eraser == null)
+                {
+                    continue;
+                }
+
+                var want = eraser.PlayerIndex == cueSeat ? 1.14f : 1f;
+                var scale = eraser.transform.localScale;
+                var next = Mathf.Lerp(scale.x, want, 1f - Mathf.Exp(-12f * Time.unscaledDeltaTime));
+                eraser.transform.localScale = new Vector3(next, next, next);
+            }
+        }
+
+        void TickTurnTimer(float deltaSeconds)
+        {
+            if (state == null || deltaSeconds <= 0f)
+            {
+                return;
+            }
+
+            if (state.Rules.TurnTimeSeconds <= 0f)
+            {
+                return;
+            }
+
+            // Only burn the clock while the seat can still flick or pass.
+            if (state.Phase is not (Phase.Aim or Phase.CardSelect or Phase.TurnStart))
+            {
+                return;
+            }
+
+            var next = state.TurnTimeLeft - deltaSeconds;
+            if (next > 0f)
+            {
+                state = state with { TurnTimeLeft = next };
+                return;
+            }
+
+            state = state with { TurnTimeLeft = 0f };
+            state = MatchReduce.Reduce(state, new TimerExpired(state.CurrentPlayerId));
+            SyncActiveSeat();
+            RespawnIfNeeded();
+        }
+
         void OnDestroy()
         {
             if (settleWatcher != null)
