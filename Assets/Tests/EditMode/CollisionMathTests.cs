@@ -28,5 +28,24 @@ namespace EraserWars.Tests.EditMode
             Assert.Less(a, 3f, "Striker must lose normal speed.");
             Assert.Greater(b, 0f, "Target must gain normal speed.");
         }
+
+        [Test]
+        public void WeakClosingIsRaisedToMinimum()
+        {
+            var v1 = -0.2f;
+            var v2 = 0f;
+            CollisionMath.EnsureMinimumClosing(ref v1, ref v2, 1.25f);
+            Assert.AreEqual(1.25f, CollisionMath.ClosingSpeed(v1, v2), 1e-4f);
+        }
+
+        [Test]
+        public void MinimumLaunchGuaranteesTargetLeaves()
+        {
+            var resolved1 = 0f;
+            var resolved2 = -0.3f;
+            CollisionMath.EnsureMinimumLaunch(0.02f, 0.02f, -1.25f, 0f, ref resolved1, ref resolved2, 1.4f);
+            Assert.LessOrEqual(resolved2, -1.4f + 1e-4f, "Launched body must leave at least minLaunch.");
+            Assert.Greater(resolved1, 0f, "Striker absorbs the launch boost oppositely.");
+        }
     }
 }

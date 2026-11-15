@@ -19,6 +19,7 @@ namespace EraserWars.Gameplay
         public float Power => power;
         public float SizeFactor => sizeFactor;
         public float MaxSpeed => maxSpeed;
+        public Vector3 VelocityBeforePhysics { get; private set; }
         public int PlayerIndex { get; set; }
 
         void Reset()
@@ -39,6 +40,12 @@ namespace EraserWars.Gameplay
             body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             body.interpolation = RigidbodyInterpolation.Interpolate;
             EnsureMotionTrail();
+        }
+
+        void FixedUpdate()
+        {
+            // Snapshot before the solver so OnCollisionEnter can rebuild approach speeds.
+            VelocityBeforePhysics = body.linearVelocity;
         }
 
         public void ApplyFlick(Vector3 worldImpulse, Vector3 contactPoint)

@@ -44,5 +44,16 @@ namespace EraserWars.Core.Smoke
             Assert.AreEqual(0f, striker, 1e-5f);
             Assert.AreEqual(2f, target, 1e-5f);
         }
+
+        [Test]
+        public void WeakCloseRangeHitStillLaunches()
+        {
+            var v1 = -0.15f;
+            var v2 = 0f;
+            CollisionMath.EnsureMinimumClosing(ref v1, ref v2, 1.25f);
+            CollisionMath.ResolveNormalSpeeds(1f, 1f, v1, v2, 1f, out var r1, out var r2);
+            CollisionMath.EnsureMinimumLaunch(1f, 1f, v1, v2, ref r1, ref r2, 1.4f);
+            Assert.LessOrEqual(r2, -1.4f + 1e-4f);
+        }
     }
 }
