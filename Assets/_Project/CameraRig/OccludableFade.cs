@@ -22,7 +22,8 @@ namespace EraserWars.CameraRig
         void Awake()
         {
             // Colliders stay enabled so CameraOcclusionFader sphere-casts keep hitting.
-            renderers = GetComponentsInChildren<Renderer>(true);
+            // Re-query each hide so wall-mounted children (chalk, curtains, lights) stay in sync.
+            RefreshRenderers();
         }
 
         void LateUpdate()
@@ -38,8 +39,14 @@ namespace EraserWars.CameraRig
             ApplyHidden(hidden);
         }
 
+        void RefreshRenderers()
+        {
+            renderers = GetComponentsInChildren<Renderer>(true);
+        }
+
         void ApplyHidden(bool hide)
         {
+            RefreshRenderers();
             if (renderers == null)
             {
                 return;

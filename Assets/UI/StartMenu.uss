@@ -9,25 +9,29 @@
     right: 0;
     top: 0;
     bottom: 0;
-    background-color: rgba(18, 28, 48, 0.3);
+    background-color: rgba(18, 28, 48, 0.28);
 }
 
 .menu-content {
     flex-grow: 1;
     align-items: center;
-    padding: 3% 4% 3% 4%;
+    justify-content: space-between;
+    padding: 4% 5% 3% 5%;
+    max-height: 100%;
 }
 
 .brand-row {
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .brand-icon {
-    width: 150px;
-    height: 150px;
-    margin-left: 12px;
+    width: 72px;
+    height: 72px;
+    margin-left: 10px;
+    flex-shrink: 0;
 }
 
 .brand-text {
@@ -36,45 +40,49 @@
 }
 
 .title-ja {
-    font-size: 88px;
+    font-size: 48px;
     -unity-font-style: bold;
     color: rgb(255, 90, 140);
-    -unity-text-outline-width: 5px;
+    -unity-text-outline-width: 3px;
     -unity-text-outline-color: rgb(255, 255, 255);
-    text-shadow: 0 4px 0 rgb(60, 24, 44);
+    text-shadow: 0 3px 0 rgb(60, 24, 44);
     margin: 0;
     padding: 0;
 }
 
 .title-en {
-    font-size: 30px;
+    font-size: 18px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
-    -unity-text-outline-width: 3px;
+    -unity-text-outline-width: 2px;
     -unity-text-outline-color: rgb(70, 40, 30);
-    letter-spacing: 4px;
+    letter-spacing: 3px;
     margin: 0;
     padding: 0;
 }
 
 .spacer {
     flex-grow: 1;
+    min-height: 8px;
+    max-height: 48px;
 }
 
 .cta-button {
-    width: 46%;
-    min-width: 420px;
-    height: 112px;
-    font-size: 52px;
+    width: 42%;
+    min-width: 280px;
+    max-width: 520px;
+    height: 64px;
+    font-size: 32px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
     -unity-text-outline-width: 2px;
     -unity-text-outline-color: rgb(20, 50, 110);
     background-color: rgb(52, 130, 235);
-    border-radius: 56px;
-    border-width: 6px;
+    border-radius: 32px;
+    border-width: 4px;
     border-color: rgb(30, 36, 60);
-    margin: 0 0 28px 0;
+    margin: 0 0 16px 0;
+    flex-shrink: 0;
 }
 
 .cta-button:hover {
@@ -88,19 +96,20 @@
 .tile-row {
     flex-direction: row;
     width: 100%;
-    max-width: 1200px;
+    max-width: 900px;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .tile {
     flex-grow: 1;
     flex-basis: 0;
-    height: 150px;
-    margin: 0 8px;
-    padding: 8px;
+    height: 96px;
+    margin: 0 6px;
+    padding: 6px;
     background-color: rgb(255, 252, 244);
-    border-radius: 18px;
-    border-width: 4px;
+    border-radius: 14px;
+    border-width: 3px;
     align-items: center;
     justify-content: center;
 }
@@ -128,13 +137,13 @@
 }
 
 .tile-icon {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 8px;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 4px;
 }
 
 .tile-label {
-    font-size: 18px;
+    font-size: 13px;
     -unity-font-style: bold;
     color: rgb(40, 36, 48);
     white-space: normal;
@@ -143,10 +152,10 @@
 
 .side-panel {
     position: absolute;
-    right: 24px;
-    top: 24px;
-    width: 280px;
-    padding: 18px;
+    right: 20px;
+    top: 20px;
+    width: 260px;
+    padding: 16px;
     background-color: rgba(20, 24, 36, 0.94);
     border-radius: 12px;
     border-top-width: 4px;
@@ -158,21 +167,21 @@
 }
 
 .panel-title {
-    font-size: 22px;
+    font-size: 20px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
     margin-bottom: 8px;
 }
 
 .panel-body {
-    font-size: 14px;
+    font-size: 13px;
     color: rgb(220, 220, 230);
     white-space: normal;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .panel-close {
-    height: 40px;
-    font-size: 16px;
+    height: 36px;
+    font-size: 15px;
     -unity-font-style: bold;
 }

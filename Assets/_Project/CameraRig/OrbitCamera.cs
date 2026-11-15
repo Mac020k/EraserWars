@@ -5,9 +5,9 @@ namespace EraserWars.CameraRig
 {
     public sealed class OrbitCamera : MonoBehaviour
     {
-        // Wide enough that the four-desk row (2.4×0.4), legs, and floor contact fit at match start.
+        // Wide enough that the 2×2 arena (1.2×0.8), legs, and floor contact fit at match start.
         // Yaw looks toward the chalkboard and the -X window wall so both show with the desk.
-        // Stay inside the 9×7×3 room shell so the start view is not a faded outer wall.
+        // Stay inside the 7×9×3 room shell so the start view is not a faded outer wall.
         const float OverviewDistance = 5.5f;
         const float OverviewYaw = -50f;
         const float OverviewPitch = 27f;
