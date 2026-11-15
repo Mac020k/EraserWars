@@ -10,7 +10,7 @@ namespace EraserWars.Gameplay
         [SerializeField] float pairCooldownSeconds = 0.04f;
         [SerializeField] float minClosingSpeed = 2f;
         [SerializeField] float minLaunchSpeed = 2.4f;
-        [SerializeField] float separationMeters = 0.012f;
+        [SerializeField] float separationMeters = 0.02f;
 
         EraserBody self;
         HitstopController hitstop;
@@ -79,13 +79,12 @@ namespace EraserWars.Gameplay
                 return false;
             }
 
-            var n = collision.GetContact(0).normal;
-            if (n.sqrMagnitude < 1e-8f)
+            // Desk play is planar: vertical Stay normals (common when already touching) would
+            // launch along Y then get wiped by the y-preserve below, so the hittee barely moves.
+            if (!TryPlanarNormal(collision, self, other, out var n))
             {
                 return false;
             }
-
-            n.Normalize();
 
             var m1 = Mathf.Max(1e-5f, self.Body.mass);
             var m2 = Mathf.Max(1e-5f, other.Body.mass);
@@ -140,6 +139,32 @@ namespace EraserWars.Gameplay
 
             // Weak contacts still count as hits for feedback once we forced a launch.
             return closingBeforeBoost > 0.02f || CollisionMath.ClosingSpeed(v1nBefore, v2nBefore) >= minClosingSpeed * 0.5f;
+        }
+
+        static bool TryPlanarNormal(
+            Collision collision,
+            EraserBody selfBody,
+            EraserBody otherBody,
+            out Vector3 normal)
+        {
+            normal = collision.contactCount > 0 ? collision.GetContact(0).normal : Vector3.zero;
+            normal.y = 0f;
+            if (normal.sqrMagnitude >= 1e-8f)
+            {
+                normal.Normalize();
+                return true;
+            }
+
+            // Degenerate / vertical contact: separate along desk-plane centers.
+            normal = selfBody.Body.position - otherBody.Body.position;
+            normal.y = 0f;
+            if (normal.sqrMagnitude < 1e-8f)
+            {
+                return false;
+            }
+
+            normal.Normalize();
+            return true;
         }
     }
 }

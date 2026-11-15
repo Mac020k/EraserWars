@@ -86,6 +86,14 @@ namespace EraserWars.Editor
             killCol.isTrigger = true;
             killCol.size = new Vector3(4f, 0.2f, 4f);
 
+            // Wider than desk centers so 4P openers are not already glued together.
+            var spawnOffsets = new[]
+            {
+                new Vector3(-0.45f, 0.75f, -0.28f),
+                new Vector3(0.45f, 0.75f, -0.28f),
+                new Vector3(-0.45f, 0.75f, 0.28f),
+                new Vector3(0.45f, 0.75f, 0.28f),
+            };
             var spawns = new GameObject("Spawns");
             spawns.transform.SetParent(root.transform);
             var spawnTransforms = new Transform[4];
@@ -93,7 +101,7 @@ namespace EraserWars.Editor
             {
                 var s = new GameObject($"Spawn_{i}");
                 s.transform.SetParent(spawns.transform);
-                s.transform.position = offsets[i] + Vector3.up * 0.04f;
+                s.transform.position = spawnOffsets[i] + Vector3.up * 0.04f;
                 spawnTransforms[i] = s.transform;
             }
 
