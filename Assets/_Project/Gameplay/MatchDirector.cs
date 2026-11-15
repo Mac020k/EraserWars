@@ -21,7 +21,7 @@ namespace EraserWars.Gameplay
         MatchState state;
         int activeSeat;
 
-        static readonly Rect DebugChromeRect = new(12f, 12f, 460f, 280f);
+        static readonly Rect DebugChromeRect = new(12f, 12f, 460f, 340f);
 
         public MatchState State => state;
         public IReadOnlyList<EraserBody> Erasers => erasers;
@@ -293,11 +293,6 @@ namespace EraserWars.Gameplay
                 GUILayout.Label($"{p.Id} ({colorName}) stocks={p.Stocks} pts={p.Points} alive={p.IsAlive}");
             }
 
-            if (state.Phase == Phase.MatchEnd && GUILayout.Button("Rematch"))
-            {
-                Rematch();
-            }
-
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Hotseat 2P"))
             {
@@ -310,6 +305,11 @@ namespace EraserWars.Gameplay
             }
 
             GUILayout.EndHorizontal();
+
+            if (state.Phase == Phase.MatchEnd && GUILayout.Button("Rematch"))
+            {
+                Rematch();
+            }
 
             if (GUILayout.Button("Pass"))
             {
