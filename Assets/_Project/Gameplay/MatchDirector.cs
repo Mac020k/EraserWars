@@ -298,6 +298,19 @@ namespace EraserWars.Gameplay
                 Rematch();
             }
 
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Hotseat 2P"))
+            {
+                StartHotseat(2);
+            }
+
+            if (GUILayout.Button("Hotseat 4P"))
+            {
+                StartHotseat(4);
+            }
+
+            GUILayout.EndHorizontal();
+
             if (GUILayout.Button("Pass"))
             {
                 Pass();

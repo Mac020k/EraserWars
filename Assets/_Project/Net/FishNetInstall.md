@@ -41,3 +41,18 @@ Play → **Start Host** (Tugboat). Optional second instance → **Start Client**
 HUD **Fire canned flick** runs `HostCommandGate` on the server, applies PhysX on the
 host only, then broadcasts settle pose. On a second instance, compare
 `Local vs host delta` in the HUD.
+
+### Dual-instance smoke (operator)
+
+1. Editor: open `FishNet_Spike`, Play, **Start Host**.
+2. Build client player (Unity closed for batchmode, or menu while idle):
+
+```powershell
+# Menu: EraserWars > Build Fish-Net Spike Windows Player
+# Or (Unity closed):
+.\tools\run-fishnet-dual-smoke.ps1 -Build
+```
+
+3. Run the player (`Builds\FishNetSpike\EraserWars.exe`) or `.\tools\run-fishnet-dual-smoke.ps1`.
+4. In the player: **Start Client** → in the editor Host: **Fire canned flick**.
+5. Read `Local vs host delta` on the client HUD. Host-as-client in the same process is expected ~0.

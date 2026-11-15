@@ -24,7 +24,8 @@ Yak フォルダは削除済み。LAN は **Tugboat** のみ使う。
 ## 手順 (残作業)
 
 1. Play → Start Host → **Fire canned flick**。別プロセスまたはビルドで Start Client し、HUD の `Local vs host delta` を見る。
-2. 許容差を決め、必要なら自動照合テストを足す。
+2. プレイヤービルド: `EraserWars/Build Fish-Net Spike Windows Player` または `tools/run-fishnet-dual-smoke.ps1 -Build` (batchmode 時は Unity を閉じる)。
+3. 許容差を決め、必要なら自動照合テストを足す。
 
 ## 失敗時メモ
 
