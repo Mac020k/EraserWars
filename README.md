@@ -101,7 +101,7 @@ The project compiles the `Core` sources directly, so it catches rule regressions
 2. Enter Play Mode. `ClassroomBootstrap` calls `MatchDirector.StartHotseat` with its `players` field (2 by default).
 3. Left-drag anywhere in the Game view (not the debug Pass panel). Pull back to aim, then release. A longer drag is a stronger flick. Space or Pass skips the turn.
 4. Right-drag orbits the camera. Tab toggles top-down. Wheel zooms.
-5. When your eraser hits another during Simulating, physics freezes for 0.08 seconds. Desk and floor hits do not freeze. Another eraser hit inside 0.15 seconds is ignored.
+5. When your eraser hits another during Simulating, physics freezes for 0.08 seconds. Desk and floor hits do not freeze. Another eraser hit inside 0.15 seconds is ignored. Close-range Stay contacts project the hit normal onto XZ so the hittee still launches on the desk (vertical PhysX normals would otherwise be wiped).
 6. During Simulating, an eraser within 0.05 m of the outer desk edge, or dropping through the 0.05 m slice under the desk marker, slows time to 0.4 for 0.22 seconds. An eraser-hit freeze cancels that slow, and the next one waits until every eraser has left the zone and 0.6 seconds from the start have passed.
 
 `EraserWars > Import Cards CSV` reads `Assets/Data/Csv/cards.csv` and creates or updates `Assets/Data/Cards/Card_<id>.asset` for each row.
