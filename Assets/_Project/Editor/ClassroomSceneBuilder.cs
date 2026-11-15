@@ -299,6 +299,7 @@ namespace EraserWars.Editor
                 orbitSo.FindProperty("distance").floatValue = OverviewDistance;
                 orbitSo.FindProperty("yaw").floatValue = OverviewYaw;
                 orbitSo.FindProperty("pitch").floatValue = OverviewPitch;
+                orbitSo.FindProperty("maxDistance").floatValue = 7f;
                 orbitSo.ApplyModifiedPropertiesWithoutUndo();
                 var occSo = new SerializedObject(occlusion);
                 occSo.FindProperty("focus").objectReferenceValue = deskFocus.transform;
@@ -589,7 +590,8 @@ namespace EraserWars.Editor
         static void BuildCorridorWall(Transform room, Material wallMat, Material frameMat)
         {
             const float doorHalfW = 0.9f;
-            const float doorFrontZ = 2.55f;
+            // Push front/rear doors toward the chalkboard and back walls (JP classroom ends).
+            const float doorFrontZ = 3.45f;
             const float pierW = 0.28f;
             const int paneCount = 3;
             var xIn = RoomHalfX;

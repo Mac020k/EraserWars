@@ -22,7 +22,8 @@ namespace EraserWars.CameraRig
         [SerializeField] float chaseLerp = 10f;
         [SerializeField] float chaseDistanceScale = 0.88f;
         [SerializeField] float minDistance = 1.0f;
-        [SerializeField] float maxDistance = 11f;
+        // About classroom-wide (7×9): beyond this the shell fills the frame without empty void.
+        [SerializeField] float maxDistance = 7f;
 
         Transform chaseTarget;
         Vector3 smoothedFocus;

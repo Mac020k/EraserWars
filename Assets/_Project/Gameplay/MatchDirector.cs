@@ -168,8 +168,8 @@ namespace EraserWars.Gameplay
         void OnSettled()
         {
             state = MatchReduce.Reduce(state, new SimulationSettled());
+            // Keep the player's orbit framing from the previous turn; only drop chase focus.
             EnsureOrbitCamera()?.ClearChaseTarget();
-            EnsureOrbitCamera()?.FrameDeskOverview();
             SyncActiveSeat();
             RespawnIfNeeded();
         }
