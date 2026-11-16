@@ -64,13 +64,19 @@ namespace EraserWars.Gameplay
                 return;
             }
 
-            if (!ApplyRestitutionImpulse(other, collision))
+            if (!ApplyRestitutionImpulse(other, collision, out var hit, out var kickDirection, out var shaken))
             {
                 return;
             }
 
             nextPairTime = Time.time + Mathf.Max(0f, pairCooldownSeconds);
-            hitstop?.NotifyEraserCollision();
+            Transform visual = null;
+            if (shaken != null && shaken.VisualRoot != shaken.transform)
+            {
+                visual = shaken.VisualRoot;
+            }
+
+            hitstop?.PresentAcceptedHit(hit, kickDirection, visual);
             PlayAcceptedPairCue();
         }
 
@@ -79,8 +85,16 @@ namespace EraserWars.Gameplay
             AudioBus.Ensure().Play(AudioCue.Collision);
         }
 
-        bool ApplyRestitutionImpulse(EraserBody other, Collision collision)
+        bool ApplyRestitutionImpulse(
+            EraserBody other,
+            Collision collision,
+            out NormalHit hit,
+            out Vector3 kickDirection,
+            out EraserBody shaken)
         {
+            hit = default;
+            kickDirection = Vector3.zero;
+            shaken = self;
             if (collision.contactCount <= 0)
             {
                 return false;
@@ -143,6 +157,10 @@ namespace EraserWars.Gameplay
             var sep = n * separationMeters;
             self.Body.position += sep;
             other.Body.position -= sep;
+
+            hit = NormalHit.FromSpeeds(m1, v1nBefore, v1nOut, m2, v2nBefore, v2nOut);
+            kickDirection = n * hit.Sign;
+            shaken = hit.LaunchIsSecond ? other : self;
 
             // Weak contacts still count as hits for feedback once we forced a launch.
             return closingBeforeBoost > 0.02f || CollisionMath.ClosingSpeed(v1nBefore, v2nBefore) >= minClosingSpeed * 0.5f;

@@ -561,12 +561,10 @@ namespace EraserWars.Gameplay
             Debug.Log($"[EraserWars] Flick P{command.Player.Value + 1} {modifiers} bodyMass={eraser.Body.mass:0.0000} damping={eraser.Body.linearDamping:0.00}");
 
             state = MatchReduce.Reduce(state, new Flicked(command));
-            if (PlayerPrefs.GetInt("eraserwars.cameraShake", 1) != 0)
-            {
-                hitstop?.BeginShot();
-            }
-
-            EnsureOrbitCamera()?.SetChaseTarget(eraser.transform);
+            var camera = EnsureOrbitCamera();
+            hitstop?.BindCamera(camera);
+            hitstop?.BeginShot();
+            camera?.SetChaseTarget(eraser.transform);
             var flickScale = Mathf.Clamp(PlayerPrefs.GetFloat("eraserwars.flickScale", 1f), 0.5f, 1.5f);
             flickApplier.Apply(eraser, command, modifiers.Power * flickScale);
             AudioBus.Ensure().Play(AudioCue.Flick);
@@ -801,6 +799,7 @@ namespace EraserWars.Gameplay
                 relay = eraser.gameObject.AddComponent<EraserCollisionRelay>();
             }
 
+            hitstop.BindCamera(EnsureOrbitCamera());
             relay.Bind(hitstop, IsSimulating);
         }
 

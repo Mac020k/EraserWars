@@ -31,6 +31,7 @@ namespace EraserWars.CameraRig
         Vector3 smoothedFocus;
         bool hasSmoothedFocus;
         FallLeave leave;
+        CameraPunch punch;
 
         public enum Mode
         {
@@ -67,9 +68,20 @@ namespace EraserWars.CameraRig
             leave = FallLeave.Begin(worldFocus, nowUnscaled, seconds);
         }
 
+        public float PunchDuration => punch.Duration;
+
+        public Vector3 PunchOffsetAt(float nowUnscaled) => punch.OffsetAt(nowUnscaled);
+
+        public void Punch(Vector3 worldDirection, float meters, float nowUnscaled, float duration)
+        {
+            var scaled = meters * CameraPunch.DistanceScale(distance, OverviewDistance);
+            punch = CameraPunch.Begin(worldDirection, scaled, nowUnscaled, duration);
+        }
+
         public void FrameDeskOverview()
         {
             leave = default;
+            punch = default;
             chaseTarget = null;
             distance = OverviewDistance;
             yaw = OverviewYaw;
@@ -177,7 +189,8 @@ namespace EraserWars.CameraRig
             }
 
             var rotation = Quaternion.Euler(usePitch, yaw, 0f);
-            transform.position = anchor + rotation * (Vector3.back * useDistance);
+            var kick = punch.OffsetAt(Time.unscaledTime);
+            transform.position = anchor + rotation * (Vector3.back * useDistance) + kick;
             transform.LookAt(anchor);
         }
 
