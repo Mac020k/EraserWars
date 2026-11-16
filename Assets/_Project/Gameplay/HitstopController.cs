@@ -1,22 +1,24 @@
 using System.Collections;
+using EraserWars.CameraRig;
+using EraserWars.Core;
 using UnityEngine;
 
 namespace EraserWars.Gameplay
 {
     public sealed class HitstopController : MonoBehaviour
     {
-        [SerializeField] int minFrames = 2;
-        [SerializeField] int maxFrames = 10;
+        public const string CameraShakePref = "eraserwars.cameraShake";
+
         [SerializeField] int shotBudgetFrames = 30;
-        [SerializeField] float eraserHitFreezeSeconds = 0.045f;
-        [SerializeField] float eraserHitCooldownSeconds = 0.15f;
 
         int usedThisShot;
-        float nextEraserHitTime;
         Coroutine running;
-        Coroutine freezeRoutine;
         SimulationMode modeBeforeFreeze;
         bool freezing;
+        OrbitCamera orbit;
+        Transform shaken;
+        Vector3 shakenOrigin;
+        bool holdingVisual;
 
         public bool IsFreezing => freezing;
 
@@ -25,96 +27,109 @@ namespace EraserWars.Gameplay
             usedThisShot = 0;
         }
 
-        public void Pulse(float impulseMagnitude, Transform visualRoot)
+        public void BindCamera(OrbitCamera camera)
         {
-            var frames = Mathf.Clamp(Mathf.RoundToInt(impulseMagnitude * 40f), minFrames, maxFrames);
+            if (camera != null)
+            {
+                orbit = camera;
+            }
+        }
+
+        public void PresentAcceptedHit(NormalHit hit, Vector3 planarDirection, Transform visualChild)
+        {
+            if (hit.Impulse <= 0f)
+            {
+                return;
+            }
+
+            var frames = hit.Frames;
             var remaining = shotBudgetFrames - usedThisShot;
-            if (remaining <= 0)
+            if (remaining <= 0 || frames <= 0)
             {
                 return;
             }
 
             frames = Mathf.Min(frames, remaining);
             usedThisShot += frames;
-            if (running != null)
-            {
-                StopCoroutine(running);
-            }
 
-            running = StartCoroutine(HitstopRoutine(frames, visualRoot));
-        }
+            var shakeOn = PlayerPrefs.GetInt(CameraShakePref, 1) != 0;
+            orbit?.Punch(planarDirection, hit.KickMeters(shakeOn), Time.unscaledTime, frames / 60f);
 
-        public void NotifyEraserCollision()
-        {
-            if (freezing || Time.time < nextEraserHitTime)
+            StopRunning();
+            if (!Application.isPlaying)
             {
                 return;
             }
 
-            nextEraserHitTime = Time.time + Mathf.Max(0f, eraserHitCooldownSeconds);
-            freezeRoutine = StartCoroutine(FreezeRoutine(Mathf.Max(0f, eraserHitFreezeSeconds)));
+            var amplitude = 0.0015f + 0.002f * hit.Strength;
+            running = StartCoroutine(HitstopRoutine(frames, visualChild, amplitude));
         }
 
         void OnDisable()
         {
+            StopRunning();
+        }
+
+        void StopRunning()
+        {
+            if (running != null)
+            {
+                StopCoroutine(running);
+                running = null;
+            }
+
+            ReleaseFreeze();
+        }
+
+        void ReleaseFreeze()
+        {
+            RestoreVisual();
             if (!freezing)
             {
                 return;
             }
 
-            if (freezeRoutine != null)
-            {
-                StopCoroutine(freezeRoutine);
-                freezeRoutine = null;
-            }
-
             Physics.simulationMode = modeBeforeFreeze;
             freezing = false;
         }
 
-        IEnumerator FreezeRoutine(float seconds)
+        void RestoreVisual()
+        {
+            if (!holdingVisual || shaken == null)
+            {
+                holdingVisual = false;
+                return;
+            }
+
+            shaken.localPosition = shakenOrigin;
+            holdingVisual = false;
+        }
+
+        IEnumerator HitstopRoutine(int frames, Transform visualChild, float amplitude)
         {
             modeBeforeFreeze = Physics.simulationMode;
             freezing = true;
             Physics.simulationMode = SimulationMode.Script;
-            var end = Time.time + seconds;
-            while (Time.time < end)
+            if (visualChild != null && visualChild.GetComponent<Rigidbody>() == null)
             {
-                yield return null;
+                shaken = visualChild;
+                shakenOrigin = visualChild.localPosition;
+                holdingVisual = true;
             }
 
-            if (!freezing)
-            {
-                yield break;
-            }
-
-            Physics.simulationMode = modeBeforeFreeze;
-            freezing = false;
-            freezeRoutine = null;
-        }
-
-        IEnumerator HitstopRoutine(int frames, Transform visualRoot)
-        {
-            var previous = Physics.simulationMode;
-            Physics.simulationMode = SimulationMode.Script;
-            var origin = visualRoot != null ? visualRoot.localPosition : Vector3.zero;
             for (var i = 0; i < frames; i++)
             {
-                if (visualRoot != null)
+                if (holdingVisual && shaken != null)
                 {
                     var decay = 1f - i / (float)frames;
-                    visualRoot.localPosition = origin + Random.insideUnitSphere * (0.002f * decay);
+                    var jitter = Random.insideUnitCircle * (amplitude * decay);
+                    shaken.localPosition = shakenOrigin + new Vector3(jitter.x, 0f, jitter.y);
                 }
 
                 yield return null;
             }
 
-            if (visualRoot != null)
-            {
-                visualRoot.localPosition = origin;
-            }
-
-            Physics.simulationMode = previous;
+            ReleaseFreeze();
             running = null;
         }
     }
