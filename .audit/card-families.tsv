@@ -1,0 +1,4 @@
+ts	phase	decision	why	evidence	result
+2026-11-16T14:17:54Z	inventory	50 cards across 6 families already parse; runtime only consumed Power/Mass/ExtraFlick	CardResolver stored the rest as inert ActiveEffects	cards.csv + ActiveEffectTuning.cs	measured
+2026-11-16T14:17:54Z	behaviors	added OpponentTurnTime/SelfTurnTime, GrantShield fall guard, SwapPositions, new RestoreStock kind via MatchEffectRules	pure rules in Cards, three thin hooks in MatchDirector	dotnet test 21/21; Play Mode [verify] logs turnLeft 20->6.0, 20->30, Shield saved P2, SeatSwap P1<->P2, stocks 2->3	measured
+2026-11-16T14:17:54Z	costs	costs 3 on body_weight/clip_bomb/safety_first; added cards 51-54 (保健室, 延長チャイム, 居眠り先生, 学級会議)	cost mix was 14/28/3/5 (cost 1/2/3/4), now 15/25/9/5	cards.csv	committed

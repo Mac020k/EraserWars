@@ -63,6 +63,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 19628cde592cfb3429e937f86c6a3f4e, type: 2}
   - {fileID: 11400000, guid: f817aa5232713ea43860cb466c08dd51, type: 2}
   - {fileID: 11400000, guid: 8aa7da84824f4b2499d572f4bbab9707, type: 2}
+  - {fileID: 11400000, guid: da022ec1f9e152e4b967b913ed98434b, type: 2}
+  - {fileID: 11400000, guid: 02903482658e38e458e8eaefac03c4d9, type: 2}
+  - {fileID: 11400000, guid: 98714e552e8e1cd408cc0a38640d01dd, type: 2}
+  - {fileID: 11400000, guid: 441104391da077e449efbb50d2e4fd21, type: 2}
   Characters:
   - {fileID: 11400000, guid: bb41b17ab71183a41a0a909165581a49, type: 2}
   - {fileID: 11400000, guid: b556ee12f04d908468fa90d752f2b781, type: 2}

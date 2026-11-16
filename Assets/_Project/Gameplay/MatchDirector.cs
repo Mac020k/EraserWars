@@ -166,6 +166,7 @@ namespace EraserWars.Gameplay
 
             state = state with { TurnTimeLeft = 0f };
             state = MatchReduce.Reduce(state, new TimerExpired(state.CurrentPlayerId));
+            state = MatchEffectRules.OnTurnHandover(state);
             SyncActiveSeat();
             RespawnIfNeeded();
         }
@@ -329,6 +330,11 @@ namespace EraserWars.Gameplay
 
         public void Rematch()
         {
+            if (state == null)
+            {
+                return;
+            }
+
             StartHotseat(state.Players.Length);
         }
 
@@ -340,6 +346,7 @@ namespace EraserWars.Gameplay
             }
 
             state = MatchReduce.Reduce(state, new Passed(state.CurrentPlayerId));
+            state = MatchEffectRules.OnTurnHandover(state);
             SyncActiveSeat();
         }
 
@@ -369,9 +376,51 @@ namespace EraserWars.Gameplay
             if (effects.Count > 0)
             {
                 state = CardResolver.Apply(state, player, card, effects, target: null);
+                ApplyCardSideEffects(player, effects);
             }
 
-            Debug.Log($"[EraserWars] PlayCard id={cardId} '{definition.DisplayName}' phase={state.Phase} effects={effects.Count}");
+            Debug.Log($"[EraserWars] PlayCard id={cardId} '{definition.DisplayName}' phase={state.Phase} effects={effects.Count} turnLeft={state.TurnTimeLeft:0.0} stocks={state.GetPlayer(player).Stocks}");
+        }
+
+        void ApplyCardSideEffects(PlayerId owner, IReadOnlyList<EffectSpec> effects)
+        {
+            foreach (var effect in effects)
+            {
+                if (effect is SwapPositions)
+                {
+                    SwapWithNextOpponent(owner);
+                }
+            }
+        }
+
+        void SwapWithNextOpponent(PlayerId owner)
+        {
+            var partner = MatchEffectRules.SwapPartner(state, owner);
+            if (partner is not PlayerId other
+                || !byPlayer.TryGetValue(owner.Value, out var mine)
+                || !byPlayer.TryGetValue(other.Value, out var theirs)
+                || mine == null
+                || theirs == null
+                || !mine.gameObject.activeSelf
+                || !theirs.gameObject.activeSelf)
+            {
+                return;
+            }
+
+            var minePose = (mine.transform.position, mine.transform.rotation);
+            var theirsPose = (theirs.transform.position, theirs.transform.rotation);
+            PlaceAt(mine, theirsPose.position, theirsPose.rotation);
+            PlaceAt(theirs, minePose.position, minePose.rotation);
+            Debug.Log($"[EraserWars] SeatSwap: P{owner.Value + 1} <-> P{other.Value + 1}");
+        }
+
+        static void PlaceAt(EraserBody eraser, Vector3 position, Quaternion rotation)
+        {
+            eraser.transform.SetPositionAndRotation(position, rotation);
+            eraser.Body.position = position;
+            eraser.Body.rotation = rotation;
+            eraser.Body.linearVelocity = Vector3.zero;
+            eraser.Body.angularVelocity = Vector3.zero;
         }
 
         bool pendingExtraFlick;
@@ -403,6 +452,16 @@ namespace EraserWars.Gameplay
         void OnEraserFell(EraserBody eraser)
         {
             var victim = new PlayerId(eraser.PlayerIndex);
+            if (MatchEffectRules.TryConsumeShield(state, victim, out var shielded))
+            {
+                state = shielded;
+                var pose = FindClearSpawn(victim.Value);
+                PlaceAt(eraser, pose.position, pose.rotation);
+                eraser.GetComponent<FalloutDetector>()?.ResetReport();
+                Debug.Log($"[EraserWars] Shield saved P{victim.Value + 1} from the edge; effects={state.Effects.Length}");
+                return;
+            }
+
             state = MatchReduce.Reduce(state, new EraserFell(victim, state.CurrentPlayerId));
             eraser.gameObject.SetActive(false);
         }
@@ -442,6 +501,7 @@ namespace EraserWars.Gameplay
             }
 
             state = MatchReduce.Reduce(state, new SimulationSettled());
+            state = MatchEffectRules.OnTurnHandover(state);
             state = CardResolver.TickEffects(state);
             // Keep the player's orbit framing from the previous turn; only drop chase focus.
             EnsureOrbitCamera()?.ClearChaseTarget();
