@@ -1,4 +1,5 @@
 using EraserWars.Cards;
+using EraserWars.Core;
 using EraserWars.Gameplay;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -33,6 +34,8 @@ namespace EraserWars.UI
         readonly HotseatLoadout loadout = new();
         Button mode2P;
         Button mode4P;
+        Button modeStock;
+        Button modePoints;
         int selectedPlayers = 2;
         bool matchRunning;
         bool suspendedMatch;
@@ -88,6 +91,7 @@ namespace EraserWars.UI
             }
 
             SelectPlayers(selectedPlayers);
+            PaintWinMode();
             if (matchRunning && !suspendedMatch)
             {
                 HideMenu();
@@ -150,6 +154,8 @@ namespace EraserWars.UI
             collectionPanel = root.Q("collection-panel");
             mode2P = root.Q<Button>("mode-2p");
             mode4P = root.Q<Button>("mode-4p");
+            modeStock = root.Q<Button>("mode-stock");
+            modePoints = root.Q<Button>("mode-points");
             debugModeButton = root.Q<Button>("opt-debug-mode");
             masterSlider = root.Q<Slider>("opt-master");
             bgmSlider = root.Q<Slider>("opt-bgm");
@@ -174,6 +180,8 @@ namespace EraserWars.UI
             root.Q<Button>("resume-match")?.RegisterCallback<ClickEvent>(_ => ResumeMatch());
             mode2P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(2));
             mode4P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(4));
+            modeStock?.RegisterCallback<ClickEvent>(_ => SelectWinMode(WinMode.Stock));
+            modePoints?.RegisterCallback<ClickEvent>(_ => SelectWinMode(WinMode.Points));
             root.Q<Button>("open-options")?.RegisterCallback<ClickEvent>(_ => OpenOptions());
             root.Q<Button>("open-deck")?.RegisterCallback<ClickEvent>(_ => OpenDeck());
             root.Q<Button>("open-collection")?.RegisterCallback<ClickEvent>(_ => OpenCollection());
@@ -522,6 +530,19 @@ namespace EraserWars.UI
             mode4P?.EnableInClassList("selected", count == 4);
         }
 
+        void SelectWinMode(WinMode mode)
+        {
+            GameSettings.Save(GameSettings.Current with { WinMode = mode });
+            PaintWinMode();
+        }
+
+        void PaintWinMode()
+        {
+            var points = GameSettings.Current.WinMode == WinMode.Points;
+            modeStock?.EnableInClassList("selected", !points);
+            modePoints?.EnableInClassList("selected", points);
+        }
+
         void StartMatch()
         {
             BeginMatch(selectedPlayers);
@@ -557,7 +578,10 @@ namespace EraserWars.UI
             // Play may be paused (agent flags); push HUD without waiting for Update.
             var hud = FindAnyObjectByType<MatchHudController>();
             hud?.RefreshFromState();
-            Debug.Log($"[EraserWars] StartMenu.BeginMatch({playerCount}) hid menu, phase={director.State?.Phase}");
+            var rules = director.State?.Rules;
+            Debug.Log(
+                $"[EraserWars] StartMenu.BeginMatch({playerCount}) hid menu, phase={director.State?.Phase} " +
+                $"win={rules?.WinMode} rounds={rules?.PointRounds}");
         }
 
         public void ResumeMatch()
@@ -681,6 +705,11 @@ namespace EraserWars.UI
                 homeStack.style.display = showHome ? DisplayStyle.Flex : DisplayStyle.None;
                 homeStack.visible = showHome;
                 homeStack.style.opacity = showHome ? 1f : 0f;
+            }
+
+            if (showHome)
+            {
+                PaintWinMode();
             }
 
             var page = screen switch

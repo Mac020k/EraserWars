@@ -17,6 +17,10 @@
                         <ui:Button name="mode-2p" text="2人対戦" class="mode-chip selected" />
                         <ui:Button name="mode-4p" text="4人対戦" class="mode-chip" />
                     </ui:VisualElement>
+                    <ui:VisualElement class="mode-segment">
+                        <ui:Button name="mode-stock" text="ストック戦" class="mode-chip selected" />
+                        <ui:Button name="mode-points" text="ポイント戦" class="mode-chip" />
+                    </ui:VisualElement>
                     <ui:Button name="resume-match" text="つづける" class="cta-button cta-resume hidden" />
                     <ui:Button name="start-match" text="マッチ開始" class="cta-button" />
                 </ui:VisualElement>

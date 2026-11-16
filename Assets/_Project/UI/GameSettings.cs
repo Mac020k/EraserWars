@@ -1,3 +1,4 @@
+using EraserWars.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 using AudioPrefs = EraserWars.Audio.GameSettings;
@@ -8,7 +9,8 @@ namespace EraserWars.UI
     /// Match feel in PlayerPrefs. EraserWars.UI references Gameplay, so MatchDirector cannot call this type.
     /// Read Keys with PlayerPrefs. Volumes are 0..1 gains. Bgm/Se also mirror Audio.GameSettings percent keys
     /// so AudioBus and Options stay one contract. FlickScale is 0.5..1.5. TurnSeconds is 10..60.
-    /// CameraShake is 0 or 1. UiScale is 0.8, 1, or 1.2. ApplyVolume sets AudioListener.volume.
+    /// CameraShake is 0 or 1. UiScale is 0.8, 1, or 1.2. WinMode is 0 for Stock or 1 for Points.
+    /// ApplyVolume sets AudioListener.volume. MatchDirector reads Keys.WinMode and Keys.TurnSeconds.
     /// </summary>
     public sealed record GameSettings(
         float Master,
@@ -17,7 +19,8 @@ namespace EraserWars.UI
         float FlickScale,
         int TurnSeconds,
         bool CameraShake,
-        float UiScale)
+        float UiScale,
+        EraserWars.Core.WinMode WinMode)
     {
         public const float DefaultMaster = 1f;
         public const float DefaultBgm = 0.7f;
@@ -36,6 +39,7 @@ namespace EraserWars.UI
             public const string TurnSeconds = "eraserwars.turnSeconds";
             public const string CameraShake = "eraserwars.cameraShake";
             public const string UiScale = "eraserwars.uiScale";
+            public const string WinMode = "eraserwars.winMode";
         }
 
         public static GameSettings Defaults { get; } = new(
@@ -45,7 +49,8 @@ namespace EraserWars.UI
             DefaultFlickScale,
             DefaultTurnSeconds,
             DefaultCameraShake,
-            DefaultUiScale);
+            DefaultUiScale,
+            EraserWars.Core.WinMode.Stock);
 
         public static GameSettings Current { get; private set; } = Defaults;
 
@@ -58,7 +63,8 @@ namespace EraserWars.UI
                 PlayerPrefs.GetFloat(Keys.FlickScale, DefaultFlickScale),
                 PlayerPrefs.GetInt(Keys.TurnSeconds, DefaultTurnSeconds),
                 PlayerPrefs.GetInt(Keys.CameraShake, DefaultCameraShake ? 1 : 0) != 0,
-                PlayerPrefs.GetFloat(Keys.UiScale, DefaultUiScale));
+                PlayerPrefs.GetFloat(Keys.UiScale, DefaultUiScale),
+                RuleSet.WinModeFromPref(PlayerPrefs.GetInt(Keys.WinMode, (int)EraserWars.Core.WinMode.Stock)));
             Current = next.Clamped();
             return Current;
         }
@@ -75,6 +81,7 @@ namespace EraserWars.UI
             PlayerPrefs.SetInt(Keys.TurnSeconds, Current.TurnSeconds);
             PlayerPrefs.SetInt(Keys.CameraShake, Current.CameraShake ? 1 : 0);
             PlayerPrefs.SetFloat(Keys.UiScale, Current.UiScale);
+            PlayerPrefs.SetInt(Keys.WinMode, (int)Current.WinMode);
             PlayerPrefs.Save();
         }
 
@@ -144,7 +151,8 @@ namespace EraserWars.UI
             SnapFlick(FlickScale),
             SnapTurnSeconds(TurnSeconds),
             CameraShake,
-            SnapUiScale(UiScale));
+            SnapUiScale(UiScale),
+            RuleSet.WinModeFromPref((int)WinMode));
 
         public static float SnapVolume(float volume) => Mathf.Clamp01(volume);
 
