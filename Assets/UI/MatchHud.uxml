@@ -23,12 +23,13 @@
         <ui:VisualElement name="match-end" class="match-end hidden" picking-mode="Ignore">
             <ui:VisualElement name="match-end-dim" class="match-end-dim" picking-mode="Ignore" />
             <ui:VisualElement name="match-end-card" class="match-end-card">
+                <ui:VisualElement name="result-seat-bar" class="result-seat-bar" picking-mode="Ignore" />
                 <ui:Label name="result-kicker" text="しょうぶあり" class="result-kicker" picking-mode="Ignore" />
                 <ui:Label name="result-text" text="" class="result-text" picking-mode="Ignore" />
                 <ui:Label name="result-summary" text="" class="result-summary" picking-mode="Ignore" />
                 <ui:VisualElement class="match-end-actions">
-                    <ui:Button name="rematch" text="再戦" class="match-end-button action-rematch" />
-                    <ui:Button name="match-end-menu" text="メニューへ" class="match-end-button match-end-menu" />
+                    <ui:Button name="rematch" text="再戦" class="match-end-button match-end-primary" />
+                    <ui:Button name="match-end-menu" text="メニューへ" class="match-end-button match-end-secondary" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
