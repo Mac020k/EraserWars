@@ -166,6 +166,8 @@ namespace EraserWars.Gameplay
         void BeginCardCutIn(int seat, int cardId, string displayName, bool signature)
         {
             cardCutIn = CardCutIn.Begin(seat, cardId, displayName, signature);
+            var cue = signature ? AudioCue.CardPlaySignature : AudioCue.CardPlay;
+            AudioBus.Ensure().Play(cue);
         }
 
         void RefreshActiveEraserCue()

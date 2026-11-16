@@ -1,6 +1,6 @@
 # Audio
 
-`AudioBus` plays a looping bed and four short cues. Volume comes from `PlayerPrefs`.
+`AudioBus` plays a looping bed and six short cues. Volume comes from `PlayerPrefs`.
 
 ## Prefs contract
 
@@ -24,5 +24,7 @@ The sliders already exist in `Assets/UI/StartMenu.uxml`. `AudioBus` finds `opt-b
 | `MatchDirector.SubmitFlick` accepts a flick | `flick` | SE |
 | `EraserCollisionRelay` accepts an eraser pair | `eraser-hit` | SE |
 | `FalloutDetector` hits a Floor collider, once until `ResetReport` | `floor-hit` | SE |
+| `MatchDirector.BeginCardCutIn` for a common card | `card-play` | SE |
+| `MatchDirector.BeginCardCutIn` for a signature card | `card-play-signature` | SE |
 
 The clips are generated in code. They are not files under `Assets/Audio`. They stand in until recorded eraser hits and purchased music replace them. `AudioBus` uses `DontDestroyOnLoad`, so the loop keeps playing when the start menu hides.

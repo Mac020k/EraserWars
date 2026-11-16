@@ -94,7 +94,7 @@ Points loads `RuleSet.PointsTrial`, which ends after 8 rounds. Stock loads `Rule
 
 ## Audio
 
-`AudioBus` starts a generated BGM loop as soon as play mode begins. A UI button click plays `ui-click`. An accepted flick plays `flick`. An accepted eraser hit plays `eraser-hit`. A floor contact plays `floor-hit`. Volumes are percents in `PlayerPrefs`, owned by `EraserWars.Audio.GameSettings`. The keys match the options sliders `opt-bgm` and `opt-se`. See [`Assets/_Project/Audio/README.md`](Assets/_Project/Audio/README.md).
+`AudioBus` starts a generated BGM loop as soon as play mode begins. A UI button click plays `ui-click`. An accepted flick plays `flick`. An accepted eraser hit plays `eraser-hit`. A floor contact plays `floor-hit`. A card cut-in plays `card-play`. A signature cut-in plays the brighter `card-play-signature`. Volumes are percents in `PlayerPrefs`, owned by `EraserWars.Audio.GameSettings`. The keys match the options sliders `opt-bgm` and `opt-se`. See [`Assets/_Project/Audio/README.md`](Assets/_Project/Audio/README.md).
 
 ## Card faces
 
@@ -110,7 +110,7 @@ A contact sheet of the six families is in `docs/prototypes/card-tcg/contact-shee
 
 ## Card cut-in
 
-Playing a card shows a tilted banner over the match.
+Playing a card shows a tilted banner over the match and plays a slash. A signature card uses a brighter slash at the same SE volume.
 The banner names the seat and the card, and paints the card face with `CardFaceBuilder` on `CardSurface.CutIn`.
 A signature card holds for 1.2 seconds. A common card holds for 0.8 seconds. Each of those times includes a 0.2 second slash in and a 0.2 second slash out.
 While the banner is up, the turn callout, the hand, and the pass button hide, and the turn clock does not move.
