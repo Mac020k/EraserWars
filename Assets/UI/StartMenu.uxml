@@ -38,20 +38,41 @@
 
             <ui:VisualElement name="options-panel" class="destination-page options-panel hidden">
                 <ui:VisualElement class="destination-chrome">
-                    <ui:Button name="close-options" text="← もどる" class="destination-back" />
+                    <ui:Button name="close-options" text="← もどる" class="destination-back options-back" />
                     <ui:Label text="オプション" class="destination-title" />
                 </ui:VisualElement>
-                <ui:VisualElement class="destination-body options-body">
-                    <ui:Label text="音量・言語・操作感はここにまとめます。" class="panel-body" />
-                    <ui:Label text="いまは枠のみ。Esc でもホームへ戻れます。" class="panel-body" />
-                    <ui:Label text="BGM" class="options-label" />
-                    <ui:Slider name="opt-bgm" low-value="0" high-value="100" value="70" />
-                    <ui:Label text="SE" class="options-label" />
-                    <ui:Slider name="opt-se" low-value="0" high-value="100" value="80" />
-                    <ui:Label text="開発" class="options-label" />
+                <ui:ScrollView name="options-scroll" class="options-body options-scroll" mode="Vertical" horizontal-scroller-visibility="Hidden">
+                    <ui:Label text="音量" class="options-section options-section-first" />
+                    <ui:Label name="opt-master-value" text="マスター 100" class="options-label" />
+                    <ui:Slider name="opt-master" low-value="0" high-value="100" value="100" class="options-slider" />
+                    <ui:Label name="opt-bgm-value" text="BGM 70" class="options-label" />
+                    <ui:Slider name="opt-bgm" low-value="0" high-value="100" value="70" class="options-slider" />
+                    <ui:Label name="opt-se-value" text="SE 80" class="options-label" />
+                    <ui:Slider name="opt-se" low-value="0" high-value="100" value="80" class="options-slider" />
+                    <ui:Label text="マスターは今すぐ変わります。BGM と SE は音が入ると、この割合で鳴ります。" class="options-note" />
+
+                    <ui:Label text="対戦" class="options-section" />
+                    <ui:Label name="opt-flick-value" text="フリックの強さ 100" class="options-label" />
+                    <ui:Slider name="opt-flick" low-value="50" high-value="150" value="100" class="options-slider" />
+                    <ui:Label name="opt-turn-value" text="1ターン 20秒" class="options-label" />
+                    <ui:Slider name="opt-turn" low-value="10" high-value="60" value="20" class="options-slider" />
+                    <ui:Button name="opt-shake" text="カメラ揺れ: ON" class="options-toggle on" />
+                    <ui:Label text="フリックの強さ、ターン時間、カメラ揺れは保存されます。試合側がこの値を読むと効きます。" class="options-note" />
+
+                    <ui:Label text="表示" class="options-section" />
+                    <ui:Label text="画面の大きさ" class="options-label" />
+                    <ui:VisualElement class="options-choice-row">
+                        <ui:Button name="opt-ui-80" text="小" class="options-choice" />
+                        <ui:Button name="opt-ui-100" text="標準" class="options-choice selected" />
+                        <ui:Button name="opt-ui-120" text="大" class="options-choice" />
+                    </ui:VisualElement>
+
+                    <ui:Label text="開発" class="options-section" />
                     <ui:Button name="opt-debug-mode" text="デバッグモード: ON" class="options-debug-button debug-on" />
-                    <ui:Label text="リリース前にこのボタンを非表示にします。" class="panel-body" />
-                </ui:VisualElement>
+                    <ui:Label text="リリース前にこのボタンを非表示にします。" class="options-note" />
+
+                    <ui:Button name="opt-reset" text="初期値に戻す" class="options-reset" />
+                </ui:ScrollView>
             </ui:VisualElement>
 
             <ui:VisualElement name="deck-panel" class="destination-page deck-panel hidden">

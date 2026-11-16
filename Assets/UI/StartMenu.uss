@@ -285,24 +285,77 @@
 .options-body {
     width: 100%;
     flex-grow: 1;
-    max-width: 560px;
-    padding: 16px;
+    max-width: none;
+    padding: 8px 16px 16px 16px;
     background-color: rgba(8, 10, 18, 0.35);
     border-radius: 12px;
     border-width: 2px;
     border-color: rgba(255, 255, 255, 0.12);
 }
 
-.options-label {
-    font-size: 14px;
-    color: rgb(255, 220, 120);
-    margin: 10px 0 4px 0;
+.options-scroll {
+    flex-grow: 1;
+    min-height: 0;
 }
 
-.options-debug-button {
-    height: 40px;
+.options-panel .options-back {
+    width: 132px;
+    height: 48px;
+    min-height: 48px;
+    font-size: 16px;
+}
+
+.options-section {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    margin: 18px 0 2px 0;
+}
+
+.options-section-first {
     margin-top: 4px;
-    font-size: 15px;
+}
+
+.options-label {
+    font-size: 16px;
+    color: rgb(255, 220, 120);
+    margin: 10px 0 2px 0;
+}
+
+.options-note {
+    font-size: 14px;
+    color: rgb(210, 214, 226);
+    white-space: normal;
+    margin: 2px 0 8px 0;
+}
+
+.options-slider {
+    height: 48px;
+    min-height: 48px;
+    margin: 0 0 6px 0;
+}
+
+.options-slider .unity-base-slider__drag-container {
+    height: 48px;
+}
+
+.options-slider .unity-base-slider__dragger {
+    width: 28px;
+    height: 28px;
+}
+
+.options-choice-row {
+    flex-direction: row;
+    height: 48px;
+    margin: 4px 0 8px 0;
+}
+
+.options-choice {
+    flex-grow: 1;
+    height: 48px;
+    min-height: 48px;
+    margin: 0 4px;
+    font-size: 18px;
     -unity-font-style: bold;
     background-color: rgb(60, 66, 84);
     color: rgb(230, 230, 240);
@@ -311,9 +364,42 @@
     border-color: rgb(100, 110, 130);
 }
 
-.options-debug-button.debug-on {
+.options-choice.selected {
+    background-color: rgb(245, 168, 66);
+    color: rgb(255, 255, 255);
+    border-color: rgb(120, 70, 20);
+}
+
+.options-debug-button,
+.options-toggle,
+.options-reset {
+    height: 48px;
+    min-height: 48px;
+    margin-top: 4px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    background-color: rgb(60, 66, 84);
+    color: rgb(230, 230, 240);
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgb(100, 110, 130);
+}
+
+.options-debug-button.debug-on,
+.options-toggle.on {
     background-color: rgb(70, 160, 90);
     border-color: rgb(30, 80, 45);
+    color: rgb(255, 255, 255);
+}
+
+.options-reset {
+    margin-top: 22px;
+    margin-bottom: 12px;
+}
+
+.options-reset.armed {
+    background-color: rgb(176, 64, 48);
+    border-color: rgb(90, 24, 18);
     color: rgb(255, 255, 255);
 }
 
