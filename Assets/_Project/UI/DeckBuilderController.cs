@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using EraserWars.Cards;
+using EraserWars.Core;
 using UnityEngine;
 
 namespace EraserWars.UI
@@ -11,45 +13,31 @@ namespace EraserWars.UI
 
         public bool TryValidate(out string error)
         {
-            if (character == null || character.Eraser == null)
+            var eraser = character != null ? character.Eraser : null;
+            var verdict = DeckRules.Evaluate(
+                eraser != null,
+                eraser != null ? eraser.DeckCostCap : 0,
+                DeckCardFacts.From(selectedCommons));
+            switch (verdict.Fault)
             {
-                error = "character-missing";
-                return false;
-            }
-
-            var cost = 0;
-            var counts = new Dictionary<int, int>();
-            foreach (var card in selectedCommons)
-            {
-                if (card == null)
-                {
-                    continue;
-                }
-
-                cost += card.BuildCost;
-                counts.TryGetValue(card.IdValue, out var n);
-                counts[card.IdValue] = n + 1;
-                if (counts[card.IdValue] > card.MaxCopies)
-                {
-                    error = $"max-copies:{card.NameKey}";
+                case DeckFault.None:
+                    error = null;
+                    return true;
+                case DeckFault.NoCharacter:
+                    error = "character-missing";
                     return false;
-                }
+                case DeckFault.SameName:
+                    error = $"max-copies:{verdict.NameKey}";
+                    return false;
+                case DeckFault.Slots:
+                    error = "too-many-commons";
+                    return false;
+                case DeckFault.OverCost:
+                    error = "over-cost";
+                    return false;
+                default:
+                    throw new InvalidOperationException($"Unhandled {nameof(DeckFault)} '{verdict.Fault}'.");
             }
-
-            if (selectedCommons.Count > 6)
-            {
-                error = "too-many-commons";
-                return false;
-            }
-
-            if (cost > character.Eraser.DeckCostCap)
-            {
-                error = "over-cost";
-                return false;
-            }
-
-            error = null;
-            return true;
         }
     }
 }
