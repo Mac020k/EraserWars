@@ -90,6 +90,13 @@ In the editor the directory is `playtests/match-logs/`. A player build uses `App
 Each file records the match id, start and end in UTC, `WinMode`, stock count, point-round cap, ending round, winner seat or a draw, and each seat's stocks, points, and eliminated round.
 P3 can measure match length from the two timestamps and group matches by `WinMode`. Comeback counts and one-punch counts are not in this file.
 
+`ReplayStub` overwrites `last-flick.txt` when `MatchDirector.SubmitFlick` accepts a flick.
+The file is `Application.temporaryCachePath/replay/last-flick.txt`. In the editor that folder is `Temp/replay`.
+The text stores the seat, aim vector, drag power, and contact offset from that `FlickCommand`.
+`SubmitFlick` reads the file back and prints it in the console.
+A flick the reducer rejects leaves the previous file in place.
+The file records that accepted command so a smoke read can print it.
+
 ## Card effects
 
 `Assets/Data/Csv/cards.csv` lists each card's family, build cost and an effect string that `EffectSpecParser` turns into an `EffectSpec`.
