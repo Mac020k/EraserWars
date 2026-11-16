@@ -474,7 +474,7 @@
     background-color: rgb(255, 120, 160);
     border-radius: 12px;
     padding: 2px 16px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 .hand-dock.seat-0 .hand-title { background-color: rgb(255, 120, 160); }
@@ -487,6 +487,7 @@
     justify-content: center;
     align-items: flex-end;
     flex-wrap: wrap;
+    padding-top: 32px;
 }
 
 .hand-card {
@@ -494,18 +495,24 @@
     height: 158px;
     min-width: 112px;
     max-width: 112px;
-    margin: 0 5px 4px 5px;
+    margin: 0 8px 8px 8px;
     flex-shrink: 0;
+    transition-property: scale, translate, border-color;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out;
 }
 
-.hand-card:hover {
-    scale: 1.06 1.06;
-    translate: 0 -10px;
+.hand-card:hover,
+.hand-card.hand-card-selected {
+    scale: 1.1 1.1;
+    translate: 0 -16px;
+    border-width: 4px;
+    border-color: rgb(255, 252, 248);
 }
 
 .hand-card:active {
-    scale: 0.97 0.97;
-    translate: 0 -2px;
+    scale: 0.98 0.98;
+    translate: 0 -4px;
 }
 
 .action-bar {
