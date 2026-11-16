@@ -25,6 +25,8 @@ namespace EraserWars.UI
         [SerializeField] Texture2D iconPass;
 
         readonly List<PlayerPill> pills = new();
+        KnockPraiseView praiseView;
+        MatchDirector praiseDirector;
 
         VisualElement root;
         VisualElement playersRow;
@@ -94,6 +96,8 @@ namespace EraserWars.UI
             handFingerprint = string.Empty;
 
             ApplyIcon(root.Q("pass-icon"), iconPass);
+            EnsurePraiseView();
+            HookPraise();
             passButton?.RegisterCallback<ClickEvent>(_ => director?.Pass());
             rematchButton?.RegisterCallback<ClickEvent>(_ => director?.Rematch());
             matchEndMenuButton?.RegisterCallback<ClickEvent>(_ => startMenu?.ShowMenu());
@@ -101,8 +105,14 @@ namespace EraserWars.UI
             SetVisible(false);
         }
 
+        void OnDisable()
+        {
+            UnhookPraise();
+        }
+
         void Update()
         {
+            praiseView?.Tick(Time.unscaledDeltaTime);
             RefreshFromState();
         }
 
@@ -112,6 +122,8 @@ namespace EraserWars.UI
             {
                 director = FindAnyObjectByType<MatchDirector>();
             }
+
+            HookPraise();
 
             if (startMenu == null)
             {
@@ -421,6 +433,68 @@ namespace EraserWars.UI
             for (var i = 0; i < SeatClassCount; i++)
             {
                 element.EnableInClassList($"seat-{i}", seat >= 0 && seat % SeatClassCount == i);
+            }
+        }
+
+        void EnsurePraiseView()
+        {
+            if (praiseView != null || root == null)
+            {
+                return;
+            }
+
+            var layer = new VisualElement
+            {
+                name = "knock-praise",
+                pickingMode = PickingMode.Ignore,
+            };
+            layer.AddToClassList("knock-praise");
+            root.Add(layer);
+            praiseView = new KnockPraiseView(layer, PraiseAnchor);
+        }
+
+        VisualElement PraiseAnchor(int seat)
+        {
+            if (seat < 0 || seat >= pills.Count)
+            {
+                return null;
+            }
+
+            return pills[seat].Root;
+        }
+
+        void HookPraise()
+        {
+            if (praiseDirector == director)
+            {
+                return;
+            }
+
+            UnhookPraise();
+            praiseDirector = director;
+            if (praiseDirector != null)
+            {
+                praiseDirector.EraserStockLost += OnEraserStockLost;
+            }
+        }
+
+        void UnhookPraise()
+        {
+            if (praiseDirector == null)
+            {
+                return;
+            }
+
+            praiseDirector.EraserStockLost -= OnEraserStockLost;
+            praiseDirector = null;
+        }
+
+        void OnEraserStockLost(EraserStockLoss loss)
+        {
+            if (praiseView != null
+                && KnockPraiseBurst.TryPraiseSeat(loss.VictimSeat, loss.KnockerSeat, out var seat))
+            {
+                praiseView.Play(seat);
             }
         }
 

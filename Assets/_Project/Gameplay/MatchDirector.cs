@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using EraserWars.Audio;
@@ -53,6 +54,7 @@ namespace EraserWars.Gameplay
             };
         }
 
+        public event Action<EraserStockLoss> EraserStockLost;
         public bool IsStartMenuOpen { get; private set; } = true;
 
         public void SetStartMenuOpen(bool open)
@@ -489,9 +491,20 @@ namespace EraserWars.Gameplay
             }
 
             var exit = eraser.Body != null ? eraser.Body.position : eraser.transform.position;
-            state = MatchReduce.Reduce(state, new EraserFell(victim, state.CurrentPlayerId));
+            var knocker = state.CurrentPlayerId;
+            var stocksBefore = state.GetPlayer(victim).Stocks;
+            state = MatchReduce.Reduce(state, new EraserFell(victim, knocker));
             PresentFallLeave(eraser, exit);
             eraser.gameObject.SetActive(false);
+            if (EraserStockLoss.TryNotice(
+                    stocksBefore,
+                    state.GetPlayer(victim).Stocks,
+                    victim.Value,
+                    knocker.Value,
+                    out var loss))
+            {
+                EraserStockLost?.Invoke(loss);
+            }
         }
 
         void PresentFallLeave(EraserBody eraser, Vector3 exit)
