@@ -6,6 +6,7 @@
         "EraserWars.Cards",
         "EraserWars.UI",
         "EraserWars.Gameplay",
+        "EraserWars.CameraRig",
         "EraserWars.Audio",
         "EraserWars.Net",
         "UnityEngine.TestRunner",

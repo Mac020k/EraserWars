@@ -25,9 +25,12 @@ namespace EraserWars.CameraRig
         // About classroom-wide (7×9): beyond this the shell fills the frame without empty void.
         [SerializeField] float maxDistance = 7f;
 
+        const float FallGlanceDistanceScale = 0.72f;
+
         Transform chaseTarget;
         Vector3 smoothedFocus;
         bool hasSmoothedFocus;
+        FallLeave leave;
 
         public enum Mode
         {
@@ -53,8 +56,20 @@ namespace EraserWars.CameraRig
             chaseTarget = null;
         }
 
+        public Vector3 FallLeaveFocus => leave.Focus;
+
+        public float FallLeaveUntilUnscaled => leave.UntilUnscaled;
+
+        public bool FallLeaveActiveAt(float nowUnscaled) => leave.Active(nowUnscaled);
+
+        public void PlayFallLeave(Vector3 worldFocus, float nowUnscaled, float seconds)
+        {
+            leave = FallLeave.Begin(worldFocus, nowUnscaled, seconds);
+        }
+
         public void FrameDeskOverview()
         {
+            leave = default;
             chaseTarget = null;
             distance = OverviewDistance;
             yaw = OverviewYaw;
@@ -117,25 +132,28 @@ namespace EraserWars.CameraRig
         void Apply(bool immediate)
         {
             var deskFocus = focus != null ? focus.position : new Vector3(0f, 0.77f, 0f);
+            var glancing = leave.Active(Time.unscaledTime);
             Vector3 anchor;
-            if (chaseTarget != null)
+            if (glancing || chaseTarget != null)
             {
+                var desired = glancing ? leave.Focus : chaseTarget.position;
                 if (!hasSmoothedFocus)
                 {
-                    smoothedFocus = chaseTarget.position;
+                    smoothedFocus = desired;
                     hasSmoothedFocus = true;
                 }
 
                 if (immediate)
                 {
-                    smoothedFocus = chaseTarget.position;
+                    smoothedFocus = desired;
                 }
                 else
                 {
+                    var step = glancing ? Time.unscaledDeltaTime : Time.deltaTime;
                     smoothedFocus = Vector3.Lerp(
                         smoothedFocus,
-                        chaseTarget.position,
-                        1f - Mathf.Exp(-chaseLerp * Time.deltaTime));
+                        desired,
+                        1f - Mathf.Exp(-chaseLerp * step));
                 }
 
                 anchor = smoothedFocus;
@@ -149,7 +167,11 @@ namespace EraserWars.CameraRig
 
             var usePitch = mode == Mode.TopDown ? 85f : mode == Mode.CloseUp ? 32f : pitch;
             var useDistance = mode == Mode.CloseUp ? distance * 0.42f : distance;
-            if (chaseTarget != null && mode == Mode.Orbit)
+            if (glancing && mode == Mode.Orbit)
+            {
+                useDistance *= FallGlanceDistanceScale;
+            }
+            else if (chaseTarget != null && mode == Mode.Orbit)
             {
                 useDistance *= chaseDistanceScale;
             }
