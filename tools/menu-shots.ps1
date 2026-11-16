@@ -7,7 +7,7 @@ param(
     [string]$Aspect = "",
     [int]$CharacterId = 0,
     [switch]$EnterPlay,
-    [int]$TimeoutSeconds = 60
+    [int]$TimeoutSeconds = 120
 )
 
 $ErrorActionPreference = "Stop"

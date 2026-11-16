@@ -297,7 +297,7 @@ namespace EraserWars.UI
                 var sigA = character.SignatureA != null ? character.SignatureA.DisplayName : "—";
                 var sigB = character.SignatureB != null ? character.SignatureB.DisplayName : "—";
                 detailBody.text =
-                    $"{character.Bio}\n\n固有A: {sigA}\n固有B: {sigB}\nパッシブ: {eraser.PassiveKey}\nデッキコスト上限: {eraser.DeckCostCap} / 手札: {eraser.HandLimit}";
+                    $"{character.Bio}\n\n固有A: {sigA}\n固有B: {sigB}\nパッシブ: {FormatPassiveLabel(eraser.PassiveKey)}\nデッキコスト上限: {eraser.DeckCostCap} / 手札: {eraser.HandLimit}";
                 if (detailUnlock != null)
                 {
                     detailUnlock.text = "解放済み";
@@ -378,6 +378,18 @@ namespace EraserWars.UI
             {
                 detailUnlock.text = string.Empty;
             }
+        }
+
+        static string FormatPassiveLabel(string passiveKey)
+        {
+            if (string.IsNullOrWhiteSpace(passiveKey) ||
+                string.Equals(passiveKey, "passive.none", System.StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(passiveKey, "none", System.StringComparison.OrdinalIgnoreCase))
+            {
+                return "なし";
+            }
+
+            return passiveKey;
         }
     }
 }
