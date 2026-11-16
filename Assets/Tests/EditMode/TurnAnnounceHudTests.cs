@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using EraserWars.Cards;
 using EraserWars.Core;
 using EraserWars.Gameplay;
+using EraserWars.Persistence;
 using EraserWars.UI;
 using NUnit.Framework;
 using UnityEditor;
@@ -116,6 +117,8 @@ namespace EraserWars.Tests.EditMode
         public void MatchEndHidesTheAnnounceAndLeavesTheFinishCard()
         {
             var previous = PlayerPrefs.GetInt(MatchDirector.HotseatWinModeKey, (int)WinMode.Stock);
+            var hadXp = PlayerPrefs.HasKey(CareerXp.TotalKey);
+            var previousXp = PlayerPrefs.GetInt(CareerXp.TotalKey, 0);
             PlayerPrefs.SetInt(MatchDirector.HotseatWinModeKey, (int)WinMode.Points);
             try
             {
@@ -138,6 +141,16 @@ namespace EraserWars.Tests.EditMode
             finally
             {
                 PlayerPrefs.SetInt(MatchDirector.HotseatWinModeKey, previous);
+                if (hadXp)
+                {
+                    PlayerPrefs.SetInt(CareerXp.TotalKey, previousXp);
+                }
+                else
+                {
+                    PlayerPrefs.DeleteKey(CareerXp.TotalKey);
+                }
+
+                PlayerPrefs.Save();
             }
         }
 
