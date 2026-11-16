@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using EraserWars.Cards;
 using UnityEngine.UIElements;
@@ -6,12 +7,19 @@ namespace EraserWars.UI
 {
     public sealed class DeckPanelController
     {
+        const int DefaultCap = 8;
+
         readonly ContentCatalog catalog;
         readonly HotseatLoadout loadout;
         ScrollView characterList;
         ScrollView cardList;
         Label status;
         Label detail;
+        Label budgetLabel;
+        Label budgetRemain;
+        VisualElement budgetFill;
+        Label budgetWarning;
+        Label emptyDeck;
         readonly Button[] seatTabs = new Button[4];
         int activeSeat;
         int playerCount = 2;
@@ -33,6 +41,11 @@ namespace EraserWars.UI
             cardList = deckPanel.Q<ScrollView>("deck-card-list");
             status = deckPanel.Q<Label>("deck-status");
             detail = deckPanel.Q<Label>("deck-detail");
+            budgetLabel = deckPanel.Q<Label>("deck-budget-label");
+            budgetRemain = deckPanel.Q<Label>("deck-budget-remain");
+            budgetFill = deckPanel.Q("deck-budget-fill");
+            budgetWarning = deckPanel.Q<Label>("deck-budget-warning");
+            emptyDeck = deckPanel.Q<Label>("deck-empty");
             for (var i = 0; i < seatTabs.Length; i++)
             {
                 var seat = i;
@@ -87,11 +100,13 @@ namespace EraserWars.UI
             }
 
             characterList.Clear();
-            if (catalog?.Characters == null)
+            if (catalog?.Characters == null || catalog.Characters.Count == 0)
             {
+                characterList.Add(EmptyCopy("キャラがいません。"));
                 return;
             }
 
+            var shown = 0;
             foreach (var character in catalog.Characters)
             {
                 if (character == null)
@@ -99,6 +114,7 @@ namespace EraserWars.UI
                     continue;
                 }
 
+                shown++;
                 var button = new Button();
                 button.AddToClassList("deck-item");
                 var selected = loadout.Seats[activeSeat] == character;
@@ -109,6 +125,11 @@ namespace EraserWars.UI
                 var captured = character;
                 button.clicked += () => SelectCharacter(captured);
                 characterList.Add(button);
+            }
+
+            if (shown == 0)
+            {
+                characterList.Add(EmptyCopy("キャラがいません。"));
             }
         }
 
@@ -129,10 +150,12 @@ namespace EraserWars.UI
             cardList.Clear();
             if (catalog?.Cards == null)
             {
+                cardList.Add(EmptyCopy("追加できるコモンカードがありません。"));
                 return;
             }
 
             var selected = loadout.Commons[activeSeat];
+            var shown = 0;
             foreach (var card in catalog.Cards)
             {
                 if (card == null || card.IsSignature)
@@ -140,93 +163,176 @@ namespace EraserWars.UI
                     continue;
                 }
 
-                var button = new Button();
-                button.AddToClassList("deck-item");
-                var count = CountCopies(selected, card.IdValue);
-                button.EnableInClassList("selected", count > 0);
-                button.text = count > 0
-                    ? $"[{count}] {card.DisplayName}  cost{card.BuildCost}"
-                    : $"{card.DisplayName}  cost{card.BuildCost}";
-                var captured = card;
-                button.clicked += () => ToggleCard(captured);
-                cardList.Add(button);
+                shown++;
+                cardList.Add(BuildCardRow(card, CountCopies(selected, card.IdValue)));
+            }
+
+            if (shown == 0)
+            {
+                cardList.Add(EmptyCopy("追加できるコモンカードがありません。"));
             }
         }
 
-        void ToggleCard(CardDefinition card)
+        VisualElement BuildCardRow(CardDefinition card, int count)
+        {
+            var row = new VisualElement();
+            row.AddToClassList("deck-row");
+            row.EnableInClassList("deck-row-in", count > 0);
+
+            var name = new Label(card.DisplayName);
+            name.AddToClassList("deck-row-name");
+            var cost = new Label($"コスト {card.BuildCost}");
+            cost.AddToClassList("deck-row-cost");
+            var copies = new Label(count > 0 ? $"{count}枚" : "");
+            copies.AddToClassList("deck-row-count");
+            copies.EnableInClassList("hidden", count <= 0);
+
+            var remove = new Button { text = "外す" };
+            remove.AddToClassList("deck-action");
+            remove.AddToClassList("deck-action-remove");
+            remove.EnableInClassList("hidden", count <= 0);
+            var add = new Button { text = "追加" };
+            add.AddToClassList("deck-action");
+            add.AddToClassList("deck-action-add");
+
+            var captured = card;
+            remove.clicked += () => RemoveOne(captured);
+            add.clicked += () => AddOne(captured);
+
+            row.Add(name);
+            row.Add(cost);
+            row.Add(copies);
+            row.Add(remove);
+            row.Add(add);
+            return row;
+        }
+
+        void AddOne(CardDefinition card)
         {
             var selected = loadout.Commons[activeSeat];
-            var count = CountCopies(selected, card.IdValue);
-            if (count > 0)
+            var budget = DeckBudget.From(selected, ActiveCap());
+            var block = budget.BlockAdd(CountCopies(selected, card.IdValue), card.MaxCopies, card.BuildCost);
+            switch (block)
             {
-                for (var i = selected.Count - 1; i >= 0; i--)
-                {
-                    if (selected[i] != null && selected[i].IdValue == card.IdValue)
-                    {
-                        selected.RemoveAt(i);
-                        break;
-                    }
-                }
+                case AddBlock.None:
+                    selected.Add(card);
+                    RebuildCardList();
+                    RefreshStatus();
+                    return;
+                case AddBlock.Slots:
+                    RefreshStatus("コモンは6枚までです。");
+                    return;
+                case AddBlock.Copies:
+                    RefreshStatus($"{card.DisplayName} は{card.MaxCopies}枚までです。");
+                    return;
+                case AddBlock.Cost:
+                    RefreshStatus(
+                        $"{card.DisplayName} を足すと {budget.Used + card.BuildCost}/{budget.Cap} になります。");
+                    return;
+                default:
+                    throw new InvalidOperationException($"Unhandled {nameof(AddBlock)} '{block}'.");
             }
-            else
+        }
+
+        void RemoveOne(CardDefinition card)
+        {
+            var selected = loadout.Commons[activeSeat];
+            for (var i = selected.Count - 1; i >= 0; i--)
             {
-                if (selected.Count >= 6)
+                if (selected[i] != null && selected[i].IdValue == card.IdValue)
                 {
-                    RefreshStatus("コモンは6枚まで");
-                    return;
+                    selected.RemoveAt(i);
+                    break;
                 }
-
-                if (count >= card.MaxCopies)
-                {
-                    RefreshStatus($"枚数上限 {card.DisplayName}");
-                    return;
-                }
-
-                var character = loadout.Seats[activeSeat];
-                var cap = character?.Eraser?.DeckCostCap ?? 8;
-                var nextCost = TotalCost(selected) + card.BuildCost;
-                if (nextCost > cap)
-                {
-                    RefreshStatus($"コスト超過 ({nextCost}/{cap})");
-                    return;
-                }
-
-                selected.Add(card);
             }
 
             RebuildCardList();
             RefreshStatus();
         }
 
-        void RefreshStatus(string extra = null)
+        void RefreshStatus(string reject = null)
         {
             var character = loadout.Seats[activeSeat];
             var selected = loadout.Commons[activeSeat];
-            var cost = TotalCost(selected);
-            var cap = character?.Eraser?.DeckCostCap ?? 8;
+            var budget = DeckBudget.From(selected, ActiveCap());
             var name = character != null ? character.DisplayName : "未選択";
-            var sigA = character?.SignatureA != null ? character.SignatureA.DisplayName : "—";
-            var sigB = character?.SignatureB != null ? character.SignatureB.DisplayName : "—";
+            var sigA = character?.SignatureA != null ? character.SignatureA.DisplayName : "なし";
+            var sigB = character?.SignatureB != null ? character.SignatureB.DisplayName : "なし";
+            PaintBudget(budget, reject);
+
             if (status != null)
             {
-                status.text =
-                    $"P{activeSeat + 1}: {name}  /  コモン {selected.Count}/6  デッキコスト {cost}/{cap}";
-                if (!string.IsNullOrEmpty(extra))
-                {
-                    status.text += $"  ·  {extra}";
-                }
+                status.text = $"P{activeSeat + 1}: {name}  /  コモン {budget.Count}/{DeckBudget.SlotCap}";
             }
 
             if (detail != null)
             {
                 detail.text =
-                    $"固有: {sigA} / {sigB}\n型: {CharacterArchetypes.DisplayJa(character?.ArchetypeKey)}\nデッキコスト上限: {cap}";
+                    $"固有: {sigA} / {sigB}\n型: {CharacterArchetypes.DisplayJa(character?.ArchetypeKey)}";
             }
+        }
+
+        void PaintBudget(DeckBudget budget, string reject)
+        {
+            if (budgetLabel != null)
+            {
+                budgetLabel.text = $"デッキコスト {budget.Used}/{budget.Cap}";
+            }
+
+            if (budgetRemain != null)
+            {
+                budgetRemain.text = budget.OverCap
+                    ? "上限オーバー"
+                    : budget.AtCap
+                        ? "上限ぴったり"
+                        : $"残り {budget.Remaining}";
+                budgetRemain.EnableInClassList("over", budget.OverCap);
+                budgetRemain.EnableInClassList("full", budget.AtCap);
+            }
+
+            if (budgetFill != null)
+            {
+                budgetFill.style.width = Length.Percent(budget.FillPercent);
+                budgetFill.EnableInClassList("over", budget.OverCap);
+                budgetFill.EnableInClassList("full", budget.AtCap);
+            }
+
+            var showWarning = budget.OverCap || !string.IsNullOrEmpty(reject);
+            if (budgetWarning != null)
+            {
+                budgetWarning.EnableInClassList("hidden", !showWarning);
+                if (showWarning)
+                {
+                    budgetWarning.text = budget.OverCap
+                        ? "上限を超えています。カードを外してください。"
+                        : reject;
+                }
+            }
+
+            emptyDeck?.EnableInClassList("hidden", budget.Count > 0);
+        }
+
+        int ActiveCap()
+        {
+            var character = loadout.Seats[activeSeat];
+            return character?.Eraser?.DeckCostCap ?? DefaultCap;
+        }
+
+        static Label EmptyCopy(string text)
+        {
+            var label = new Label(text);
+            label.AddToClassList("deck-empty");
+            return label;
         }
 
         static int CountCopies(List<CardDefinition> cards, int id)
         {
             var n = 0;
+            if (cards == null)
+            {
+                return n;
+            }
+
             foreach (var card in cards)
             {
                 if (card != null && card.IdValue == id)
@@ -238,18 +344,94 @@ namespace EraserWars.UI
             return n;
         }
 
-        static int TotalCost(List<CardDefinition> cards)
+        enum AddBlock
         {
-            var cost = 0;
-            foreach (var card in cards)
+            None,
+            Slots,
+            Copies,
+            Cost,
+        }
+
+        readonly struct DeckBudget
+        {
+            public const int SlotCap = 6;
+
+            public readonly int Used;
+            public readonly int Cap;
+            public readonly int Count;
+
+            DeckBudget(int used, int cap, int count)
             {
-                if (card != null)
+                Used = used;
+                Cap = cap;
+                Count = count;
+            }
+
+            public bool OverCap => Used > Cap;
+
+            public bool AtCap => Used == Cap;
+
+            public int Remaining => Cap > Used ? Cap - Used : 0;
+
+            public float FillPercent
+            {
+                get
                 {
-                    cost += card.BuildCost;
+                    if (Cap <= 0)
+                    {
+                        return Used > 0 ? 100f : 0f;
+                    }
+
+                    var raw = 100f * Used / Cap;
+                    if (raw < 0f)
+                    {
+                        return 0f;
+                    }
+
+                    return raw > 100f ? 100f : raw;
                 }
             }
 
-            return cost;
+            public static DeckBudget From(List<CardDefinition> cards, int cap)
+            {
+                var used = 0;
+                var count = 0;
+                if (cards != null)
+                {
+                    foreach (var card in cards)
+                    {
+                        if (card == null)
+                        {
+                            continue;
+                        }
+
+                        used += card.BuildCost;
+                        count++;
+                    }
+                }
+
+                return new DeckBudget(used, cap, count);
+            }
+
+            public AddBlock BlockAdd(int copies, int maxCopies, int buildCost)
+            {
+                if (Count >= SlotCap)
+                {
+                    return AddBlock.Slots;
+                }
+
+                if (copies >= maxCopies)
+                {
+                    return AddBlock.Copies;
+                }
+
+                if (Used + buildCost > Cap)
+                {
+                    return AddBlock.Cost;
+                }
+
+                return AddBlock.None;
+            }
         }
     }
 }
