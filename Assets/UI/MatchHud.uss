@@ -167,6 +167,41 @@
     color: rgb(90, 82, 98);
 }
 
+.turn-yield {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    top: 4px;
+    bottom: 4px;
+    border-radius: 12px;
+    border-width: 3px;
+    font-size: 22px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    background-color: rgb(255, 236, 168);
+    color: rgb(70, 42, 8);
+}
+
+.turn-yield.hidden {
+    display: none;
+}
+
+.turn-yield.yield-pass {
+    background-color: rgb(255, 236, 168);
+    color: rgb(70, 42, 8);
+}
+
+.turn-yield.yield-time {
+    background-color: rgb(214, 32, 48);
+    color: rgb(255, 255, 255);
+}
+
+.turn-yield.seat-0 { border-color: rgb(255, 120, 160); }
+.turn-yield.seat-1 { border-color: rgb(70, 130, 240); }
+.turn-yield.seat-2 { border-color: rgb(70, 190, 100); }
+.turn-yield.seat-3 { border-color: rgb(255, 160, 50); }
+
 .hud-menu-button {
     width: 100px;
     height: 80%;
