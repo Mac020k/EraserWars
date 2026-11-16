@@ -272,6 +272,10 @@
     margin-bottom: 2px;
 }
 
+.pill-hearts.hidden {
+    display: none;
+}
+
 .heart {
     width: 16px;
     height: 16px;
@@ -303,10 +307,25 @@
 }
 
 .pill-points {
-    font-size: 16px;
+    font-size: 32px;
     -unity-font-style: bold;
-    color: rgb(70, 60, 80);
+    color: rgb(50, 42, 60);
+    background-color: rgb(255, 248, 220);
+    border-radius: 12px;
+    padding: 2px 14px;
+    margin-top: 2px;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
 }
+
+.pill-points.hidden {
+    display: none;
+}
+
+.player-pill.seat-0 .pill-points { color: rgb(176, 32, 84); }
+.player-pill.seat-1 .pill-points { color: rgb(28, 72, 176); }
+.player-pill.seat-2 .pill-points { color: rgb(16, 118, 52); }
+.player-pill.seat-3 .pill-points { color: rgb(176, 88, 8); }
 
 .player-pill.pill-active {
     opacity: 1;

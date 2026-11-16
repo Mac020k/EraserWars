@@ -69,6 +69,7 @@ namespace EraserWars.UI
         sealed class PlayerPill
         {
             public VisualElement Root;
+            public VisualElement HeartsRow;
             public Label Points;
             public Label Now;
             public readonly List<VisualElement> Hearts = new();
@@ -557,6 +558,7 @@ namespace EraserWars.UI
             }
 
             var activeSeat = state.Phase == Phase.MatchEnd ? -1 : state.CurrentPlayerId.Value;
+            var showScore = state.Rules.WinMode == WinMode.Points;
             for (var i = 0; i < state.Players.Length; i++)
             {
                 var player = state.Players[i];
@@ -566,6 +568,8 @@ namespace EraserWars.UI
                 pill.Now?.EnableInClassList(HiddenClass, !active);
                 pill.Root.EnableInClassList(PillOutClass, !player.IsAlive);
                 pill.Points.text = $"{player.Points}点";
+                pill.Points.EnableInClassList(HiddenClass, !showScore);
+                pill.HeartsRow.EnableInClassList(HiddenClass, showScore);
                 for (var h = 0; h < pill.Hearts.Count; h++)
                 {
                     pill.Hearts[h].EnableInClassList(HeartLostClass, h >= player.Stocks);
@@ -594,6 +598,7 @@ namespace EraserWars.UI
 
                 var heartRow = new VisualElement();
                 heartRow.AddToClassList("pill-hearts");
+                pill.HeartsRow = heartRow;
                 for (var h = 0; h < stockCount; h++)
                 {
                     var heart = new VisualElement();
