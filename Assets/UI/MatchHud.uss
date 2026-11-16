@@ -487,3 +487,110 @@
     border-top-width: 2px;
     border-top-color: rgba(255, 255, 255, 0.92);
 }
+
+.card-cutin {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-cutin.hidden {
+    display: none;
+}
+
+.card-cutin-dim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(18, 12, 22, 0.55);
+}
+
+.card-cutin-banner {
+    flex-direction: row;
+    align-items: center;
+    min-width: 640px;
+    max-width: 92%;
+    min-height: 220px;
+    padding: 18px 40px 18px 22px;
+    background-color: rgba(255, 252, 248, 0.98);
+    border-radius: 28px;
+    border-width: 8px;
+    border-color: rgb(40, 32, 48);
+    rotate: -6deg;
+}
+
+.card-cutin-banner.seat-0 { border-color: rgb(255, 120, 160); }
+.card-cutin-banner.seat-1 { border-color: rgb(70, 130, 240); }
+.card-cutin-banner.seat-2 { border-color: rgb(70, 190, 100); }
+.card-cutin-banner.seat-3 { border-color: rgb(255, 160, 50); }
+
+.card-cutin-banner.seat-0 .card-cutin-name { color: rgb(176, 32, 84); }
+.card-cutin-banner.seat-1 .card-cutin-name { color: rgb(28, 72, 176); }
+.card-cutin-banner.seat-2 .card-cutin-name { color: rgb(16, 118, 52); }
+.card-cutin-banner.seat-3 .card-cutin-name { color: rgb(176, 88, 8); }
+
+.card-cutin.card-cutin-signature .card-cutin-banner {
+    min-height: 260px;
+    background-color: rgb(28, 34, 52);
+    border-color: rgb(232, 184, 72);
+}
+
+.card-cutin.card-cutin-signature .card-cutin-kicker {
+    color: rgb(232, 184, 72);
+}
+
+.card-cutin.card-cutin-signature .card-cutin-name {
+    color: rgb(255, 246, 220);
+    font-size: 72px;
+}
+
+.card-cutin-face {
+    width: 168px;
+    height: 220px;
+    margin-right: 28px;
+    flex-shrink: 0;
+}
+
+.card-cutin-face .card-face-body {
+    display: none;
+}
+
+.card-cutin-face .card-effect-icon {
+    width: 88px;
+    height: 88px;
+    top: 66px;
+    left: 40px;
+    right: auto;
+}
+
+.card-cutin-face .card-ribbon {
+    top: 164px;
+}
+
+.card-cutin-copy {
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.card-cutin-kicker {
+    margin: 0 0 4px 0;
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: rgb(80, 70, 88);
+}
+
+.card-cutin-name {
+    margin: 0;
+    font-size: 64px;
+    -unity-font-style: bold;
+    color: rgb(28, 22, 36);
+    white-space: normal;
+}
+

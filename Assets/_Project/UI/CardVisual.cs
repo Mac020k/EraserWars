@@ -9,6 +9,7 @@ namespace EraserWars.UI
     {
         Collection,
         Hand,
+        CutIn,
     }
 
     public static class CardFaceBuilder
@@ -86,10 +87,17 @@ namespace EraserWars.UI
                 case CardSurface.Collection:
                     host.EnableInClassList("card-tile", true);
                     host.EnableInClassList("hand-card", false);
+                    host.EnableInClassList("cutin-card", false);
                     break;
                 case CardSurface.Hand:
                     host.EnableInClassList("card-tile", false);
                     host.EnableInClassList("hand-card", true);
+                    host.EnableInClassList("cutin-card", false);
+                    break;
+                case CardSurface.CutIn:
+                    host.EnableInClassList("card-tile", false);
+                    host.EnableInClassList("hand-card", false);
+                    host.EnableInClassList("cutin-card", true);
                     break;
                 default:
                     throw new InvalidOperationException($"Unhandled CardSurface {surface}");
@@ -121,6 +129,8 @@ namespace EraserWars.UI
                     return "card-tile-name";
                 case CardSurface.Hand:
                     return "hand-card-name";
+                case CardSurface.CutIn:
+                    return "cutin-card-name";
                 default:
                     throw new InvalidOperationException($"Unhandled CardSurface {surface}");
             }

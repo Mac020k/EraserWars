@@ -26,6 +26,7 @@ namespace EraserWars.Gameplay
         EdgeSlowmoWatcher edgeSlowmo;
         EffectPhysicsSync effectPhysics;
         MatchState state;
+        CardCutIn? cardCutIn;
         int activeSeat;
         const float ActiveEraserCueScale = 1.14f;
 
@@ -55,6 +56,21 @@ namespace EraserWars.Gameplay
         }
 
         public event Action<EraserStockLoss> EraserStockLost;
+
+        public bool IsCardCutInShowing => cardCutIn.HasValue;
+
+        public bool TryGetCardCutIn(out CardCutIn cutIn)
+        {
+            if (cardCutIn is CardCutIn current)
+            {
+                cutIn = current;
+                return true;
+            }
+
+            cutIn = default;
+            return false;
+        }
+
         public bool IsStartMenuOpen { get; private set; } = true;
 
         public void SetStartMenuOpen(bool open)
@@ -125,9 +141,31 @@ namespace EraserWars.Gameplay
 
         void Update()
         {
-            TickTurnTimer(Time.unscaledDeltaTime);
+            AdvanceMatchClock(Time.unscaledDeltaTime);
             RefreshActiveEraserCue();
             effectPhysics.Sync(state, erasers);
+        }
+
+        public void AdvanceMatchClock(float deltaSeconds)
+        {
+            TickCardCutIn(deltaSeconds);
+            TickTurnTimer(deltaSeconds);
+        }
+
+        void TickCardCutIn(float deltaSeconds)
+        {
+            if (cardCutIn is not CardCutIn current || deltaSeconds <= 0f || IsStartMenuOpen)
+            {
+                return;
+            }
+
+            var next = current.Advance(deltaSeconds);
+            cardCutIn = next.IsFinished ? null : next;
+        }
+
+        void BeginCardCutIn(int seat, int cardId, string displayName, bool signature)
+        {
+            cardCutIn = CardCutIn.Begin(seat, cardId, displayName, signature);
         }
 
         void RefreshActiveEraserCue()
@@ -164,7 +202,7 @@ namespace EraserWars.Gameplay
 
         void TickTurnTimer(float deltaSeconds)
         {
-            if (state == null || deltaSeconds <= 0f || IsStartMenuOpen)
+            if (state == null || deltaSeconds <= 0f || IsStartMenuOpen || cardCutIn.HasValue)
             {
                 return;
             }
@@ -245,6 +283,7 @@ namespace EraserWars.Gameplay
 
         public void StartHotseat(int playerCount)
         {
+            cardCutIn = null;
             EnsureEdgeSlowmo();
             edgeSlowmo.BeginMatch();
             ClearErasers();
@@ -369,7 +408,7 @@ namespace EraserWars.Gameplay
 
         public void Pass()
         {
-            if (state.Phase is Phase.MatchEnd or Phase.Simulating)
+            if (cardCutIn.HasValue || state.Phase is Phase.MatchEnd or Phase.Simulating)
             {
                 return;
             }
@@ -398,6 +437,7 @@ namespace EraserWars.Gameplay
             if (!cardById.TryGetValue(cardId, out var definition))
             {
                 Debug.Log($"[EraserWars] PlayCard id={cardId} phase={state.Phase} (no definition)");
+                BeginCardCutIn(player.Value, cardId, $"#{cardId}", false);
                 return;
             }
 
@@ -408,7 +448,8 @@ namespace EraserWars.Gameplay
                 ApplyCardSideEffects(player, effects);
             }
 
-            Debug.Log($"[EraserWars] PlayCard id={cardId} '{definition.DisplayName}' phase={state.Phase} effects={effects.Count} turnLeft={state.TurnTimeLeft:0.0} stocks={state.GetPlayer(player).Stocks}");
+            BeginCardCutIn(player.Value, cardId, definition.DisplayName, definition.IsSignature);
+            Debug.Log($"[EraserWars] PlayCard id={cardId} '{definition.DisplayName}' phase={state.Phase} effects={effects.Count} turnLeft={state.TurnTimeLeft:0.0} stocks={state.GetPlayer(player).Stocks} cutIn={cardCutIn?.DurationSeconds:0.00}");
         }
 
         void ApplyCardSideEffects(PlayerId owner, IReadOnlyList<EffectSpec> effects)

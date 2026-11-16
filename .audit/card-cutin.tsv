@@ -1,0 +1,4 @@
+ts	phase	decision	why	evidence	result
+2026-11-17T07:10:00+09:00	trace	PlayCard already enters Aim and PlayMode tests flick in the same call	a cut-in that rejects SubmitFlick would break those shots	MatchReduce.OnCardPlayed sets Phase.Aim; EffectSpecPhysicsPlayModeTests.Play calls PlayCard then SubmitFlick	premise holds
+2026-11-17T07:20:00+09:00	design	one CardCutIn on MatchDirector, HUD only reads it	a second timer in the HUD would drift from the paused turn clock	CardCutIn.Begin duration 0.8s common and 1.2s signature, including 0.2s slash in and out	chosen
+2026-11-17T07:40:00+09:00	verify	EditMode CardCutIn filter	the banner text, hidden callout, paused clock, and flick-during-banner are what the player can observe	TestResults/CardCutIn-results.xml total=6 passed=6 failed=0	pass

@@ -122,7 +122,7 @@ namespace EraserWars.Gameplay
 
         bool CanTrack()
         {
-            if (director == null || director.State == null || director.IsStartMenuOpen)
+            if (director == null || director.State == null || director.IsStartMenuOpen || director.IsCardCutInShowing)
             {
                 return false;
             }
