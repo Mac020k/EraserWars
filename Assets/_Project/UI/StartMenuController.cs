@@ -732,6 +732,7 @@ namespace EraserWars.UI
             if (showHome)
             {
                 PaintWinMode();
+                FirstCoachTip.Apply(root);
             }
 
             var page = screen switch
