@@ -1,0 +1,8 @@
+ts	phase	decision	why	evidence	result
+2026-11-17T00:19:05+09:00	frame	players must see used cost against the cap while building	status line buried the cost and one click both added and removed a card	DeckPanelController before the change	open
+2026-11-17T00:19:05+09:00	design	one DeckBudget value from the seat card list	add, remove, the meter, and the warning read the same used/cap/count	DeckPanelController.DeckBudget	open
+2026-11-17T00:19:05+09:00	design	keep the illegal add blocked and say why	a legal deck stays legal, and the sentence names the next total or the cap	BlockAdd order slots, copies, cost	open
+2026-11-17T00:19:05+09:00	design	do not share DeckBuilderController and do not store a new field	that type owns a different list, and the loadout already stores cards	HotseatLoadout.Commons	open
+2026-11-17T00:19:05+09:00	verify	controller behavior against stub UI Toolkit	Play Mode editor is open on the main checkout, and this worktree has no Library	dotnet run deck-budget-check passed	measured
+2026-11-17T00:19:05+09:00	verify	layout prototype screenshot	Play Mode shot was not possible from this worktree	docs/prototypes/deck/deck-cost.png	prototype
+2026-11-17T00:21:00+09:00	ship	pushed agent/deck-cost-ux	parent asked for the branch and the SHA	1e7eb37c983f4f373d82992d70de0893547b6ca7	pushed

@@ -25,3 +25,15 @@
 2026-11-16T23:52:00+09:00	autonomy	operator granted 6h unattended command approval	continue absorb/merge/verify without pausing for permission	until ~2026-11-17T05:52+09:00	granted
 2026-11-16T23:54:00+09:00	loop	armed 10m absorb heartbeat for 6h	operator unattended grant; wake on AGENT_LOOP_TICK_eraserwars_absorb	pid 85864 until ~05:52	armed
 2026-11-16T23:55:00+09:00	e2e	flag hotseat reached MatchEnd then rematch CardSelect	captures flaky; logs prove MatchEnd+rematch; 02-in-match.png kept	Logs/Editor.log dump-ui MatchEnd; rematch phase=CardSelect	PARTIAL
+2026-11-16T23:59:00+09:00	absorb	e2e PASS absorbed; 03-match-end committed	predicate 2P loop + 3D visible met	main + 03-match-end.png	absorbed
+2026-11-17T00:04:00+09:00	loop	absorb tick 1: no merge (agents mid-WIP)	options/matchend/deck/turn dirty; card+audio clean still exploring	worktrees @8039cfe	wait
+2026-11-17T00:08:00+09:00	infra	wt-matchend Library robocopy exit 1 = success	copied 25893 files from wt-fx-playverify	wt-matchend/Library	ok
+2026-11-17T00:13:00+09:00	infra	wt-options Library robocopy exit 1 = success	avoid opening more Unity Editors; prefer main Play+flags	wt-options/Library	ok
+2026-11-17T00:15:00+09:00	loop	absorb tick 2: all 6 streams dirty WIP no push yet	Unity open on main+wt-matchend+wt-options+wt-audio-batch	worktrees ahead=0	wait
+2026-11-17T00:15:39+09:00	turn-clarity	large seat callout, per-seat color, 64px clock, pass hint while that seat holds the device	hotseat players must see whose turn it is and which seat they hold	dotnet TurnChrome checks passed; docs/prototypes/turn/turn-callout-2p4p.png; Unity Play not run (worktree has no Library, other editors already open)	origin/agent/turn-clarity@c25bdc5 pushed
+2026-11-17T00:17:00+09:00	merge	merged agent/turn-clarity@c25bdc5	hotseat P# callout + urgent timer; EditMode TurnChromeTests	main	merged
+2026-11-17T00:17:44+09:00	matchend	shipped a finish card on agent/matchend-polish	hotseat MatchEnd needed a readable winner, a stock or points line, rematch, and a menu button over the classroom	ac7b77c539ab89e1d2476a297e7cff5ae6bebb25 docs/prototypes/matchend/hotseat-finish.png log phase=MatchEnd winner=P0	pushed, gh missing so no PR
+2026-11-17T00:18:00+09:00	verify	AudioBus EditMode UNITY_EXIT=2 (tests failed)	audio agent still iterating; results XML present	wt-audio/TestResults/EditMode-AudioBus-results.xml	fail
+2026-11-17T00:19:00+09:00	verify	AudioBus EditMode re-run 8/8 Passed UNITY_EXIT=0	await audio agent commit/push	wt-audio/TestResults/EditMode-AudioBus-results.xml	pass
+2026-11-17T00:20:00+09:00	infra	options Unity wait TIMEOUT but log shows compile 36s OK	wait regex too strict; FishNet warnings only	wt-options/Logs/options-agent.log	ok-inferred
+2026-11-17T00:20:30+09:00	verify	AudioBus PlayMode PLAY_EXIT=0	BGM playback tests green	wt-audio/TestResults/PlayMode-AudioBus-results.xml	pass
