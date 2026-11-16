@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using EraserWars.Audio;
 using EraserWars.CameraRig;
 using EraserWars.Cards;
@@ -609,7 +610,13 @@ namespace EraserWars.Gameplay
             var modifiers = ActiveEffectTuning.For(state, command.Player);
             Debug.Log($"[EraserWars] Flick P{command.Player.Value + 1} {modifiers} bodyMass={eraser.Body.mass:0.0000} damping={eraser.Body.linearDamping:0.00}");
 
+            var beforeFlick = state;
             state = MatchReduce.Reduce(state, new Flicked(command));
+            if (!ReferenceEquals(beforeFlick, state))
+            {
+                StoreLastFlick(command);
+            }
+
             var camera = EnsureOrbitCamera();
             hitstop?.BindCamera(camera);
             hitstop?.BeginShot();
@@ -618,6 +625,19 @@ namespace EraserWars.Gameplay
             flickApplier.Apply(eraser, command, modifiers.Power * flickScale);
             AudioBus.Ensure().Play(AudioCue.Flick);
             settleWatcher.Begin(erasers);
+        }
+
+        static void StoreLastFlick(FlickCommand command)
+        {
+            try
+            {
+                var text = ReplayStub.Remember(command, ReplayStub.DefaultDirectory());
+                Debug.Log("[EraserWars] Last flick\n" + text);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException or ArgumentException)
+            {
+                Debug.LogWarning("[EraserWars] Last flick was not stored. " + ex.Message);
+            }
         }
 
         void OnEraserFell(EraserBody eraser)
