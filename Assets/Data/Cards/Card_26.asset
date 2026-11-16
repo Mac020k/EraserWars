@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: card.clip_bomb
   DisplayNameJa: "\u30AF\u30EA\u30C3\u30D7\u7206\u5F3E"
   FamilyKey: stationery
-  BuildCost: 2
+  BuildCost: 3
   IsSignature: 0
   MaxCopies: 1
   UsesPerMatch: 1

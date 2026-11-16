@@ -13,7 +13,7 @@ id,name_key,display_name_ja,family,build_cost,is_signature,max_copies,uses_per_m
 12,card.prophecy,予言,homework,1,0,2,1,0,1,RevealTrajectory:2
 13,card.kiai_boost,気合入れ,kiai,1,0,2,1,0,1,ModifyStat:Power:1.25:1
 14,card.extra_flick,もう一回,kiai,3,0,1,1,0,1,ExtraFlick
-15,card.body_weight,体重乗せ,kiai,2,0,1,1,0,1,ModifyStat:Mass:1.8:1
+15,card.body_weight,体重乗せ,kiai,3,0,1,1,0,1,ModifyStat:Mass:1.8:1
 16,card.warmup_run,走り込み,kiai,1,0,2,1,0,1,ModifyStat:Speed:1.3:1
 17,card.forgot_homework,宿題忘れ,homework,2,0,1,1,0,1,ModifyRule:OpponentTurnTime:0.8:1
 18,card.review,見直し,homework,1,0,2,1,0,1,ModifyFlick:1:0.5:1
@@ -24,11 +24,11 @@ id,name_key,display_name_ja,family,build_cost,is_signature,max_copies,uses_per_m
 23,card.pencil_lead,鉛筆の芯,stationery,1,0,2,1,0,1,GrantWeapon:0.1:1
 24,card.protractor,分度器,stationery,2,0,1,1,0,1,GrantWeapon:0.18:1
 25,card.stapler,ホッチキス,stationery,2,0,1,1,0,1,GrantWeapon:0.2:1
-26,card.clip_bomb,クリップ爆弾,stationery,2,0,1,1,0,1,GrantWeapon:0.25:1
+26,card.clip_bomb,クリップ爆弾,stationery,3,0,1,1,0,1,GrantWeapon:0.25:1
 27,card.cover_on,カバー装着,cover,1,0,2,1,0,1,ModifyStat:Bounciness:1.4:1
 28,card.tape_hold,テープ止め,cover,2,0,1,1,0,1,ModifyStat:Friction:2.5:1
 29,card.dust_pile,カスの山,cover,2,0,1,1,0,2,PlaceDeskObject:DustPile:2
-30,card.safety_first,安全第一,cover,2,0,1,1,0,1,GrantShield:1:2
+30,card.safety_first,安全第一,cover,3,0,1,1,0,1,GrantShield:1:2
 31,card.recess,休憩時間,kiai,1,0,2,1,0,1,ModifyRule:CooldownCut:0.5:1
 32,card.before_chime,チャイム前,homework,2,0,1,1,0,1,ModifyRule:SelfTurnTime:1.2:1
 33,card.cleaning_duty,掃除当番,cover,1,0,2,1,0,1,PlaceDeskObject:ClearDust:1
@@ -49,3 +49,7 @@ id,name_key,display_name_ja,family,build_cost,is_signature,max_copies,uses_per_m
 48,card.sig.stapler_x,ホッチキス芯X,signature,4,1,1,1,0,1,GrantWeapon:0.3:1
 49,card.sig.glue_bomb,のり爆弾,signature,4,1,1,1,0,1,GrantWeapon:0.28:1
 50,card.sig.take_it_slow,ゆっくりでいい,signature,2,1,1,1,0,1,ModifyRule:OpponentTurnTime:0.6:1
+51,card.infirmary,保健室,cover,3,0,1,1,0,1,RestoreStock:1
+52,card.chime_extension,延長チャイム,homework,1,0,2,1,0,1,ModifyRule:SelfTurnTime:1.5:1
+53,card.sleepy_teacher,居眠り先生,homework,3,0,1,1,0,1,ModifyRule:OpponentTurnTime:0.3:1
+54,card.sig.class_meeting,学級会議,signature,3,1,1,1,0,1,GrantShield:1:3
