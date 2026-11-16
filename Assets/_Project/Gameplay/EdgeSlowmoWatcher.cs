@@ -31,10 +31,29 @@ namespace EraserWars.Gameplay
         bool scaleApplied;
         bool nearMiss;
 
+        public bool IsSlowing => phase == SlowmoPhase.Slowing;
+
+        internal void Bind(MatchDirector match)
+        {
+            director = match;
+        }
+
+        public EdgeSlowmoCue CurrentCue(float nowUnscaled, bool reduceMotion)
+        {
+            return EdgeSlowmoCue.At(IsSlowing, ElapsedUnscaled(nowUnscaled), reduceMotion);
+        }
+
         void Awake()
         {
-            director = GetComponent<MatchDirector>();
-            hitstop = GetComponent<HitstopController>();
+            if (director == null)
+            {
+                director = GetComponent<MatchDirector>();
+            }
+
+            if (hitstop == null)
+            {
+                hitstop = GetComponent<HitstopController>();
+            }
         }
 
         public void BeginMatch()
@@ -57,19 +76,23 @@ namespace EraserWars.Gameplay
 
         void Update()
         {
-            Tick();
+            Tick(Time.unscaledTime);
         }
 
         void FixedUpdate()
         {
-            nearMiss = SampleNearMiss();
-            Tick();
+            Poll(Time.unscaledTime);
         }
 
-        void Tick()
+        public void Poll(float nowUnscaled)
+        {
+            nearMiss = SampleNearMiss();
+            Tick(nowUnscaled);
+        }
+
+        void Tick(float now)
         {
             var freezing = hitstop != null && hitstop.IsFreezing;
-            var now = Time.unscaledTime;
 
             if (phase == SlowmoPhase.Slowing)
             {
@@ -170,6 +193,23 @@ namespace EraserWars.Gameplay
             }
 
             return Mathf.Min(insetX, insetZ) <= edgeMargin;
+        }
+
+        float ElapsedUnscaled(float nowUnscaled)
+        {
+            if (!IsSlowing)
+            {
+                return 0f;
+            }
+
+            var remain = slowUntil - nowUnscaled;
+            if (remain < 0f)
+            {
+                remain = 0f;
+            }
+
+            var elapsed = duration - remain;
+            return elapsed > 0f ? elapsed : 0f;
         }
 
         void RestoreScale()
