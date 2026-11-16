@@ -37,3 +37,15 @@
 2026-11-17T00:19:00+09:00	verify	AudioBus EditMode re-run 8/8 Passed UNITY_EXIT=0	await audio agent commit/push	wt-audio/TestResults/EditMode-AudioBus-results.xml	pass
 2026-11-17T00:20:00+09:00	infra	options Unity wait TIMEOUT but log shows compile 36s OK	wait regex too strict; FishNet warnings only	wt-options/Logs/options-agent.log	ok-inferred
 2026-11-17T00:20:30+09:00	verify	AudioBus PlayMode PLAY_EXIT=0	BGM playback tests green	wt-audio/TestResults/PlayMode-AudioBus-results.xml	pass
+2026-11-17T00:21:00+09:00	merge	merged agent/deck-cost-ux@1e7eb37	cost meter + 追加/外す + over-cap copy	main	merged
+2026-11-17T00:25:00+09:00	loop	absorb tick 3: merged matchend (resolved vs turn-clarity)	audio local green awaiting agent finish; options/card still WIP	main	merged-matchend
+2026-11-17T00:27:07+09:00	options	persisted match feel on Options and pushed agent/options-expand@69f9c47	master volume and UI scale apply on the menu; BGM, SE, flick, turn, shake are PlayerPrefs because UI references Gameplay and no mixer exists	Play log options applied master=1.00 listener=1.00; menu-shot page=898x700 buttons=7 smallest opt-shake 765x48; docs/prototypes/options/options-panel.png	pushed
+2026-11-17T00:28:00+09:00	merge	merged agent/audio-options@02a8e9c; asmdef kept UI+Audio refs	EditMode 8/8 PlayMode 1/1 verified by agent	main	merged
+2026-11-17T00:28:03+09:00	matchend	merged origin/main and recaptured the finish card	turn callout landed on the same HUD files, so the card had to stay beside it	a209d6484ea27534948c8788fabc08b0eec262f0 docs/prototypes/matchend/hotseat-finish.png log phase=MatchEnd winner=P0	pushed, gh missing so no PR
+2026-11-17T00:30:00+09:00	merge	merged options-expand@69f9c47; synced BGM/SE to Audio percent keys; MatchDirector reads turn/flick/shake	UI GameSettings + MatchDirector	main	merged
+2026-11-17T00:31:00+09:00	absorb	matchend agent a209d64 already on main via b8df924	only bind-order noop vs tip; Play capture verified by agent	main@b8df924	skip-merge
+2026-11-17T00:34:00+09:00	card-tcg	painted trading-card faces on collection tiles and the match hand	family color, cost gem, and effect icon from CardGlance	agent/card-tcg@9f73f49 docs/prototypes/card-tcg/unity-cards.png EditMode CardGlanceTests 5/5	pushed, gh missing so no PR
+2026-11-17T00:35:00+09:00	loop	absorb tick 4: merged card-tcg@9f73f49	TCG faces + SVG icons; Options/Audio/MatchEnd/Deck/Turn already on main	main	merged
+2026-11-17T00:36:00+09:00	absorb	card-tcg agent done; already merged as ef668af/633b3fb	all six grok streams on main; predicate nearly met	main@633b3fb	absorbed
+2026-11-17T00:45:00+09:00	loop	absorb tick 5: six streams on main; final-verify capturing	matchend tip noop-ahead; shots landing in .audit/final-verify-2026-11-17	main@633b3fb	wait-verify
+2026-11-17T00:55:00+09:00	loop	absorb tick 6: final-verify still running; menu shots only so far	await matchend/hotseat captures	.audit/final-verify-2026-11-17	wait
