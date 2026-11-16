@@ -10,6 +10,8 @@ namespace EraserWars.Audio
         Flick,
         Collision,
         Fall,
+        CardPlay,
+        CardPlaySignature,
     }
 
     public sealed class AudioBus : MonoBehaviour
@@ -22,6 +24,8 @@ namespace EraserWars.Audio
         static AudioClip flickClip;
         static AudioClip collisionClip;
         static AudioClip fallClip;
+        static AudioClip cardPlayClip;
+        static AudioClip cardPlaySignatureClip;
 
         AudioSource bgmSource;
         AudioSource seSource;
@@ -227,6 +231,10 @@ namespace EraserWars.Audio
                     return CollisionClip();
                 case AudioCue.Fall:
                     return FallClip();
+                case AudioCue.CardPlay:
+                    return CardPlayClip();
+                case AudioCue.CardPlaySignature:
+                    return CardPlaySignatureClip();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(cue), cue, null);
             }
@@ -280,6 +288,26 @@ namespace EraserWars.Audio
             }
 
             return fallClip;
+        }
+
+        static AudioClip CardPlayClip()
+        {
+            if (cardPlayClip == null)
+            {
+                cardPlayClip = BuildCardSlash(false);
+            }
+
+            return cardPlayClip;
+        }
+
+        static AudioClip CardPlaySignatureClip()
+        {
+            if (cardPlaySignatureClip == null)
+            {
+                cardPlaySignatureClip = BuildCardSlash(true);
+            }
+
+            return cardPlaySignatureClip;
         }
 
         static AudioClip BuildBgm()
@@ -366,6 +394,49 @@ namespace EraserWars.Audio
             data[0] = 0f;
             data[data.Length - 1] = 0f;
             return MakeClip("floor-hit", data);
+        }
+
+        static AudioClip BuildCardSlash(bool signature)
+        {
+            var data = new float[(int)(0.11 * SampleRate)];
+            var rng = new System.Random(20261118);
+            var startHz = signature ? 1500.0 : 900.0;
+            var endHz = signature ? 3400.0 : 2000.0;
+            var phase = 0.0;
+            for (var i = 0; i < data.Length; i++)
+            {
+                var u = i / (double)(data.Length - 1);
+                var t = i / (double)SampleRate;
+                var env = (float)(Math.Sin(Math.PI * u) * Math.Exp(-t * 14.0));
+                var hz = startHz + (endHz - startHz) * Math.Pow(u, 0.65);
+                phase += 2 * Math.PI * hz / SampleRate;
+                var tone = (float)Math.Sin(phase);
+                var noise = (float)(rng.NextDouble() * 2 - 1);
+                data[i] = env * (0.82f * tone + 0.12f * noise);
+            }
+
+            var peak = 0f;
+            for (var i = 0; i < data.Length; i++)
+            {
+                var mag = Math.Abs(data[i]);
+                if (mag > peak)
+                {
+                    peak = mag;
+                }
+            }
+
+            if (peak > 0f)
+            {
+                var gain = 0.75f / peak;
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] *= gain;
+                }
+            }
+
+            data[0] = 0f;
+            data[data.Length - 1] = 0f;
+            return MakeClip(signature ? "card-play-signature" : "card-play", data);
         }
 
         static void AddNote(float[] data, double start, double duration, double hz, float amp)
