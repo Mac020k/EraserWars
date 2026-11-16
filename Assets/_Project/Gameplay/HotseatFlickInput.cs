@@ -240,15 +240,40 @@ namespace EraserWars.Gameplay
             }
 
             var direction = pull.normalized;
+            ReadContact(camera, gesture.PressScreen, eraser, out var offsetX, out var offsetZ);
             command = new FlickCommand(
                 director.State.CurrentPlayerId,
                 direction.x,
                 direction.z,
                 length,
-                0f,
-                0f,
+                offsetX,
+                offsetZ,
                 gesture.HeldSeconds);
             return true;
+        }
+
+        static void ReadContact(Camera camera, Vector2 pressScreen, EraserBody eraser, out float offsetX, out float offsetZ)
+        {
+            offsetX = 0f;
+            offsetZ = 0f;
+            var ray = camera.ScreenPointToRay(pressScreen);
+            if (!Physics.Raycast(ray, out var hit, 100f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            {
+                return;
+            }
+
+            if (hit.collider == null || hit.collider.GetComponentInParent<EraserBody>() != eraser)
+            {
+                return;
+            }
+
+            var box = hit.collider as BoxCollider;
+            var space = hit.collider.transform;
+            var center = box != null ? box.center : Vector3.zero;
+            var half = box != null ? box.size * 0.5f : Vector3.one * 0.5f;
+            var local = space.InverseTransformPoint(hit.point) - center;
+            offsetX = FlickMath.NormalizeOffset(local.x, half.x);
+            offsetZ = FlickMath.NormalizeOffset(local.z, half.z);
         }
 
         float DragLength01(Vector2 press, Vector2 release)

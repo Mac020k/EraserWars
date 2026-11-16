@@ -53,6 +53,43 @@ namespace EraserWars.Core
             return value;
         }
 
+        public static float ClampSigned(float value)
+        {
+            if (value < -1f) return -1f;
+            if (value > 1f) return 1f;
+            return value;
+        }
+
+        public static float NormalizeOffset(float local, float halfExtent)
+        {
+            if (halfExtent <= 1e-8f)
+            {
+                return 0f;
+            }
+
+            return ClampSigned(local / halfExtent);
+        }
+
+        public static (float x, float y, float z) LocalContact(
+            float offsetX,
+            float offsetZ,
+            float halfX,
+            float halfZ)
+        {
+            return (ClampSigned(offsetX) * halfX, 0f, ClampSigned(offsetZ) * halfZ);
+        }
+
+        public static float YawImpulse(
+            float leverX,
+            float leverZ,
+            float impulseX,
+            float impulseZ,
+            float spinGain)
+        {
+            var gain = spinGain < 0f ? 0f : spinGain;
+            return gain * (leverZ * impulseX - leverX * impulseZ);
+        }
+
         public static float Impulse(float power, float jMax, float dragLength01)
         {
             var l = Clamp01(dragLength01);

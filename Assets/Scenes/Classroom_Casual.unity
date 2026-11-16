@@ -15443,10 +15443,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b97c3d500814894b9c199bdbc371372, type: 3}
   m_Name: 
   m_EditorClassIdentifier: EraserWars.Gameplay::EraserWars.Gameplay.FlickApplier
+  tuning: {fileID: 11400000, guid: f2b73a13fd46412e834caad079e289af, type: 2}
   jMax: 0.24
   amplitude0: 0.35
   frequency0: 0.8
   frequencySlope: 2.5
+  spinGain: 1
 --- !u!114 &610683858
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,6 +7,37 @@ namespace EraserWars.Tests.EditMode
     public sealed class FlickMathTests
     {
         [Test]
+        public void CenterContactHasNoYawAndTheEdgeSpinsHarder()
+        {
+            const float impulse = 0.24f;
+            const float halfZ = 0.014f;
+            var center = FlickMath.YawImpulse(0f, 0f, impulse, 0f, 1f);
+            var middle = FlickMath.YawImpulse(0f, halfZ * 0.5f, impulse, 0f, 1f);
+            var edge = FlickMath.YawImpulse(0f, halfZ, impulse, 0f, 1f);
+            var alongPush = FlickMath.YawImpulse(0.03f, 0f, impulse, 0f, 1f);
+
+            Assert.AreEqual(0f, center, 1e-8f, "A center contact has no yaw lever.");
+            Assert.AreEqual(0f, alongPush, 1e-8f, "A contact on the push line has no yaw lever.");
+            Assert.AreEqual(halfZ * 0.5f * impulse, middle, 1e-6f, "Half the lever is half the yaw.");
+            Assert.AreEqual(halfZ * impulse, edge, 1e-6f, "Yaw is the vertical part of r cross J.");
+            Assert.Greater(MathF.Abs(edge), MathF.Abs(middle), "The edge spins harder than the middle.");
+            Assert.Greater(MathF.Abs(middle), MathF.Abs(center), "The middle spins harder than the center.");
+        }
+
+        [Test]
+        public void SpinGainScalesYawAndContactStaysInsideTheFace()
+        {
+            var once = FlickMath.YawImpulse(0f, 0.014f, 0.24f, 0f, 1f);
+            var twice = FlickMath.YawImpulse(0f, 0.014f, 0.24f, 0f, 2f);
+            var local = FlickMath.LocalContact(4f, -3f, 0.5f, 0.5f);
+
+            Assert.AreEqual(once * 2f, twice, 1e-6f, "Spin gain multiplies yaw and leaves the impulse.");
+            Assert.AreEqual(0.5f, local.x, 1e-6f, "Offset past the face clamps to the local half extent.");
+            Assert.AreEqual(0f, local.y, 1e-6f, "The contact stays at center height so a centered flick does not tip.");
+            Assert.AreEqual(-0.5f, local.z, 1e-6f, "Offset past the face clamps to the local half extent.");
+        }
+
+        [Test]
         public void ImpulseIncreasesWithDragLength()
         {
             const float power = 1f;
