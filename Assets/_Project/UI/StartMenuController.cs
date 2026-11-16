@@ -40,6 +40,24 @@ namespace EraserWars.UI
         // Dev default ON; hide the options control before release.
         bool debugModeEnabled = true;
         Button debugModeButton;
+        Slider masterSlider;
+        Slider bgmSlider;
+        Slider seSlider;
+        Slider flickSlider;
+        Slider turnSlider;
+        Label masterValue;
+        Label bgmValue;
+        Label seValue;
+        Label flickValue;
+        Label turnValue;
+        Button shakeButton;
+        Button uiScaleSmall;
+        Button uiScaleStandard;
+        Button uiScaleLarge;
+        Button resetButton;
+        bool pushingOptions;
+        bool resetArmed;
+        bool optionsWired;
 
         enum MenuScreen
         {
@@ -58,6 +76,12 @@ namespace EraserWars.UI
         void OnEnable()
         {
             BindDocument(force: true);
+            if (document == null || document.rootVisualElement == null)
+            {
+                GameSettings.Load();
+                GameSettings.ApplyVolume();
+            }
+
             if (root == null)
             {
                 return;
@@ -95,6 +119,11 @@ namespace EraserWars.UI
             }
 
             var treeChanged = force || boundPanelRoot != panelRoot;
+            if (boundPanelRoot != panelRoot)
+            {
+                optionsWired = false;
+            }
+
             if (!treeChanged && root != null)
             {
                 RefreshQueries(panelRoot);
@@ -108,6 +137,7 @@ namespace EraserWars.UI
             EnsureCatalog();
             EnsureCollectionBound();
             EnsureDeckBound();
+            LoadOptions();
         }
 
         void RefreshQueries(VisualElement panelRoot)
@@ -121,6 +151,21 @@ namespace EraserWars.UI
             mode2P = root.Q<Button>("mode-2p");
             mode4P = root.Q<Button>("mode-4p");
             debugModeButton = root.Q<Button>("opt-debug-mode");
+            masterSlider = root.Q<Slider>("opt-master");
+            bgmSlider = root.Q<Slider>("opt-bgm");
+            seSlider = root.Q<Slider>("opt-se");
+            flickSlider = root.Q<Slider>("opt-flick");
+            turnSlider = root.Q<Slider>("opt-turn");
+            masterValue = root.Q<Label>("opt-master-value");
+            bgmValue = root.Q<Label>("opt-bgm-value");
+            seValue = root.Q<Label>("opt-se-value");
+            flickValue = root.Q<Label>("opt-flick-value");
+            turnValue = root.Q<Label>("opt-turn-value");
+            shakeButton = root.Q<Button>("opt-shake");
+            uiScaleSmall = root.Q<Button>("opt-ui-80");
+            uiScaleStandard = root.Q<Button>("opt-ui-100");
+            uiScaleLarge = root.Q<Button>("opt-ui-120");
+            resetButton = root.Q<Button>("opt-reset");
         }
 
         void RegisterMenuCallbacks()
@@ -132,10 +177,26 @@ namespace EraserWars.UI
             root.Q<Button>("open-options")?.RegisterCallback<ClickEvent>(_ => OpenOptions());
             root.Q<Button>("open-deck")?.RegisterCallback<ClickEvent>(_ => OpenDeck());
             root.Q<Button>("open-collection")?.RegisterCallback<ClickEvent>(_ => OpenCollection());
-            root.Q<Button>("close-options")?.RegisterCallback<ClickEvent>(_ => GoHome());
+            root.Q<Button>("close-options")?.RegisterCallback<ClickEvent>(_ => CloseOptions());
             root.Q<Button>("close-deck")?.RegisterCallback<ClickEvent>(_ => GoHome());
             root.Q<Button>("close-collection")?.RegisterCallback<ClickEvent>(_ => GoHome());
             debugModeButton?.RegisterCallback<ClickEvent>(_ => ToggleDebugMode());
+            if (!optionsWired && masterSlider != null)
+            {
+                optionsWired = true;
+                masterSlider?.RegisterValueChangedCallback(OnMasterChanged);
+                bgmSlider?.RegisterValueChangedCallback(OnBgmChanged);
+                seSlider?.RegisterValueChangedCallback(OnSeChanged);
+                flickSlider?.RegisterValueChangedCallback(OnFlickChanged);
+                turnSlider?.RegisterValueChangedCallback(OnTurnChanged);
+                turnSlider?.RegisterCallback<PointerUpEvent>(_ => SnapTurnSlider(), TrickleDown.TrickleDown);
+                shakeButton?.RegisterCallback<ClickEvent>(_ => ToggleCameraShake());
+                uiScaleSmall?.RegisterCallback<ClickEvent>(_ => SetUiScale(0.8f));
+                uiScaleStandard?.RegisterCallback<ClickEvent>(_ => SetUiScale(1f));
+                uiScaleLarge?.RegisterCallback<ClickEvent>(_ => SetUiScale(1.2f));
+                resetButton?.RegisterCallback<ClickEvent>(_ => ConfirmReset());
+            }
+
             RefreshDebugModeButton();
         }
 
@@ -168,6 +229,188 @@ namespace EraserWars.UI
 
             debugModeButton.text = debugModeEnabled ? "デバッグモード: ON" : "デバッグモード: OFF";
             debugModeButton.EnableInClassList("debug-on", debugModeEnabled);
+        }
+
+        void LoadOptions()
+        {
+            var settings = GameSettings.Load();
+            PushOptionsToWidgets();
+            ApplyOptionsLive(scaleChanged: true);
+            Debug.Log(
+                $"[EraserWars] options applied master={settings.Master:0.00} bgm={settings.Bgm:0.00} " +
+                $"se={settings.Se:0.00} flick={settings.FlickScale:0.00} turn={settings.TurnSeconds} " +
+                $"shake={settings.CameraShake} ui={settings.UiScale:0.00} listener={AudioListener.volume:0.00}");
+        }
+
+        void ApplyOptionsLive(bool scaleChanged)
+        {
+            GameSettings.ApplyVolume();
+            if (scaleChanged)
+            {
+                GameSettings.ApplyUiScale(document);
+            }
+        }
+
+        void PushOptionsToWidgets()
+        {
+            var settings = GameSettings.Current;
+            pushingOptions = true;
+            masterSlider?.SetValueWithoutNotify(settings.Master * 100f);
+            bgmSlider?.SetValueWithoutNotify(settings.Bgm * 100f);
+            seSlider?.SetValueWithoutNotify(settings.Se * 100f);
+            flickSlider?.SetValueWithoutNotify(settings.FlickScale * 100f);
+            turnSlider?.SetValueWithoutNotify(settings.TurnSeconds);
+            pushingOptions = false;
+            RefreshOptionLabels();
+        }
+
+        void RefreshOptionLabels()
+        {
+            var settings = GameSettings.Current;
+            SetOptionText(masterValue, $"マスター {Mathf.RoundToInt(settings.Master * 100f)}");
+            SetOptionText(bgmValue, $"BGM {Mathf.RoundToInt(settings.Bgm * 100f)}");
+            SetOptionText(seValue, $"SE {Mathf.RoundToInt(settings.Se * 100f)}");
+            SetOptionText(flickValue, $"フリックの強さ {Mathf.RoundToInt(settings.FlickScale * 100f)}");
+            SetOptionText(turnValue, $"1ターン {settings.TurnSeconds}秒");
+            if (shakeButton != null)
+            {
+                shakeButton.text = settings.CameraShake ? "カメラ揺れ: ON" : "カメラ揺れ: OFF";
+                shakeButton.EnableInClassList("on", settings.CameraShake);
+            }
+
+            uiScaleSmall?.EnableInClassList("selected", settings.UiScale < 0.9f);
+            uiScaleStandard?.EnableInClassList("selected", settings.UiScale >= 0.9f && settings.UiScale < 1.1f);
+            uiScaleLarge?.EnableInClassList("selected", settings.UiScale >= 1.1f);
+            if (resetButton != null && !resetArmed)
+            {
+                resetButton.text = "初期値に戻す";
+                resetButton.EnableInClassList("armed", false);
+            }
+        }
+
+        static void SetOptionText(Label label, string text)
+        {
+            if (label != null)
+            {
+                label.text = text;
+            }
+        }
+
+        void OnMasterChanged(ChangeEvent<float> evt)
+        {
+            if (pushingOptions)
+            {
+                return;
+            }
+
+            CommitOptions(GameSettings.Current with { Master = evt.newValue / 100f });
+        }
+
+        void OnBgmChanged(ChangeEvent<float> evt)
+        {
+            if (pushingOptions)
+            {
+                return;
+            }
+
+            CommitOptions(GameSettings.Current with { Bgm = evt.newValue / 100f });
+        }
+
+        void OnSeChanged(ChangeEvent<float> evt)
+        {
+            if (pushingOptions)
+            {
+                return;
+            }
+
+            CommitOptions(GameSettings.Current with { Se = evt.newValue / 100f });
+        }
+
+        void OnFlickChanged(ChangeEvent<float> evt)
+        {
+            if (pushingOptions)
+            {
+                return;
+            }
+
+            CommitOptions(GameSettings.Current with { FlickScale = evt.newValue / 100f });
+        }
+
+        void OnTurnChanged(ChangeEvent<float> evt)
+        {
+            if (pushingOptions)
+            {
+                return;
+            }
+
+            var seconds = GameSettings.SnapTurnSeconds(evt.newValue);
+            CommitOptions(GameSettings.Current with { TurnSeconds = seconds });
+        }
+
+        void SnapTurnSlider()
+        {
+            if (turnSlider == null)
+            {
+                return;
+            }
+
+            pushingOptions = true;
+            turnSlider.SetValueWithoutNotify(GameSettings.Current.TurnSeconds);
+            pushingOptions = false;
+        }
+
+        void ToggleCameraShake()
+        {
+            CommitOptions(GameSettings.Current with { CameraShake = !GameSettings.Current.CameraShake });
+        }
+
+        void SetUiScale(float scale)
+        {
+            CommitOptions(GameSettings.Current with { UiScale = scale });
+        }
+
+        void CommitOptions(GameSettings next)
+        {
+            var scaleChanged = !Mathf.Approximately(GameSettings.Current.UiScale, next.UiScale);
+            DisarmReset();
+            GameSettings.Save(next);
+            RefreshOptionLabels();
+            ApplyOptionsLive(scaleChanged);
+        }
+
+        void ConfirmReset()
+        {
+            if (!resetArmed)
+            {
+                resetArmed = true;
+                if (resetButton != null)
+                {
+                    resetButton.text = "もう一度押すと初期値に戻します";
+                    resetButton.EnableInClassList("armed", true);
+                }
+
+                return;
+            }
+
+            resetArmed = false;
+            GameSettings.ResetToDefaults();
+            PushOptionsToWidgets();
+            ApplyOptionsLive(scaleChanged: true);
+        }
+
+        void DisarmReset()
+        {
+            if (!resetArmed)
+            {
+                return;
+            }
+
+            resetArmed = false;
+            if (resetButton != null)
+            {
+                resetButton.text = "初期値に戻す";
+                resetButton.EnableInClassList("armed", false);
+            }
         }
 
         void EnsureCatalog()
@@ -205,7 +448,14 @@ namespace EraserWars.UI
         public void OpenOptions()
         {
             BindDocument();
+            LoadOptions();
             NavigateTo(MenuScreen.Options);
+        }
+
+        void CloseOptions()
+        {
+            DisarmReset();
+            GoHome();
         }
 
         public void OpenDeck()
@@ -399,6 +649,11 @@ namespace EraserWars.UI
         void NavigateTo(MenuScreen screen)
         {
             BindDocument();
+            if (screen != MenuScreen.Options)
+            {
+                DisarmReset();
+            }
+
             currentScreen = screen;
 
             HideDestinationPages();
