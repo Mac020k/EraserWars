@@ -34,6 +34,12 @@ namespace EraserWars.Gameplay
 
         public MatchState State => state;
         public IReadOnlyList<EraserBody> Erasers => erasers;
+        public bool IsStartMenuOpen { get; private set; } = true;
+
+        public void SetStartMenuOpen(bool open)
+        {
+            IsStartMenuOpen = open;
+        }
 
         public void SetDebugChromeVisible(bool visible)
         {

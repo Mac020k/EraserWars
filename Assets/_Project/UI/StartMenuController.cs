@@ -192,6 +192,7 @@ namespace EraserWars.UI
 
             matchRunning = false;
             director?.SetDebugChromeVisible(false);
+            director?.SetStartMenuOpen(true);
         }
 
         void HideMenu()
@@ -207,6 +208,8 @@ namespace EraserWars.UI
                 document.rootVisualElement.style.display = DisplayStyle.None;
                 document.enabled = false;
             }
+
+            director?.SetStartMenuOpen(false);
 
             // Whole GameObject off so Game view cannot keep painting the title screen.
             gameObject.SetActive(false);

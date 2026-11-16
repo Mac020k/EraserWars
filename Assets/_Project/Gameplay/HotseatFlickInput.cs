@@ -95,7 +95,7 @@ namespace EraserWars.Gameplay
 
         bool CanTrack()
         {
-            if (director == null || director.State == null)
+            if (director == null || director.State == null || director.IsStartMenuOpen)
             {
                 return false;
             }
