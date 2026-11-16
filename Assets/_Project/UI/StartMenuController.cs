@@ -142,8 +142,6 @@ namespace EraserWars.UI
         void ApplyMenuIcons()
         {
             UiImageUtil.ApplyFit(root.Q("brand-icon"), brandIcon);
-            UiImageUtil.ApplyFit(root.Q("icon-2p"), icon2P);
-            UiImageUtil.ApplyFit(root.Q("icon-4p"), icon4P);
             UiImageUtil.ApplyFit(root.Q("icon-deck"), iconDeck);
             UiImageUtil.ApplyFit(root.Q("icon-collection"), iconCollection);
             UiImageUtil.ApplyFit(root.Q("icon-options"), iconOptions);
@@ -453,7 +451,7 @@ namespace EraserWars.UI
             page.style.height = pageH;
             page.style.minWidth = pageW;
             page.style.minHeight = pageH;
-            page.style.backgroundColor = new Color(0.07f, 0.09f, 0.16f, 1f);
+            page.style.backgroundColor = DestinationBackground(screen);
             page.visible = true;
             page.BringToFront();
             Debug.Log(
@@ -467,6 +465,16 @@ namespace EraserWars.UI
             HideDestinationPage(deckPanel);
             HideDestinationPage(collectionPanel);
         }
+
+        static Color DestinationBackground(MenuScreen screen) =>
+            screen switch
+            {
+                MenuScreen.Collection => new Color(0.18f, 0.42f, 0.28f, 1f),
+                MenuScreen.Options => new Color(0.12f, 0.14f, 0.22f, 1f),
+                MenuScreen.Deck => new Color(0.07f, 0.09f, 0.16f, 1f),
+                MenuScreen.Home => new Color(0.07f, 0.09f, 0.16f, 1f),
+                _ => new Color(0.07f, 0.09f, 0.16f, 1f),
+            };
 
         static void HideDestinationPage(VisualElement page)
         {

@@ -12,33 +12,31 @@
                     <ui:VisualElement name="brand-icon" class="brand-icon" />
                 </ui:VisualElement>
                 <ui:VisualElement class="spacer" />
-                <ui:Button name="resume-match" text="つづける" class="cta-button cta-resume hidden" />
-                <ui:Button name="start-match" text="マッチ開始" class="cta-button" />
-                <ui:VisualElement class="tile-row">
-                    <ui:Button name="mode-2p" class="tile tile-pink">
-                        <ui:VisualElement name="icon-2p" class="tile-icon" />
-                        <ui:Label text="ホットシート 2P" class="tile-label" />
-                    </ui:Button>
-                    <ui:Button name="mode-4p" class="tile tile-yellow">
-                        <ui:VisualElement name="icon-4p" class="tile-icon" />
-                        <ui:Label text="ホットシート 4P" class="tile-label" />
-                    </ui:Button>
-                    <ui:Button name="open-deck" class="tile tile-pink">
+                <ui:VisualElement class="action-stack">
+                    <ui:VisualElement class="mode-segment">
+                        <ui:Button name="mode-2p" text="2人対戦" class="mode-chip selected" />
+                        <ui:Button name="mode-4p" text="4人対戦" class="mode-chip" />
+                    </ui:VisualElement>
+                    <ui:Button name="resume-match" text="つづける" class="cta-button cta-resume hidden" />
+                    <ui:Button name="start-match" text="マッチ開始" class="cta-button" />
+                </ui:VisualElement>
+                <ui:VisualElement class="nav-row">
+                    <ui:Button name="open-deck" class="nav-tile">
                         <ui:VisualElement name="icon-deck" class="tile-icon" />
                         <ui:Label text="デッキ" class="tile-label" />
                     </ui:Button>
-                    <ui:Button name="open-collection" class="tile tile-yellow">
+                    <ui:Button name="open-collection" class="nav-tile">
                         <ui:VisualElement name="icon-collection" class="tile-icon" />
                         <ui:Label text="コレクション" class="tile-label" />
                     </ui:Button>
-                    <ui:Button name="open-options" class="tile tile-blue">
+                    <ui:Button name="open-options" class="nav-tile">
                         <ui:VisualElement name="icon-options" class="tile-icon" />
                         <ui:Label text="オプション" class="tile-label" />
                     </ui:Button>
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:VisualElement name="options-panel" class="destination-page hidden">
+            <ui:VisualElement name="options-panel" class="destination-page options-panel hidden">
                 <ui:VisualElement class="destination-chrome">
                     <ui:Button name="close-options" text="← もどる" class="destination-back" />
                     <ui:Label text="オプション" class="destination-title" />

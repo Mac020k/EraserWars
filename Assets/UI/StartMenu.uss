@@ -92,24 +92,69 @@
 .spacer {
     flex-grow: 1;
     min-height: 2%;
-    max-height: 8%;
+    max-height: 12%;
+}
+
+.action-stack {
+    width: 42%;
+    min-width: 280px;
+    max-width: 520px;
+    align-items: center;
+    flex-shrink: 0;
+    margin-bottom: 1.5%;
+}
+
+.mode-segment {
+    flex-direction: row;
+    width: 100%;
+    height: 48px;
+    margin-bottom: 14px;
+    padding: 4px;
+    background-color: rgb(255, 252, 244);
+    border-radius: 12px;
+    border-width: 3px;
+    border-color: rgb(40, 40, 48);
+}
+
+.mode-chip {
+    flex-grow: 1;
+    height: 100%;
+    margin: 0 2px;
+    padding: 0 8px;
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(48, 44, 56);
+    background-color: transparent;
+    border-width: 0;
+    border-radius: 8px;
+}
+
+.mode-chip:hover {
+    background-color: rgba(255, 200, 120, 0.35);
+}
+
+.mode-chip.selected {
+    background-color: rgb(245, 168, 66);
+    color: rgb(255, 255, 255);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgb(120, 70, 20);
 }
 
 .cta-button {
-    width: 34%;
+    width: 100%;
     min-width: 180px;
-    max-width: 480px;
-    height: 52px;
-    font-size: 24px;
+    max-width: 520px;
+    height: 58px;
+    font-size: 26px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
     -unity-text-outline-width: 2px;
     -unity-text-outline-color: rgb(20, 50, 110);
     background-color: rgb(52, 130, 235);
-    border-radius: 14px;
+    border-radius: 29px;
     border-width: 3px;
     border-color: rgb(30, 36, 60);
-    margin: 0 0 1.5% 0;
+    margin: 0;
     flex-shrink: 0;
 }
 
@@ -135,48 +180,37 @@
     background-color: rgb(50, 160, 80);
 }
 
-.tile-row {
+.nav-row {
     flex-direction: row;
-    width: 92%;
-    max-width: 1100px;
-    height: 88px;
+    width: 58%;
+    min-width: 360px;
+    max-width: 720px;
+    height: 92px;
     justify-content: center;
     flex-shrink: 0;
 }
 
-.tile {
+.nav-tile {
     flex-grow: 1;
     flex-basis: 0;
     height: 100%;
-    margin: 0 0.5%;
-    padding: 6px;
+    margin: 0 8px;
+    padding: 8px 6px 6px 6px;
     background-color: rgb(255, 252, 244);
-    border-radius: 12px;
+    border-radius: 14px;
     border-width: 3px;
+    border-color: rgb(210, 200, 180);
     align-items: center;
     justify-content: center;
 }
 
-.tile-pink {
-    border-color: rgb(250, 170, 190);
-}
-
-.tile-yellow {
-    border-color: rgb(240, 214, 140);
-}
-
-.tile-blue {
-    border-color: rgb(150, 200, 240);
-}
-
-.tile:hover {
+.nav-tile:hover {
     background-color: rgb(255, 255, 255);
-    border-color: rgb(255, 120, 150);
+    border-color: rgb(255, 140, 100);
 }
 
-.tile.selected {
-    background-color: rgb(255, 238, 176);
-    border-color: rgb(40, 40, 48);
+.nav-tile:active {
+    background-color: rgb(255, 238, 210);
 }
 
 .tile-icon {
@@ -202,9 +236,22 @@
     position: absolute;
     left: 0;
     top: 0;
-    padding: 2% 3%;
+    padding: 20px 24px;
     background-color: rgb(18, 22, 40);
     flex-direction: column;
+    border-width: 8px;
+    border-color: rgb(196, 150, 88);
+    border-radius: 6px;
+}
+
+.collection-panel.destination-page {
+    background-color: rgb(42, 98, 62);
+    border-color: rgb(210, 168, 104);
+}
+
+.options-panel.destination-page {
+    background-color: rgb(32, 38, 58);
+    border-color: rgb(170, 180, 210);
 }
 
 .destination-page.hidden {
@@ -236,9 +283,14 @@
 }
 
 .options-body {
-    width: 48%;
-    min-width: 280px;
-    max-width: 520px;
+    width: 100%;
+    flex-grow: 1;
+    max-width: 560px;
+    padding: 16px;
+    background-color: rgba(8, 10, 18, 0.35);
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 .options-label {
@@ -297,9 +349,9 @@
 
 .collection-tab {
     flex-grow: 1;
-    height: 34px;
-    margin-right: 6px;
-    font-size: 14px;
+    height: 44px;
+    margin-right: 8px;
+    font-size: 16px;
     -unity-font-style: bold;
     background-color: rgb(40, 46, 64);
     color: rgb(230, 230, 240);
@@ -321,10 +373,11 @@
 }
 
 .collection-filter {
-    height: 28px;
-    margin: 0 4px 4px 0;
-    padding: 0 8px;
-    font-size: 12px;
+    height: 36px;
+    min-width: 64px;
+    margin: 0 6px 6px 0;
+    padding: 0 12px;
+    font-size: 13px;
     background-color: rgb(48, 54, 72);
     color: rgb(220, 220, 230);
     border-width: 1px;
@@ -339,12 +392,14 @@
 }
 
 .collection-strip-scroll {
-    height: 210px;
+    height: 200px;
     flex-shrink: 0;
-    margin-bottom: 10px;
-    background-color: rgba(8, 10, 18, 0.55);
+    margin-bottom: 12px;
+    background-color: rgba(12, 22, 16, 0.45);
     border-radius: 12px;
-    padding: 8px;
+    padding: 10px;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .collection-strip {
@@ -367,8 +422,9 @@
 }
 
 .char-tile.selected {
-    border-color: rgb(40, 40, 48);
-    background-color: rgb(255, 232, 150);
+    border-color: rgb(255, 210, 64);
+    border-width: 4px;
+    background-color: rgb(255, 248, 220);
 }
 
 .char-tile.locked {
