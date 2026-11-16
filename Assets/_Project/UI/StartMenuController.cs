@@ -29,6 +29,7 @@ namespace EraserWars.UI
         VisualElement optionsPanel;
         VisualElement deckPanel;
         VisualElement collectionPanel;
+        VisualElement secretRoomPanel;
         CollectionPanelController collection;
         DeckPanelController deck;
         SeatPickController seatPick;
@@ -69,6 +70,7 @@ namespace EraserWars.UI
             Collection,
             Options,
             Deck,
+            SecretRoom,
         }
 
         public bool IsMenuVisible =>
@@ -140,6 +142,7 @@ namespace EraserWars.UI
             boundPanelRoot = panelRoot;
             RefreshQueries(panelRoot);
             RegisterMenuCallbacks();
+            SecretRoomPanel.Bind(root);
             ApplyMenuIcons();
             EnsureCatalog();
             EnsureCollectionBound();
@@ -157,6 +160,7 @@ namespace EraserWars.UI
             }
 
             UiText.Apply(root, UiText.StartMenuSlots);
+            SecretRoomPanel.RefreshStatus(root);
             RefreshDebugModeButton();
             RefreshOptionLabels();
             RefreshStartButtonLabel();
@@ -170,6 +174,7 @@ namespace EraserWars.UI
             optionsPanel = root.Q("options-panel");
             deckPanel = root.Q("deck-panel");
             collectionPanel = root.Q("collection-panel");
+            secretRoomPanel = root.Q(SecretRoomPanel.PanelName);
             mode2P = root.Q<Button>("mode-2p");
             mode4P = root.Q<Button>("mode-4p");
             modeStock = root.Q<Button>("mode-stock");
@@ -203,6 +208,8 @@ namespace EraserWars.UI
             root.Q<Button>("open-options")?.RegisterCallback<ClickEvent>(_ => OpenOptions());
             root.Q<Button>("open-deck")?.RegisterCallback<ClickEvent>(_ => OpenDeck());
             root.Q<Button>("open-collection")?.RegisterCallback<ClickEvent>(_ => OpenCollection());
+            root.Q<Button>(SecretRoomPanel.OpenName)?.RegisterCallback<ClickEvent>(_ => OpenSecretRoom());
+            root.Q<Button>(SecretRoomPanel.CloseName)?.RegisterCallback<ClickEvent>(_ => GoHome());
             root.Q<Button>("close-options")?.RegisterCallback<ClickEvent>(_ => CloseOptions());
             root.Q<Button>("close-deck")?.RegisterCallback<ClickEvent>(_ => GoHome());
             root.Q<Button>("close-collection")?.RegisterCallback<ClickEvent>(_ => GoHome());
@@ -491,6 +498,12 @@ namespace EraserWars.UI
             NavigateTo(MenuScreen.Options);
         }
 
+        public void OpenSecretRoom()
+        {
+            BindDocument();
+            NavigateTo(MenuScreen.SecretRoom);
+        }
+
         void CloseOptions()
         {
             DisarmReset();
@@ -760,6 +773,7 @@ namespace EraserWars.UI
                 MenuScreen.Collection => collectionPanel,
                 MenuScreen.Options => optionsPanel,
                 MenuScreen.Deck => deckPanel,
+                MenuScreen.SecretRoom => secretRoomPanel,
                 MenuScreen.Home => null,
                 _ => null,
             };
@@ -799,6 +813,7 @@ namespace EraserWars.UI
             HideDestinationPage(optionsPanel);
             HideDestinationPage(deckPanel);
             HideDestinationPage(collectionPanel);
+            HideDestinationPage(secretRoomPanel);
         }
 
         static Color DestinationBackground(MenuScreen screen) =>
@@ -807,6 +822,7 @@ namespace EraserWars.UI
                 MenuScreen.Collection => new Color(0.18f, 0.42f, 0.28f, 1f),
                 MenuScreen.Options => new Color(0.12f, 0.14f, 0.22f, 1f),
                 MenuScreen.Deck => new Color(0.07f, 0.09f, 0.16f, 1f),
+                MenuScreen.SecretRoom => new Color(0.16f, 0.10f, 0.28f, 1f),
                 MenuScreen.Home => new Color(0.07f, 0.09f, 0.16f, 1f),
                 _ => new Color(0.07f, 0.09f, 0.16f, 1f),
             };

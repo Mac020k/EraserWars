@@ -34,6 +34,7 @@
                     </ui:VisualElement>
                     <ui:Button name="resume-match" text="つづける" class="cta-button cta-resume hidden" />
                     <ui:Button name="start-match" text="マッチ開始" class="cta-button" />
+                    <ui:Button name="open-secret-room" text="ひみつのへや" class="secret-room-entry" />
                 </ui:VisualElement>
                 <ui:VisualElement class="nav-row">
                     <ui:Button name="open-deck" class="nav-tile">
@@ -149,6 +150,21 @@
                         <ui:Label name="collection-detail-body" text="" class="collection-detail-body" />
                     </ui:VisualElement>
                 </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="secret-room-panel" class="destination-page secret-room-panel hidden">
+                <ui:VisualElement class="destination-chrome">
+                    <ui:Button name="close-secret-room" text="← もどる" class="destination-back" />
+                    <ui:Label name="secret-room-title" text="ひみつのへや" class="destination-title" />
+                </ui:VisualElement>
+                <ui:Label name="secret-room-note" text="まだ通信しません。コードはこの端末の中だけです。" class="options-note" />
+                <ui:Label name="secret-room-code-label" text="参加コード" class="options-label" />
+                <ui:TextField name="join-code" class="secret-room-code" max-length="6" />
+                <ui:VisualElement class="secret-room-actions">
+                    <ui:Button name="secret-generate" text="コードをつくる" class="options-choice" />
+                    <ui:Button name="secret-copy" text="コピー" class="options-choice" />
+                </ui:VisualElement>
+                <ui:Label name="secret-status" text="" class="options-note" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

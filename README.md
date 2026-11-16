@@ -187,6 +187,15 @@ On a gamepad, the left stick aims on the camera's horizontal plane. Up flies awa
 
 `EraserWars > Import All Content CSV` imports cards (`Assets/Data/Csv/cards.csv` → `Assets/Data/Cards/`), erasers / characters (`erasers.csv`, `characters.csv` → `Assets/Data/Erasers/`, `Assets/Data/Characters/`), and refreshes `Assets/Resources/EraserWars/ContentCatalog.asset`. The Start Menu **コレクション** panel browses that catalog (20 characters, 50 cards, school-motif filters).
 
+## Secret room stub
+
+The start menu button **ひみつのへや** opens a page on that menu.
+The page has a join-code field, **コードをつくる**, and **コピー**.
+**コードをつくる** writes a 6-character code from `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`.
+That set skips 0, 1, I, and O.
+**コピー** copies the field when the text is one of those codes.
+The page does not start a host, a client, or a match.
+
 ## Fish-Net spike
 
 Fish-Net **4.7.4** is embedded under `Assets/FishNet` (not UPM). See [`Assets/_Project/Net/FishNetInstall.md`](Assets/_Project/Net/FishNetInstall.md) and [ADR-0008](docs/decisions/ADR-0008-fishnet-spike.md).

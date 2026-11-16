@@ -168,6 +168,20 @@
     background-color: rgb(36, 100, 200);
 }
 
+.secret-room-entry {
+    width: 100%;
+    height: 40px;
+    margin-top: 10px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(48, 44, 56);
+    background-color: rgb(255, 252, 244);
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: rgb(196, 150, 88);
+    flex-shrink: 0;
+}
+
 .cta-resume {
     background-color: rgb(70, 190, 100);
     -unity-text-outline-color: rgb(20, 70, 40);
@@ -290,6 +304,40 @@
 .options-panel.destination-page {
     background-color: rgb(32, 38, 58);
     border-color: rgb(170, 180, 210);
+}
+
+.secret-room-panel.destination-page {
+    background-color: rgb(41, 26, 71);
+    border-color: rgb(196, 150, 88);
+}
+
+.secret-room-code {
+    height: 56px;
+    min-height: 56px;
+    margin: 8px 0 12px 0;
+    background-color: rgb(255, 252, 244);
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgb(40, 40, 48);
+}
+
+.secret-room-code,
+.secret-room-code .unity-text-element {
+    font-size: 28px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    letter-spacing: 4px;
+    color: rgb(40, 36, 48);
+}
+
+.secret-room-code .unity-base-field__label {
+    display: none;
+}
+
+.secret-room-actions {
+    flex-direction: row;
+    height: 48px;
+    margin: 4px 0 8px 0;
 }
 
 .destination-page.hidden {
