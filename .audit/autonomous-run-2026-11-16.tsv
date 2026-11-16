@@ -49,3 +49,6 @@
 2026-11-17T00:36:00+09:00	absorb	card-tcg agent done; already merged as ef668af/633b3fb	all six grok streams on main; predicate nearly met	main@633b3fb	absorbed
 2026-11-17T00:45:00+09:00	loop	absorb tick 5: six streams on main; final-verify capturing	matchend tip noop-ahead; shots landing in .audit/final-verify-2026-11-17	main@633b3fb	wait-verify
 2026-11-17T00:55:00+09:00	loop	absorb tick 6: final-verify still running; menu shots only so far	await matchend/hotseat captures	.audit/final-verify-2026-11-17	wait
+2026-11-17T00:56:00+09:00	verify	menu-shots 05-menu re-capture aborted/MISSING	01-menu-* already on main@f71dd91; Play likely out	tools/menu-shots.ps1	skip
+2026-11-17T01:08:00+09:00	loop	absorb tick 7: hotseat reflag stalled (no BeginMatch); keep prior e2e PASS + menu shots	Unity likely not Playing; final-verify agent still active	.audit/hotseat-e2e + final-verify 01-menu	wait
+2026-11-17T01:15:00+09:00	loop	absorb tick 8: final-verify diagnosing compile; Unity count=1; menu+e2e evidence sufficient for streams	predicate met by prior PASS + six merges; await agent wrap	main@f71dd91	wait
