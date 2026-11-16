@@ -2,6 +2,44 @@ using System;
 
 namespace EraserWars.Core
 {
+    public readonly struct FlickAimSample
+    {
+        public FlickAimSample(
+            float lengthMeters,
+            float halfAngleRadians,
+            float centerX,
+            float centerY,
+            float releaseX,
+            float releaseY,
+            float leftX,
+            float leftY,
+            float rightX,
+            float rightY)
+        {
+            LengthMeters = lengthMeters;
+            HalfAngleRadians = halfAngleRadians;
+            CenterX = centerX;
+            CenterY = centerY;
+            ReleaseX = releaseX;
+            ReleaseY = releaseY;
+            LeftX = leftX;
+            LeftY = leftY;
+            RightX = rightX;
+            RightY = rightY;
+        }
+
+        public float LengthMeters { get; }
+        public float HalfAngleRadians { get; }
+        public float CenterX { get; }
+        public float CenterY { get; }
+        public float ReleaseX { get; }
+        public float ReleaseY { get; }
+        public float LeftX { get; }
+        public float LeftY { get; }
+        public float RightX { get; }
+        public float RightY { get; }
+    }
+
     public static class FlickMath
     {
         public const float DefaultSwayAmplitude = 0.35f;
@@ -65,6 +103,46 @@ namespace EraserWars.Core
         public static (float x, float y) DirectionFromAngle(float radians)
         {
             return (MathF.Cos(radians), MathF.Sin(radians));
+        }
+
+        public static FlickAimSample SampleAim(
+            float directionX,
+            float directionY,
+            float dragLength01,
+            float heldSeconds,
+            float sizeFactor,
+            float metersAtFullDrag,
+            float a0,
+            float f0,
+            float f1)
+        {
+            var length01 = Clamp01(dragLength01);
+            var aim = MathF.Atan2(directionY, directionX);
+            var half = a0 * length01 * length01 * sizeFactor;
+            var center = DirectionFromAngle(aim);
+            var release = SwayedDirection(
+                directionX,
+                directionY,
+                length01,
+                heldSeconds,
+                sizeFactor,
+                a0,
+                f0,
+                f1);
+            var left = DirectionFromAngle(aim + half);
+            var right = DirectionFromAngle(aim - half);
+            var meters = metersAtFullDrag > 0f ? metersAtFullDrag * length01 : 0f;
+            return new FlickAimSample(
+                meters,
+                half,
+                center.x,
+                center.y,
+                release.x,
+                release.y,
+                left.x,
+                left.y,
+                right.x,
+                right.y);
         }
     }
 }

@@ -60,6 +60,89 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual(expected, angle, 1e-4f, "A backward pull sways around that pull, not around +X.");
         }
 
+        [Test]
+        public void FullPullKeepsPowerOnThePullWhileBlurSitsAtThePeak()
+        {
+            const float meters = 0.8f;
+            var time = PeakTime(1f, 1f);
+            var sample = FlickMath.SampleAim(1f, 0f, 1f, time, 1f, meters, 0.35f, 0.8f, 2.5f);
+
+            Assert.AreEqual(meters, sample.LengthMeters, 1e-5f, "Full drag reaches the full aim length.");
+            Assert.AreEqual(1f, sample.CenterX, 1e-5f, "The power line stays on the pull.");
+            Assert.AreEqual(0f, sample.CenterY, 1e-5f, "The power line stays on the pull.");
+            Assert.AreEqual(0.35f, sample.HalfAngleRadians, 1e-4f, "A full pull on a normal eraser opens 0.35 rad of blur.");
+            Assert.AreEqual(MathF.Cos(0.35f), sample.ReleaseX, 1e-4f, "The release arrow sits on the sway peak.");
+            Assert.AreEqual(MathF.Sin(0.35f), sample.ReleaseY, 1e-4f, "The release arrow sits on the sway peak.");
+            Assert.AreEqual(0.35f, SignedDelta(0f, MathF.Atan2(sample.LeftY, sample.LeftX)), 1e-4f, "The fan's left edge is +A from the pull.");
+            Assert.AreEqual(-0.35f, SignedDelta(0f, MathF.Atan2(sample.RightY, sample.RightX)), 1e-4f, "The fan's right edge is -A from the pull.");
+        }
+
+        [Test]
+        public void ZeroCrossingStillShowsTheBlurFan()
+        {
+            var sample = FlickMath.SampleAim(0f, 1f, 1f, 0f, 1f, 0.8f, 0.35f, 0.8f, 2.5f);
+            var center = MathF.Atan2(sample.CenterY, sample.CenterX);
+
+            Assert.AreEqual(0f, sample.CenterX, 1e-5f, "A pull along the plane +Y stays on +Y.");
+            Assert.AreEqual(1f, sample.CenterY, 1e-5f, "A pull along the plane +Y stays on +Y.");
+            Assert.AreEqual(sample.CenterX, sample.ReleaseX, 1e-4f, "At the press instant the arrow lies on the power line.");
+            Assert.AreEqual(sample.CenterY, sample.ReleaseY, 1e-4f, "At the press instant the arrow lies on the power line.");
+            Assert.AreEqual(0.35f, sample.HalfAngleRadians, 1e-4f, "The fan stays open when the arrow crosses the center.");
+            Assert.AreEqual(0.35f, SignedDelta(center, MathF.Atan2(sample.LeftY, sample.LeftX)), 1e-4f);
+            Assert.AreEqual(-0.35f, SignedDelta(center, MathF.Atan2(sample.RightY, sample.RightX)), 1e-4f);
+        }
+
+        [Test]
+        public void ShortPullShrinksPowerAndBlurTogether()
+        {
+            var quarter = FlickMath.SampleAim(3f, 4f, 0.25f, 0f, 1f, 0.8f, 0.35f, 0.8f, 2.5f);
+            var full = FlickMath.SampleAim(3f, 4f, 1f, 0f, 1f, 0.8f, 0.35f, 0.8f, 2.5f);
+
+            Assert.AreEqual(0.2f, quarter.LengthMeters, 1e-5f, "A quarter drag is a quarter of the full length.");
+            Assert.AreEqual(0.35f * 0.25f * 0.25f, quarter.HalfAngleRadians, 1e-4f, "Blur grows with L squared.");
+            Assert.AreEqual(0.6f, quarter.CenterX, 1e-5f, "Power follows the pull, not a unit axis.");
+            Assert.AreEqual(0.8f, quarter.CenterY, 1e-5f, "Power follows the pull, not a unit axis.");
+            Assert.Greater(full.LengthMeters, quarter.LengthMeters, "A longer drag draws a longer power line.");
+            Assert.Greater(full.HalfAngleRadians, quarter.HalfAngleRadians * 10f, "A full pull opens much more blur than a quarter pull.");
+        }
+
+        [Test]
+        public void LargeEraserOpensTheFanToTheReleasePeak()
+        {
+            var time = PeakTime(1f, 2f);
+            var sample = FlickMath.SampleAim(1f, 0f, 1f, time, 2f, 0.8f, 0.35f, 0.8f, 2.5f);
+
+            Assert.AreEqual(0.70f, sample.HalfAngleRadians, 1e-4f, "Size 2 doubles the full-pull fan.");
+            Assert.AreEqual(1f, sample.CenterX, 1e-5f, "Power stays on the pull for a large eraser.");
+            Assert.AreEqual(0f, sample.CenterY, 1e-5f, "Power stays on the pull for a large eraser.");
+            Assert.AreEqual(MathF.Cos(0.70f), sample.ReleaseX, 1e-4f, "The arrow peak stays on the fan edge.");
+            Assert.AreEqual(MathF.Sin(0.70f), sample.ReleaseY, 1e-4f, "The arrow peak stays on the fan edge.");
+        }
+
+        static float PeakTime(float length, float sizeFactor)
+        {
+            const float frequency0 = 0.8f;
+            const float frequencySlope = 2.5f;
+            var frequency = frequency0 + frequencySlope * length * sizeFactor;
+            return 0.25f / frequency;
+        }
+
+        static float SignedDelta(float from, float to)
+        {
+            var delta = to - from;
+            if (delta > MathF.PI)
+            {
+                delta -= 2f * MathF.PI;
+            }
+
+            if (delta < -MathF.PI)
+            {
+                delta += 2f * MathF.PI;
+            }
+
+            return delta;
+        }
+
         static float PeakOffset(float length, float sizeFactor)
         {
             return PeakAngle(1f, 0f, length, sizeFactor);
