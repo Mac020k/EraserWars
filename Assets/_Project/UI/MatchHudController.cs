@@ -202,6 +202,7 @@ namespace EraserWars.UI
             }
 
             SetVisible(true);
+            PaintEdgeCue();
             var state = director.State;
             if (phaseLabel != null)
             {
@@ -677,6 +678,20 @@ namespace EraserWars.UI
             {
                 praiseView.Play(seat);
             }
+        }
+
+        void PaintEdgeCue()
+        {
+            if (root == null || director == null)
+            {
+                return;
+            }
+
+            var watcher = director.GetComponent<EdgeSlowmoWatcher>();
+            var cue = watcher == null
+                ? EdgeSlowmoCue.Idle
+                : watcher.CurrentCue(Time.unscaledTime, EdgeSlowmoCue.ReduceMotionPreferred());
+            EdgeSlowmoVignette.Paint(root, cue);
         }
 
         void SetVisible(bool visible)

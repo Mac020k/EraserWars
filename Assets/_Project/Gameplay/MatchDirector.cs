@@ -873,6 +873,8 @@ namespace EraserWars.Gameplay
             {
                 edgeSlowmo = gameObject.AddComponent<EdgeSlowmoWatcher>();
             }
+
+            edgeSlowmo.Bind(this);
         }
 
         void ClearErasers()
