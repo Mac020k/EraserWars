@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using EraserWars.Cards;
 using EraserWars.Core;
 using EraserWars.Gameplay;
+using EraserWars.Persistence;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -58,6 +59,10 @@ namespace EraserWars.UI
         VisualElement matchEndCard;
         Label resultText;
         Label resultSummary;
+        Label resultXp;
+        bool finishXpGranted;
+        int finishXpGained;
+        int finishXpTotal;
         string handFingerprint = string.Empty;
         Button boundPass;
 
@@ -140,6 +145,7 @@ namespace EraserWars.UI
             matchEndCard = root.Q("match-end-card");
             resultText = root.Q<Label>("result-text");
             resultSummary = root.Q<Label>("result-summary");
+            resultXp = root.Q<Label>("result-xp");
 
             if (passButton == null || ReferenceEquals(passButton, boundPass))
             {
@@ -442,7 +448,21 @@ namespace EraserWars.UI
             matchEnd.EnableInClassList(HiddenClass, !ended);
             if (!ended)
             {
+                finishXpGranted = false;
+                if (resultXp != null)
+                {
+                    resultXp.text = string.Empty;
+                }
+
                 return;
+            }
+
+            if (!finishXpGranted)
+            {
+                var receipt = CareerXp.GrantFinishedMatch();
+                finishXpGained = receipt.Gained;
+                finishXpTotal = receipt.Total;
+                finishXpGranted = true;
             }
 
             var copy = DescribeMatchEnd(state);
@@ -460,6 +480,16 @@ namespace EraserWars.UI
             {
                 resultSummary.text = copy.Summary;
             }
+
+            if (resultXp != null)
+            {
+                resultXp.text = FormatXpLine(finishXpGained, finishXpTotal);
+            }
+        }
+
+        static string FormatXpLine(int gained, int total)
+        {
+            return $"けいけん +{gained}  ·  ごうけい {total}";
         }
 
         readonly struct MatchEndCopy

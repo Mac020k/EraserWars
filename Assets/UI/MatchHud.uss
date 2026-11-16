@@ -402,6 +402,17 @@
     white-space: normal;
 }
 
+.result-xp {
+    margin-top: 6px;
+    margin-left: 40px;
+    margin-right: 40px;
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: rgb(120, 90, 40);
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+}
+
 .match-end-card.seat-0 .result-kicker,
 .match-end-card.seat-0 .result-text { color: rgb(176, 32, 84); }
 .match-end-card.seat-1 .result-kicker,

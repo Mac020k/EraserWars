@@ -3,6 +3,7 @@
     "rootNamespace": "EraserWars.UI",
     "references": [
         "EraserWars.Core",
+        "EraserWars.Persistence",
         "EraserWars.Cards",
         "EraserWars.Gameplay",
         "EraserWars.View",

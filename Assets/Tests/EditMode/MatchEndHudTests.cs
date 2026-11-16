@@ -1,8 +1,10 @@
 using System.Collections;
+using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using EraserWars.Core;
 using EraserWars.Gameplay;
+using EraserWars.Persistence;
 using EraserWars.UI;
 using NUnit.Framework;
 using UnityEditor;
@@ -62,6 +64,60 @@ namespace EraserWars.Tests.EditMode
             AssertFinish(rig, "P1 のかち!", "P1 3点  ·  P2 0点", 0);
         }
 
+        [Test]
+        public void FinishGrantsOnceAndRematchGrantsAgain()
+        {
+            using var rig = new Rig(WinMode.Stock);
+            var logDir = MatchLogWriter.DefaultDirectory();
+            var logsBefore = Directory.Exists(logDir) ? Directory.GetFiles(logDir) : System.Array.Empty<string>();
+            try
+            {
+                rig.KnockOut(0, 3);
+                rig.FinishRound();
+                rig.Hud.RefreshFromState();
+                rig.Hud.RefreshFromState();
+
+                Assert.AreEqual("けいけん +10  ·  ごうけい 10", rig.Xp.text);
+                Assert.AreEqual(10, PlayerPrefs.GetInt(CareerXp.TotalKey));
+
+                LogAssert.Expect(LogType.Error, new Regex("Destroy may not be called from edit mode"));
+                LogAssert.Expect(LogType.Error, new Regex("Destroy may not be called from edit mode"));
+                LogAssert.Expect(LogType.Error, new Regex("Instantiating material"));
+                LogAssert.Expect(LogType.Error, new Regex("Instantiating material"));
+                rig.Director.Rematch();
+                rig.Hud.RefreshFromState();
+                Assert.AreEqual(string.Empty, rig.Xp.text);
+                Assert.AreEqual(10, PlayerPrefs.GetInt(CareerXp.TotalKey));
+
+                rig.KnockOut(0, 3);
+                rig.FinishRound();
+                rig.Hud.RefreshFromState();
+
+                Assert.AreEqual("けいけん +10  ·  ごうけい 20", rig.Xp.text);
+                Assert.AreEqual(20, PlayerPrefs.GetInt(CareerXp.TotalKey));
+            }
+            finally
+            {
+                DeleteNewLogs(logDir, logsBefore);
+            }
+        }
+
+        static void DeleteNewLogs(string logDir, string[] logsBefore)
+        {
+            if (!Directory.Exists(logDir))
+            {
+                return;
+            }
+
+            foreach (var file in Directory.GetFiles(logDir))
+            {
+                if (System.Array.IndexOf(logsBefore, file) < 0)
+                {
+                    File.Delete(file);
+                }
+            }
+        }
+
         static void AssertFinish(Rig rig, string title, string summary, int seat)
         {
             Assert.AreEqual(Phase.MatchEnd, rig.Director.State.Phase);
@@ -78,6 +134,8 @@ namespace EraserWars.Tests.EditMode
             Assert.IsNotNull(rig.Praise, "Knock praise should stay on the HUD.");
             Assert.AreEqual("再戦", rig.Rematch.text);
             Assert.AreEqual("メニューへ", rig.Menu.text);
+            Assert.AreEqual("けいけん +10  ·  ごうけい 10", rig.Xp.text);
+            Assert.AreEqual(10, PlayerPrefs.GetInt(CareerXp.TotalKey));
             Assert.IsTrue(rig.Rematch.ClassListContains("match-end-primary"));
             Assert.IsTrue(rig.Menu.ClassListContains("match-end-secondary"));
             Assert.IsFalse(rig.Rematch.ClassListContains("hidden"));
@@ -91,12 +149,17 @@ namespace EraserWars.Tests.EditMode
             readonly GameObject root;
             readonly bool hadWinMode;
             readonly int previousWinMode;
+            readonly bool hadXp;
+            readonly int previousXp;
 
             public Rig(WinMode mode)
             {
                 hadWinMode = PlayerPrefs.HasKey(MatchDirector.HotseatWinModeKey);
                 previousWinMode = PlayerPrefs.GetInt(MatchDirector.HotseatWinModeKey, (int)WinMode.Stock);
                 PlayerPrefs.SetInt(MatchDirector.HotseatWinModeKey, (int)mode);
+                hadXp = PlayerPrefs.HasKey(CareerXp.TotalKey);
+                previousXp = PlayerPrefs.GetInt(CareerXp.TotalKey, 0);
+                PlayerPrefs.DeleteKey(CareerXp.TotalKey);
 
                 root = new GameObject("MatchEndRig");
                 var surface = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -166,6 +229,7 @@ namespace EraserWars.Tests.EditMode
             public VisualElement Praise => Tree.Q("knock-praise");
             public Button Rematch => Tree.Q<Button>("rematch");
             public Button Menu => Tree.Q<Button>("match-end-menu");
+            public Label Xp => Tree.Q<Label>("result-xp");
 
             VisualElement Tree
             {
@@ -202,6 +266,17 @@ namespace EraserWars.Tests.EditMode
                 {
                     PlayerPrefs.DeleteKey(MatchDirector.HotseatWinModeKey);
                 }
+
+                if (hadXp)
+                {
+                    PlayerPrefs.SetInt(CareerXp.TotalKey, previousXp);
+                }
+                else
+                {
+                    PlayerPrefs.DeleteKey(CareerXp.TotalKey);
+                }
+
+                PlayerPrefs.Save();
 
                 if (Director != null)
                 {
