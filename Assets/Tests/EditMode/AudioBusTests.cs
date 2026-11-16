@@ -97,6 +97,29 @@ namespace EraserWars.Tests.EditMode
         }
 
         [Test]
+        public void CollisionAndFallUseDistinctClipsAtTheSeGain()
+        {
+            GameSettings.SaveSePercent(0f);
+            var bus = AudioBus.Ensure();
+            bus.Play(AudioCue.Collision);
+            var se = OneShotSource(bus);
+            Assert.AreEqual(0f, se.volume, 0.001f);
+            AssertSeClip(se.clip, "eraser-hit");
+            Assert.Less(se.clip.length, 0.1f);
+
+            GameSettings.SaveSePercent(35f);
+            bus.Play(AudioCue.Fall);
+            Assert.AreEqual(0.35f, se.volume, 0.001f);
+            AssertSeClip(se.clip, "floor-hit");
+            Assert.Greater(se.clip.length, 0.15f);
+            var fallLength = se.clip.length;
+
+            bus.Play(AudioCue.Collision);
+            Assert.AreEqual("eraser-hit", se.clip.name);
+            Assert.Less(se.clip.length, fallLength);
+        }
+
+        [Test]
         public void SeSliderWritesPercentAndGain()
         {
             var bus = AudioBus.Ensure();
@@ -215,6 +238,15 @@ namespace EraserWars.Tests.EditMode
 
             Assert.Fail("SE source missing");
             return null;
+        }
+
+        static void AssertSeClip(AudioClip clip, string clipName)
+        {
+            Assert.AreEqual(clipName, clip.name);
+            Assert.Greater(Rms(clip), 0.02f);
+            var data = Samples(clip);
+            Assert.AreEqual(0f, data[0], 0.0001f);
+            Assert.AreEqual(0f, data[data.Length - 1], 0.0001f);
         }
 
         static float Rms(AudioClip clip)
