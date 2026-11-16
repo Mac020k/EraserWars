@@ -156,6 +156,16 @@ It also fails if Unity produced no results XML, and the log file says why.
 `tools/run-core-smoke.ps1` runs the reducer tests in `tools/CoreSmoke` with `dotnet test`, without Unity.
 The project compiles the `Core` sources directly, so it catches rule regressions in seconds.
 
+## Language
+
+`UiText` in `Assets/_Project/UI/UiText.cs` holds the start menu and match HUD lines.
+Each `UiKey` has a Japanese line and an English line.
+The game shows Japanese until a caller uses `UiLocale.Set`.
+That call stores `ja` or `en` under the PlayerPrefs key `eraserwars.locale`.
+The options page has no language row.
+`StartMenuController` and `MatchHudController` call `UiLocale.Load` when they enable, then read `UiText` for the lines they draw.
+Deck status, collection detail, and seat names stay in the Japanese written in those controllers.
+
 ## Classroom scene
 
 1. In Unity, run `EraserWars > Build Classroom Casual Scene` (also builds UI icons). It writes `Assets/Scenes/Classroom_Casual.unity` as a Heisei ordinary classroom at about **7 m × 9 m × 3 m** (short chalkboard wall, deeper room), with a **2×2 four-desk arena** (0.6×0.4 m each), yard-side windows (4 bays / 5 pillars), corridor 引き違い戸 (~1.8 m bays) + high 連窓, one rear cleaning locker plus a long bayed storage shelf, chalkboard wall, paired prop desks (2-desk units along depth), and **full hide** of occluding walls/ceilings plus mounted props (chalk, corkboard, locker, fluorescents, curtains). Looking in through open window/door bays also hides that wall via separation planes ([ADR-0009](docs/decisions/ADR-0009-start-screen-and-classroom-look.md)). UITK uses `ScaleWithScreenSize` + **Expand** and %-based USS so Full HD / 4K / free aspect stay readable.

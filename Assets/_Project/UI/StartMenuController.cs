@@ -79,6 +79,7 @@ namespace EraserWars.UI
 
         void OnEnable()
         {
+            UiLocale.Load();
             BindDocument(force: true);
             if (document == null || document.rootVisualElement == null)
             {
@@ -132,6 +133,7 @@ namespace EraserWars.UI
             if (!treeChanged && root != null)
             {
                 RefreshQueries(panelRoot);
+                PaintCopy();
                 return;
             }
 
@@ -144,6 +146,20 @@ namespace EraserWars.UI
             EnsureDeckBound();
             EnsureSeatPickBound();
             LoadOptions();
+            PaintCopy();
+        }
+
+        void PaintCopy()
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            UiText.Apply(root, UiText.StartMenuSlots);
+            RefreshDebugModeButton();
+            RefreshOptionLabels();
+            RefreshStartButtonLabel();
         }
 
         void RefreshQueries(VisualElement panelRoot)
@@ -237,7 +253,9 @@ namespace EraserWars.UI
                 return;
             }
 
-            debugModeButton.text = debugModeEnabled ? "デバッグモード: ON" : "デバッグモード: OFF";
+            debugModeButton.text = debugModeEnabled
+                ? UiText.Get(UiKey.OptDebugOn)
+                : UiText.Get(UiKey.OptDebugOff);
             debugModeButton.EnableInClassList("debug-on", debugModeEnabled);
         }
 
@@ -277,24 +295,28 @@ namespace EraserWars.UI
         void RefreshOptionLabels()
         {
             var settings = GameSettings.Current;
-            SetOptionText(masterValue, $"マスター {Mathf.RoundToInt(settings.Master * 100f)}");
-            SetOptionText(bgmValue, $"BGM {Mathf.RoundToInt(settings.Bgm * 100f)}");
-            SetOptionText(seValue, $"SE {Mathf.RoundToInt(settings.Se * 100f)}");
-            SetOptionText(flickValue, $"フリックの強さ {Mathf.RoundToInt(settings.FlickScale * 100f)}");
-            SetOptionText(turnValue, $"1ターン {settings.TurnSeconds}秒");
+            SetOptionText(masterValue, UiText.Format(UiKey.OptMaster, Mathf.RoundToInt(settings.Master * 100f)));
+            SetOptionText(bgmValue, UiText.Format(UiKey.OptBgm, Mathf.RoundToInt(settings.Bgm * 100f)));
+            SetOptionText(seValue, UiText.Format(UiKey.OptSe, Mathf.RoundToInt(settings.Se * 100f)));
+            SetOptionText(flickValue, UiText.Format(UiKey.OptFlick, Mathf.RoundToInt(settings.FlickScale * 100f)));
+            SetOptionText(turnValue, UiText.Format(UiKey.OptTurn, settings.TurnSeconds));
             if (shakeButton != null)
             {
-                shakeButton.text = settings.CameraShake ? "カメラ揺れ: ON" : "カメラ揺れ: OFF";
+                shakeButton.text = settings.CameraShake
+                    ? UiText.Get(UiKey.OptShakeOn)
+                    : UiText.Get(UiKey.OptShakeOff);
                 shakeButton.EnableInClassList("on", settings.CameraShake);
             }
 
             uiScaleSmall?.EnableInClassList("selected", settings.UiScale < 0.9f);
             uiScaleStandard?.EnableInClassList("selected", settings.UiScale >= 0.9f && settings.UiScale < 1.1f);
             uiScaleLarge?.EnableInClassList("selected", settings.UiScale >= 1.1f);
-            if (resetButton != null && !resetArmed)
+            if (resetButton != null)
             {
-                resetButton.text = "初期値に戻す";
-                resetButton.EnableInClassList("armed", false);
+                resetButton.text = resetArmed
+                    ? UiText.Get(UiKey.OptResetConfirm)
+                    : UiText.Get(UiKey.OptReset);
+                resetButton.EnableInClassList("armed", resetArmed);
             }
         }
 
@@ -393,12 +415,7 @@ namespace EraserWars.UI
             if (!resetArmed)
             {
                 resetArmed = true;
-                if (resetButton != null)
-                {
-                    resetButton.text = "もう一度押すと初期値に戻します";
-                    resetButton.EnableInClassList("armed", true);
-                }
-
+                RefreshOptionLabels();
                 return;
             }
 
@@ -416,11 +433,7 @@ namespace EraserWars.UI
             }
 
             resetArmed = false;
-            if (resetButton != null)
-            {
-                resetButton.text = "初期値に戻す";
-                resetButton.EnableInClassList("armed", false);
-            }
+            RefreshOptionLabels();
         }
 
         void EnsureCatalog()
@@ -673,7 +686,9 @@ namespace EraserWars.UI
             var resume = root?.Q<Button>("resume-match");
             if (start != null)
             {
-                start.text = suspendedMatch ? "あたらしいマッチ" : "マッチ開始";
+                start.text = suspendedMatch
+                    ? UiText.Get(UiKey.MenuNewMatch)
+                    : UiText.Get(UiKey.MenuStart);
             }
 
             resume?.EnableInClassList("hidden", !suspendedMatch);

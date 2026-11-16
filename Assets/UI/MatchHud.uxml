@@ -42,7 +42,7 @@
         <ui:VisualElement class="action-bar" picking-mode="Ignore">
             <ui:Button name="pass" class="action-chip action-pass">
                 <ui:VisualElement name="pass-icon" class="action-icon" picking-mode="Ignore" />
-                <ui:Label text="パス" class="action-label" picking-mode="Ignore" />
+                <ui:Label name="pass-label" text="パス" class="action-label" picking-mode="Ignore" />
             </ui:Button>
         </ui:VisualElement>
         <ui:VisualElement name="turn-announce" class="turn-announce hidden" picking-mode="Ignore">

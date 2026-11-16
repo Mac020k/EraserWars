@@ -76,6 +76,8 @@ namespace EraserWars.UI
 
         void OnEnable()
         {
+            UiLocale.Load();
+            EnsureDocument();
             if (document == null)
             {
                 return;
@@ -92,8 +94,17 @@ namespace EraserWars.UI
             SetVisible(false);
         }
 
+        void EnsureDocument()
+        {
+            if (document == null)
+            {
+                document = GetComponent<UIDocument>();
+            }
+        }
+
         void BindTree()
         {
+            EnsureDocument();
             if (document == null)
             {
                 return;
@@ -149,6 +160,7 @@ namespace EraserWars.UI
 
             if (passButton == null || ReferenceEquals(passButton, boundPass))
             {
+                ApplyChrome();
                 return;
             }
 
@@ -164,6 +176,7 @@ namespace EraserWars.UI
             rematchButton?.RegisterCallback<ClickEvent>(_ => director?.Rematch());
             matchEndMenuButton?.RegisterCallback<ClickEvent>(_ => startMenu?.ShowMenu());
             root.Q<Button>("menu")?.RegisterCallback<ClickEvent>(_ => startMenu?.ShowMenu());
+            ApplyChrome();
         }
 
         void OnDisable()
@@ -180,6 +193,7 @@ namespace EraserWars.UI
         public void RefreshFromState()
         {
             BindTree();
+            ApplyChrome();
             if (director == null)
             {
                 director = FindAnyObjectByType<MatchDirector>();
@@ -212,7 +226,7 @@ namespace EraserWars.UI
             var state = director.State;
             if (phaseLabel != null)
             {
-                phaseLabel.text = $"ROUND {state.Round}  {PhaseText(state.Phase)}";
+                phaseLabel.text = UiText.Format(UiKey.HudRound, state.Round, PhaseText(state.Phase));
             }
 
             RefreshTurnChrome(state);
@@ -293,15 +307,16 @@ namespace EraserWars.UI
             }
 
             turnYieldLabel.EnableInClassList(HiddenClass, false);
-            turnYieldLabel.text = notice.Label;
             SetSeatClass(turnYieldLabel, notice.Seat);
             switch (notice.Kind)
             {
                 case TurnYieldKind.Pass:
+                    turnYieldLabel.text = UiText.Get(UiKey.HudYieldPass);
                     turnYieldLabel.EnableInClassList("yield-pass", true);
                     turnYieldLabel.EnableInClassList("yield-time", false);
                     break;
                 case TurnYieldKind.Time:
+                    turnYieldLabel.text = UiText.Get(UiKey.HudYieldTime);
                     turnYieldLabel.EnableInClassList("yield-pass", false);
                     turnYieldLabel.EnableInClassList("yield-time", true);
                     break;
@@ -342,7 +357,7 @@ namespace EraserWars.UI
             SetSeatClass(handDock, state.CurrentPlayerId.Value);
             if (handTitle != null)
             {
-                handTitle.text = $"P{state.CurrentPlayerId.Value + 1} のカード";
+                handTitle.text = UiText.Format(UiKey.HudHand, state.CurrentPlayerId.Value + 1);
             }
 
             var player = state.Players[state.CurrentPlayerId.Value];
@@ -412,8 +427,8 @@ namespace EraserWars.UI
             if (cardCutInKicker != null)
             {
                 cardCutInKicker.text = cut.Signature
-                    ? $"P{cut.Seat + 1}  とくぎ"
-                    : $"P{cut.Seat + 1}  カード";
+                    ? UiText.Format(UiKey.HudCutInSpecial, cut.Seat + 1)
+                    : UiText.Format(UiKey.HudCutInCard, cut.Seat + 1);
             }
 
             if (cardCutInName != null)
@@ -490,7 +505,7 @@ namespace EraserWars.UI
 
         static string FormatXpLine(int gained, int total)
         {
-            return $"けいけん +{gained}  ·  ごうけい {total}";
+            return UiText.Format(UiKey.HudXp, gained, total);
         }
 
         readonly struct MatchEndCopy
@@ -512,8 +527,8 @@ namespace EraserWars.UI
             var winner = state.Winner;
             var seat = winner is PlayerId id ? id.Value : -1;
             var title = winner is PlayerId won
-                ? $"P{won.Value + 1} のかち!"
-                : "ひきわけ!";
+                ? UiText.Format(UiKey.HudWin, won.Value + 1)
+                : UiText.Get(UiKey.HudDraw);
             return new MatchEndCopy(title, SummarizeSeats(state), seat);
         }
 
@@ -531,13 +546,13 @@ namespace EraserWars.UI
 
         static string FormatSeat(WinMode mode, PlayerState player)
         {
-            var seat = $"P{player.Id.Value + 1}";
+            var seat = player.Id.Value + 1;
             switch (mode)
             {
                 case WinMode.Stock:
-                    return $"{seat} ストック {player.Stocks}";
+                    return UiText.Format(UiKey.HudStockLine, seat, player.Stocks);
                 case WinMode.Points:
-                    return $"{seat} {player.Points}点";
+                    return UiText.Format(UiKey.HudPointsLine, seat, player.Points);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unhandled win mode.");
             }
@@ -564,8 +579,13 @@ namespace EraserWars.UI
                 var active = player.Id.Value == activeSeat;
                 pill.Root.EnableInClassList(PillActiveClass, active);
                 pill.Now?.EnableInClassList(HiddenClass, !active);
+                if (pill.Now != null)
+                {
+                    pill.Now.text = UiText.Get(UiKey.HudNow);
+                }
+
                 pill.Root.EnableInClassList(PillOutClass, !player.IsAlive);
-                pill.Points.text = $"{player.Points}点";
+                pill.Points.text = UiText.Format(UiKey.HudPoints, player.Points);
                 for (var h = 0; h < pill.Hearts.Count; h++)
                 {
                     pill.Hearts[h].EnableInClassList(HeartLostClass, h >= player.Stocks);
@@ -583,7 +603,7 @@ namespace EraserWars.UI
                 pill.Root.AddToClassList("player-pill");
                 pill.Root.AddToClassList($"seat-{i % SeatClassCount}");
 
-                pill.Now = new Label("いま");
+                pill.Now = new Label(UiText.Get(UiKey.HudNow));
                 pill.Now.AddToClassList("pill-now");
                 pill.Now.AddToClassList(HiddenClass);
                 pill.Root.Add(pill.Now);
@@ -605,7 +625,7 @@ namespace EraserWars.UI
 
                 pill.Root.Add(heartRow);
 
-                pill.Points = new Label("0点");
+                pill.Points = new Label(UiText.Format(UiKey.HudPoints, 0));
                 pill.Points.AddToClassList("pill-points");
                 pill.Root.Add(pill.Points);
 
@@ -618,15 +638,27 @@ namespace EraserWars.UI
         {
             return phase switch
             {
-                Phase.TurnStart => "じゅんびちゅう",
-                Phase.CardSelect => "カード / ねらえ!",
-                Phase.Aim => "ねらえ!",
-                Phase.Simulating => "ころがり中...",
-                Phase.Resolve => "けっか",
-                Phase.RoundEnd => "ラウンド終了",
-                Phase.MatchEnd => "しょうぶあり!",
+                Phase.TurnStart => UiText.Get(UiKey.HudPhaseReady),
+                Phase.CardSelect => UiText.Get(UiKey.HudPhaseCard),
+                Phase.Aim => UiText.Get(UiKey.HudPhaseAim),
+                Phase.Simulating => UiText.Get(UiKey.HudPhaseRoll),
+                Phase.Resolve => UiText.Get(UiKey.HudPhaseResult),
+                Phase.RoundEnd => UiText.Get(UiKey.HudPhaseRoundEnd),
+                Phase.MatchEnd => UiText.Get(UiKey.HudPhaseMatchEnd),
                 _ => phase.ToString(),
             };
+        }
+
+        void ApplyChrome()
+        {
+            EnsureDocument();
+            var tree = document != null ? document.rootVisualElement : root;
+            if (tree == null)
+            {
+                return;
+            }
+
+            UiText.Apply(tree, UiText.MatchHudSlots);
         }
 
         static void ApplyIcon(VisualElement element, Texture2D icon)
