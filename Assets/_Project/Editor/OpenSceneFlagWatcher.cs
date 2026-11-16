@@ -21,6 +21,7 @@ namespace EraserWars.Editor
         const string FlagUnpause = "Temp/unpause.flag";
         const string FlagStartHotseat2 = "Temp/start-hotseat-2.flag";
         const string FlagFlickCurrent = "Temp/flick-current.flag";
+        const string FlagDumpUi = "Temp/dump-ui.flag";
         const string FlagRebuildFishNet = "Temp/rebuild-fishnet-spike.flag";
         const string FlagRebuildClassroom = "Temp/rebuild-classroom.flag";
 
@@ -39,6 +40,7 @@ namespace EraserWars.Editor
             TryEnterPlay();
             TryStartHotseat2();
             TryFlickCurrent();
+            TryDumpUi();
         }
 
         static void TryStopPlay()
@@ -168,6 +170,30 @@ namespace EraserWars.Editor
             director.SubmitFlick(command);
             ForceUnpausedPlay();
             Debug.Log($"[EraserWars] flick-current: P{director.State.CurrentPlayerId.Value + 1} phase={director.State.Phase} paused={EditorApplication.isPaused}");
+        }
+
+        static void TryDumpUi()
+        {
+            if (!ConsumeFlag(FlagDumpUi))
+            {
+                return;
+            }
+
+            var docs = Object.FindObjectsByType<UnityEngine.UIElements.UIDocument>(FindObjectsInactive.Include);
+            Debug.Log($"[EraserWars] dump-ui: {docs.Length} UIDocument(s) playing={EditorApplication.isPlaying} paused={EditorApplication.isPaused}");
+            foreach (var doc in docs)
+            {
+                var go = doc.gameObject;
+                var tree = doc.visualTreeAsset != null ? doc.visualTreeAsset.name : "(none)";
+                var display = doc.rootVisualElement != null
+                    ? doc.rootVisualElement.resolvedStyle.display.ToString()
+                    : "(null-root)";
+                Debug.Log(
+                    $"[EraserWars] dump-ui: '{go.name}' active={go.activeInHierarchy} enabled={doc.enabled} tree={tree} display={display} sort={doc.sortingOrder}");
+            }
+
+            var director = Object.FindAnyObjectByType<MatchDirector>();
+            Debug.Log($"[EraserWars] dump-ui: match phase={director?.State?.Phase} players={director?.State?.Players.Length}");
         }
 
         static void TryRebuild()
