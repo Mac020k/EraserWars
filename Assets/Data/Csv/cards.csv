@@ -33,12 +33,12 @@ id,name_key,display_name_ja,family,build_cost,is_signature,max_copies,uses_per_m
 32,card.before_chime,チャイム前,homework,2,0,1,1,0,1,ModifyRule:SelfTurnTime:1.2:1
 33,card.cleaning_duty,掃除当番,cover,1,0,2,1,0,1,PlaceDeskObject:ClearDust:1
 34,card.class_leader,班長の合図,seat,2,0,1,1,0,1,ModifyStat:Power:1.15:1
-35,card.sig.another_push,もう一押し,signature,3,1,1,1,0,1,ExtraFlick
+35,card.sig.another_push,もう一押し,signature,4,1,1,1,0,1,ExtraFlick
 36,card.sig.burning_white,燃える白,signature,2,1,1,1,0,1,ModifyStat:Power:1.8:1
-37,card.sig.dosukoi,どすこい,signature,3,1,1,1,0,1,ModifyStat:Mass:2.2:1
+37,card.sig.dosukoi,どすこい,signature,4,1,1,1,0,1,ModifyStat:Mass:2.2:1
 38,card.sig.push_out,押し出し,signature,2,1,1,1,0,1,ModifyRule:PushEdge:0.7:1
 39,card.sig.recheck,検算,signature,2,1,1,1,0,1,ModifyFlick:1:0:0.5
-40,card.sig.ruler_laser,定規レーザー,signature,3,1,1,1,0,2,PlaceDeskObject:RulerWall:2
+40,card.sig.ruler_laser,定規レーザー,signature,4,1,1,1,0,2,PlaceDeskObject:RulerWall:2
 41,card.sig.sticky_seal,くっつきシール,signature,2,1,1,1,0,1,ModifyStat:Friction:3:1
 42,card.sig.safety_cone,安全コーン,signature,2,1,1,1,0,2,PlaceDeskObject:Cone:2
 43,card.sig.newcomer,ニューカマー,signature,2,1,1,1,0,1,ModifyStat:Speed:1.5:1
@@ -46,6 +46,6 @@ id,name_key,display_name_ja,family,build_cost,is_signature,max_copies,uses_per_m
 45,card.sig.cheer,声かけ,signature,2,1,1,1,0,1,ModifyStat:Power:1.35:1
 46,card.sig.formation,フォーメーション,signature,3,1,1,1,0,1,GrantShield:0.5:1
 47,card.sig.proto_cover,試作カバー,signature,2,1,1,1,0,1,ModifyStat:Bounciness:1.8:1
-48,card.sig.stapler_x,ホッチキス芯X,signature,3,1,1,1,0,1,GrantWeapon:0.3:1
-49,card.sig.glue_bomb,のり爆弾,signature,3,1,1,1,0,1,GrantWeapon:0.28:1
+48,card.sig.stapler_x,ホッチキス芯X,signature,4,1,1,1,0,1,GrantWeapon:0.3:1
+49,card.sig.glue_bomb,のり爆弾,signature,4,1,1,1,0,1,GrantWeapon:0.28:1
 50,card.sig.take_it_slow,ゆっくりでいい,signature,2,1,1,1,0,1,ModifyRule:OpponentTurnTime:0.6:1

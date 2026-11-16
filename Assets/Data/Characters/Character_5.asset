@@ -16,6 +16,8 @@ MonoBehaviour:
   NameKey: char.ohori
   DisplayNameJa: "\u9CF3 \u30AD\u30E3\u30D7\u30C6\u30F3"
   ArchetypeKey: seat_take
+  UnlockHintJa: "\u30DB\u30C3\u30C8\u30B7\u30FC\u30C8\u30925\u52DD\u3059\u308B"
+  BioJa: "\u58F0\u304B\u3051\u4E00\u3064\u3067\u4E26\u3073\u304C\u5909\u308F\u308B\u3002\u90E8\u6D3B\u5E30\u308A\u3067\u3082\u30D5\u30A9\u30FC\u30E1\u30FC\u30B7\u30E7\u30F3\u306F\u5D29\u3055\u306A\u3044\u30AD\u30E3\u30D7\u30C6\u30F3\u3002"
   Portrait: {fileID: 0}
   Eraser: {fileID: 11400000, guid: 521b6e6475d187a49bf20e0850b76fb7, type: 2}
   SignatureA: {fileID: 11400000, guid: 0e7d259687108f541bf17974ac1195c4, type: 2}

@@ -209,7 +209,8 @@ namespace EraserWars.UI
             var sigB = character?.SignatureB != null ? character.SignatureB.DisplayName : "—";
             if (status != null)
             {
-                status.text = $"P{activeSeat + 1}: {name}  /  コモン {selected.Count}/6  コスト {cost}/{cap}";
+                status.text =
+                    $"P{activeSeat + 1}: {name}  /  コモン {selected.Count}/6  デッキコスト {cost}/{cap}";
                 if (!string.IsNullOrEmpty(extra))
                 {
                     status.text += $"  ·  {extra}";
@@ -218,7 +219,8 @@ namespace EraserWars.UI
 
             if (detail != null)
             {
-                detail.text = $"固有: {sigA} / {sigB}\n型: {CharacterArchetypes.DisplayJa(character?.ArchetypeKey)}";
+                detail.text =
+                    $"固有: {sigA} / {sigB}\n型: {CharacterArchetypes.DisplayJa(character?.ArchetypeKey)}\nデッキコスト上限: {cap}";
             }
         }
 

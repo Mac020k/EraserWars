@@ -115,8 +115,9 @@ namespace EraserWars.Editor
                 }
 
                 var cols = lines[i].Split(',');
-                if (cols.Length < 8)
+                if (cols.Length < 10)
                 {
+                    Debug.LogWarning($"Skip character row {i}: expected 10 columns, got {cols.Length}");
                     continue;
                 }
 
@@ -139,6 +140,8 @@ namespace EraserWars.Editor
                 character.Eraser = eraser;
                 character.SignatureA = LoadCard(cols[6]);
                 character.SignatureB = LoadCard(cols[7]);
+                character.UnlockHintJa = cols[8];
+                character.BioJa = cols[9];
                 EditorUtility.SetDirty(character);
                 list.Add(character);
             }

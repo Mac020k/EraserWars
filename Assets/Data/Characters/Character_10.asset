@@ -16,6 +16,8 @@ MonoBehaviour:
   NameKey: char.tosho
   DisplayNameJa: "\u56F3\u66F8 \u3072\u306A\u305F"
   ArchetypeKey: seat_take
+  UnlockHintJa: "\u56F3\u66F8\u5BA4\u30C1\u30E3\u30EC\u30F3\u30B8\u3092\u30AF\u30EA\u30A2"
+  BioJa: "\u4E88\u6E2C\u7DDA\u3092\u4FE1\u3058\u308B\u53F8\u66F8\u898B\u7FD2\u3044\u3002\u5C0F\u3055\u306A\u767D\u3067\u3082\u8AAD\u307F\u306F\u92ED\u3044\u3002"
   Portrait: {fileID: 0}
   Eraser: {fileID: 11400000, guid: 67f8f4e46c601a14cbfe0403596aaceb, type: 2}
   SignatureA: {fileID: 0}

@@ -1,0 +1,7 @@
+ts	phase	decision	why	evidence	result
+2026-11-16T12:52:00Z	start	autonomous run for destination Collection/Options plus locked roster UX	operator wants full screens, ‰ºèÂ≠ó, unlock text, horizontal strip, bios, then art	agent-run collection-destination	open
+2026-11-16T12:52:30Z	frame	exit predicate named before edits	autonomous-run step 1	.audit/collection-destination.tsv	open
+2026-11-16T12:53:00Z	design	choose UITK full-page destinations with slide transition inside Classroom scene, not SceneManager	keeps MatchDirector alive and feels like a scene change without tear-down cost	StartMenu destination pages	open
+2026-11-16T13:04:25Z	verify	collection destination homeHidden + strip 20 + locked 16	prove real UITK destination	Editor.log open-collection stripChildren=20	measured
+2026-11-16T13:04:25Z	verify	locked Alex shows ïöéö and unlock hint	Experience First lock UX	select-locked-char title/unlock log	measured
+2026-11-16T13:04:25Z	art	assigned 4 starter stills + 2 eraser design refs	operator asked for stills then eraser art	Import Character Stills assigned=4	open

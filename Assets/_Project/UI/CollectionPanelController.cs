@@ -9,14 +9,17 @@ namespace EraserWars.UI
     {
         readonly ContentCatalog catalog;
         VisualElement panel;
-        ScrollView list;
+        VisualElement strip;
         Label detailTitle;
         Label detailMeta;
         Label detailBody;
+        Label detailUnlock;
+        VisualElement portrait;
         Button tabCharacters;
         Button tabCards;
         string mode = "characters";
         string filter = "all";
+        int selectedCharacterId = -1;
 
         public CollectionPanelController(ContentCatalog catalog)
         {
@@ -31,10 +34,12 @@ namespace EraserWars.UI
                 return;
             }
 
-            list = panel.Q<ScrollView>("collection-list");
+            strip = panel.Q("collection-strip");
             detailTitle = panel.Q<Label>("collection-detail-title");
             detailMeta = panel.Q<Label>("collection-detail-meta");
             detailBody = panel.Q<Label>("collection-detail-body");
+            detailUnlock = panel.Q<Label>("collection-detail-unlock");
+            portrait = panel.Q("collection-portrait");
             tabCharacters = panel.Q<Button>("collection-tab-characters");
             tabCards = panel.Q<Button>("collection-tab-cards");
             var filterRow = panel.Q("collection-filters");
@@ -56,12 +61,31 @@ namespace EraserWars.UI
             RebuildList();
         }
 
+        public void SelectCharacterById(int id)
+        {
+            if (catalog == null)
+            {
+                return;
+            }
+
+            var character = catalog.FindCharacter(id);
+            if (character == null)
+            {
+                return;
+            }
+
+            mode = "characters";
+            SetMode("characters");
+            ShowCharacter(character);
+        }
+
         void SetMode(string next)
         {
             mode = next;
             tabCharacters?.EnableInClassList("selected", mode == "characters");
             tabCards?.EnableInClassList("selected", mode == "cards");
             filter = "all";
+            selectedCharacterId = -1;
             RebuildFilters();
             RebuildList();
             ClearDetail(mode == "characters" ? "キャラを選んでください" : "カードを選んでください");
@@ -132,31 +156,31 @@ namespace EraserWars.UI
 
         void RebuildList()
         {
-            if (list == null)
+            if (strip == null)
             {
                 return;
             }
 
-            list.Clear();
+            strip.Clear();
             if (catalog == null)
             {
                 var missing = new Label("カタログ未読み込み");
                 missing.AddToClassList("collection-empty");
-                list.Add(missing);
+                strip.Add(missing);
                 return;
             }
 
             if (mode == "characters")
             {
-                RebuildCharacterList();
+                RebuildCharacterStrip();
             }
             else
             {
-                RebuildCardList();
+                RebuildCardStrip();
             }
         }
 
-        void RebuildCharacterList()
+        void RebuildCharacterStrip()
         {
             var characters = catalog.Characters ?? new List<CharacterDefinition>();
             var shown = 0;
@@ -172,23 +196,42 @@ namespace EraserWars.UI
                     continue;
                 }
 
-                var button = new Button();
-                button.AddToClassList("collection-item");
-                var lockMark = character.UnlockedByDefault ? "" : "🔒 ";
-                button.text = $"{lockMark}{character.IdValue:00}  {character.DisplayName}";
+                var unlocked = character.UnlockedByDefault;
+                var tile = new Button();
+                tile.AddToClassList("char-tile");
+                tile.EnableInClassList("locked", !unlocked);
+                tile.EnableInClassList("selected", character.IdValue == selectedCharacterId);
+
+                var art = new VisualElement();
+                art.AddToClassList("char-tile-art");
+                if (character.Portrait != null)
+                {
+                    art.style.backgroundImage = new StyleBackground(character.Portrait.texture);
+                }
+
+                var name = new Label(unlocked ? character.DisplayName : character.MaskedDisplayName);
+                name.AddToClassList("char-tile-name");
+                var archetype = new Label(unlocked
+                    ? CharacterArchetypes.DisplayJa(character.ArchetypeKey)
+                    : "？？？型");
+                archetype.AddToClassList("char-tile-arch");
+
+                tile.Add(art);
+                tile.Add(name);
+                tile.Add(archetype);
                 var captured = character;
-                button.clicked += () => ShowCharacter(captured);
-                list.Add(button);
+                tile.clicked += () => ShowCharacter(captured);
+                strip.Add(tile);
                 shown++;
             }
 
             if (shown == 0)
             {
-                AddEmptyLabel(list);
+                AddEmptyLabel(strip);
             }
         }
 
-        void RebuildCardList()
+        void RebuildCardStrip()
         {
             var cards = catalog.Cards ?? new List<CardDefinition>();
             var shown = 0;
@@ -204,19 +247,24 @@ namespace EraserWars.UI
                     continue;
                 }
 
-                var button = new Button();
-                button.AddToClassList("collection-item");
-                var sig = card.IsSignature ? "★ " : "";
-                button.text = $"{sig}{card.IdValue:00}  {card.DisplayName}";
+                var tile = new Button();
+                tile.AddToClassList("card-tile");
+                tile.EnableInClassList("signature", card.IsSignature);
+                var title = new Label(card.DisplayName);
+                title.AddToClassList("card-tile-name");
+                var cost = new Label($"コスト {card.BuildCost}");
+                cost.AddToClassList("card-tile-cost");
+                tile.Add(title);
+                tile.Add(cost);
                 var captured = card;
-                button.clicked += () => ShowCard(captured);
-                list.Add(button);
+                tile.clicked += () => ShowCard(captured);
+                strip.Add(tile);
                 shown++;
             }
 
             if (shown == 0)
             {
-                AddEmptyLabel(list);
+                AddEmptyLabel(strip);
             }
         }
 
@@ -229,24 +277,54 @@ namespace EraserWars.UI
 
         void ShowCharacter(CharacterDefinition character)
         {
+            selectedCharacterId = character.IdValue;
+            RebuildCharacterStrip();
             if (detailTitle == null)
             {
                 return;
             }
 
-            detailTitle.text = character.DisplayName;
-            var archetype = CharacterArchetypes.DisplayJa(character.ArchetypeKey);
-            var unlock = character.UnlockedByDefault ? "初期解放" : "アンロック";
+            var unlocked = character.UnlockedByDefault;
+            detailTitle.text = unlocked ? character.DisplayName : character.MaskedDisplayName;
+            var archetype = unlocked
+                ? CharacterArchetypes.DisplayJa(character.ArchetypeKey)
+                : "？？？型";
             var eraser = character.Eraser;
-            var eraserLine = eraser == null
-                ? "消しゴム未設定"
-                : $"質量 {eraser.Mass:0.###} / 摩擦 {eraser.Friction:0.##} / パワー {eraser.Power:0.##} / スピード {eraser.Speed:0.##}";
-            detailMeta.text = $"{archetype} · {unlock}\n{eraserLine}";
-            var sigA = character.SignatureA != null ? character.SignatureA.DisplayName : "—";
-            var sigB = character.SignatureB != null ? character.SignatureB.DisplayName : "—";
-            var passive = eraser != null ? eraser.PassiveKey : "—";
-            detailBody.text =
-                $"固有A: {sigA}\n固有B: {sigB}\nパッシブ: {passive}\nデッキ上限: {eraser?.DeckCostCap ?? 0} / 手札: {eraser?.HandLimit ?? 0}";
+            if (unlocked && eraser != null)
+            {
+                detailMeta.text =
+                    $"{archetype}\n質量 {eraser.Mass:0.###} / 摩擦 {eraser.Friction:0.##} / パワー {eraser.Power:0.##} / スピード {eraser.Speed:0.##}";
+                var sigA = character.SignatureA != null ? character.SignatureA.DisplayName : "—";
+                var sigB = character.SignatureB != null ? character.SignatureB.DisplayName : "—";
+                detailBody.text =
+                    $"{character.Bio}\n\n固有A: {sigA}\n固有B: {sigB}\nパッシブ: {eraser.PassiveKey}\nデッキコスト上限: {eraser.DeckCostCap} / 手札: {eraser.HandLimit}";
+                if (detailUnlock != null)
+                {
+                    detailUnlock.text = "解放済み";
+                }
+            }
+            else
+            {
+                detailMeta.text = $"{archetype}\n詳細はロック中";
+                detailBody.text = "？？？？？？？？\n自己紹介は解放後に読めます。";
+                if (detailUnlock != null)
+                {
+                    detailUnlock.text = $"解放条件: {character.UnlockHint}";
+                }
+            }
+
+            if (portrait != null)
+            {
+                portrait.EnableInClassList("locked", !unlocked);
+                if (unlocked && character.Portrait != null)
+                {
+                    portrait.style.backgroundImage = new StyleBackground(character.Portrait.texture);
+                }
+                else
+                {
+                    portrait.style.backgroundImage = StyleKeyword.None;
+                }
+            }
         }
 
         void ShowCard(CardDefinition card)
@@ -270,6 +348,16 @@ namespace EraserWars.UI
                 ? "効果なし"
                 : string.Join("\n", effects) +
                   $"\n試合内 {card.UsesPerMatch}回 / CD {card.CooldownTurns} / 持続 {card.DurationTurns}T";
+            if (detailUnlock != null)
+            {
+                detailUnlock.text = card.IsSignature ? "キャラ固有" : "コモンプール";
+            }
+
+            portrait?.EnableInClassList("locked", false);
+            if (portrait != null)
+            {
+                portrait.style.backgroundImage = StyleKeyword.None;
+            }
         }
 
         void ClearDetail(string title)
@@ -287,6 +375,11 @@ namespace EraserWars.UI
             if (detailBody != null)
             {
                 detailBody.text = string.Empty;
+            }
+
+            if (detailUnlock != null)
+            {
+                detailUnlock.text = string.Empty;
             }
         }
     }

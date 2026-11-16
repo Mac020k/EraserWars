@@ -34,6 +34,8 @@ namespace EraserWars.Editor
         const string FlagRefreshAssets = "Temp/refresh-assets.flag";
         const string FlagPlayFirstCard = "Temp/play-first-card.flag";
         const string FlagForceSettle = "Temp/force-settle.flag";
+        const string FlagImportStills = "Temp/import-stills.flag";
+        const string FlagSelectLockedChar = "Temp/select-locked-char.flag";
 
         static int heartbeatLeft;
         static int heartbeatLastFrame = -1;
@@ -50,6 +52,7 @@ namespace EraserWars.Editor
             TryRefreshAssets();
             TryRebuild();
             TryImportContent();
+            TryImportStills();
             TryOpen(FlagFishNet, "Assets/Scenes/FishNet_Spike.unity");
             TryOpen(FlagClassroom, "Assets/Scenes/Classroom_Casual.unity");
             TryEnterPlay();
@@ -58,6 +61,7 @@ namespace EraserWars.Editor
             TryKnockOut();
             TryRematch();
             TryOpenCollection();
+            TrySelectLockedChar();
             TryPlayFirstCard();
             TryForceSettle();
             TryDumpUi();
@@ -419,6 +423,63 @@ namespace EraserWars.Editor
             Debug.Log("[EraserWars] refresh-assets: AssetDatabase.Refresh done");
         }
 
+        static void TryImportStills()
+        {
+            if (!PeekFlag(FlagImportStills))
+            {
+                return;
+            }
+
+            if (EditorApplication.isPlaying)
+            {
+                EditorApplication.isPlaying = false;
+                return;
+            }
+
+            if (EditorApplication.isCompiling)
+            {
+                return;
+            }
+
+            if (!ConsumeFlag(FlagImportStills))
+            {
+                return;
+            }
+
+            CharacterStillImporter.Import();
+        }
+
+        static void TrySelectLockedChar()
+        {
+            if (!PeekFlag(FlagSelectLockedChar))
+            {
+                return;
+            }
+
+            if (!EditorApplication.isPlaying || EditorApplication.isCompiling)
+            {
+                return;
+            }
+
+            if (!ConsumeFlag(FlagSelectLockedChar))
+            {
+                return;
+            }
+
+            var menu = Object.FindAnyObjectByType<StartMenuController>(FindObjectsInactive.Include);
+            if (menu == null)
+            {
+                Debug.LogWarning("[EraserWars] select-locked-char: StartMenu missing");
+                return;
+            }
+
+            menu.SelectCollectionCharacter(4);
+            var panel = menu.GetComponent<UIDocument>()?.rootVisualElement?.Q("collection-panel");
+            var unlock = panel?.Q<Label>("collection-detail-unlock")?.text;
+            var title = panel?.Q<Label>("collection-detail-title")?.text;
+            Debug.Log($"[EraserWars] select-locked-char: title='{title}' unlock='{unlock}'");
+        }
+
         static void TryForceSettle()
         {
             if (!PeekFlag(FlagForceSettle))
@@ -550,11 +611,28 @@ namespace EraserWars.Editor
             menu.OpenCollection();
 
             var catalog = Resources.Load<ContentCatalog>("EraserWars/ContentCatalog");
-            var panel = menu.GetComponent<UIDocument>()?.rootVisualElement?.Q("collection-panel");
+            var root = menu.GetComponent<UIDocument>()?.rootVisualElement;
+            var panel = root?.Q("collection-panel");
+            var home = root?.Q("menu-content");
+            var strip = panel?.Q("collection-strip");
             var hidden = panel == null || panel.ClassListContains("hidden");
-            var listCount = panel?.Q<ScrollView>("collection-list")?.childCount ?? -1;
+            var homeHidden = home == null || home.ClassListContains("hidden") || home.ClassListContains("dimmed");
+            var stripCount = strip?.childCount ?? -1;
+            var lockedTiles = 0;
+            if (strip != null)
+            {
+                foreach (var child in strip.Children())
+                {
+                    if (child.ClassListContains("locked"))
+                    {
+                        lockedTiles++;
+                    }
+                }
+            }
+
+            var unlockLabel = panel?.Q<Label>("collection-detail-unlock")?.text;
             Debug.Log(
-                $"[EraserWars] open-collection: catalogCards={catalog?.Cards?.Count ?? 0} catalogChars={catalog?.Characters?.Count ?? 0} panelHidden={hidden} listChildren={listCount}");
+                $"[EraserWars] open-collection: catalogCards={catalog?.Cards?.Count ?? 0} catalogChars={catalog?.Characters?.Count ?? 0} panelHidden={hidden} homeHidden={homeHidden} stripChildren={stripCount} lockedTiles={lockedTiles} unlockLabel='{unlockLabel}'");
         }
 
         static bool PeekFlag(string flagRelative)

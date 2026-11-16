@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: card.sig.stapler_x
   DisplayNameJa: "\u30DB\u30C3\u30C1\u30AD\u30B9\u82AFX"
   FamilyKey: signature
-  BuildCost: 3
+  BuildCost: 4
   IsSignature: 1
   MaxCopies: 1
   UsesPerMatch: 1

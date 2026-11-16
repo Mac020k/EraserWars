@@ -22,6 +22,7 @@ namespace EraserWars.UI
         [SerializeField] Texture2D iconOptions;
 
         VisualElement root;
+        VisualElement menuContent;
         VisualElement optionsPanel;
         VisualElement deckPanel;
         VisualElement collectionPanel;
@@ -33,6 +34,15 @@ namespace EraserWars.UI
         int selectedPlayers = 2;
         bool matchRunning;
         bool suspendedMatch;
+        MenuScreen currentScreen = MenuScreen.Home;
+
+        enum MenuScreen
+        {
+            Home,
+            Collection,
+            Options,
+            Deck,
+        }
 
         public bool IsMenuVisible =>
             isActiveAndEnabled
@@ -73,6 +83,7 @@ namespace EraserWars.UI
 
             var panelRoot = document.rootVisualElement;
             root = panelRoot.Q("root") ?? panelRoot;
+            menuContent = root.Q("menu-content");
             optionsPanel = root.Q("options-panel");
             deckPanel = root.Q("deck-panel");
             collectionPanel = root.Q("collection-panel");
@@ -83,12 +94,12 @@ namespace EraserWars.UI
             root.Q<Button>("resume-match")?.RegisterCallback<ClickEvent>(_ => ResumeMatch());
             mode2P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(2));
             mode4P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(4));
-            root.Q<Button>("open-options")?.RegisterCallback<ClickEvent>(_ => ShowPanel(optionsPanel));
+            root.Q<Button>("open-options")?.RegisterCallback<ClickEvent>(_ => OpenOptions());
             root.Q<Button>("open-deck")?.RegisterCallback<ClickEvent>(_ => OpenDeck());
             root.Q<Button>("open-collection")?.RegisterCallback<ClickEvent>(_ => OpenCollection());
-            root.Q<Button>("close-options")?.RegisterCallback<ClickEvent>(_ => HidePanels());
-            root.Q<Button>("close-deck")?.RegisterCallback<ClickEvent>(_ => HidePanels());
-            root.Q<Button>("close-collection")?.RegisterCallback<ClickEvent>(_ => HidePanels());
+            root.Q<Button>("close-options")?.RegisterCallback<ClickEvent>(_ => GoHome());
+            root.Q<Button>("close-deck")?.RegisterCallback<ClickEvent>(_ => GoHome());
+            root.Q<Button>("close-collection")?.RegisterCallback<ClickEvent>(_ => GoHome());
 
             ApplyIcon(root.Q("brand-icon"), brandIcon);
             ApplyIcon(root.Q("icon-2p"), icon2P);
@@ -130,14 +141,31 @@ namespace EraserWars.UI
         {
             EnsureCollectionBound();
             collection?.Refresh();
-            ShowPanel(collectionPanel);
+            NavigateTo(MenuScreen.Collection);
+        }
+
+        public void OpenOptions()
+        {
+            NavigateTo(MenuScreen.Options);
         }
 
         public void OpenDeck()
         {
             EnsureDeckBound();
             deck?.Refresh(selectedPlayers);
-            ShowPanel(deckPanel);
+            NavigateTo(MenuScreen.Deck);
+        }
+
+        public void GoHome()
+        {
+            NavigateTo(MenuScreen.Home);
+        }
+
+        public void SelectCollectionCharacter(int characterId)
+        {
+            EnsureCollectionBound();
+            collection?.SelectCharacterById(characterId);
+            NavigateTo(MenuScreen.Collection);
         }
 
         void Update()
@@ -150,21 +178,9 @@ namespace EraserWars.UI
 
             if (keyboard.escapeKey.wasPressedThisFrame)
             {
-                if (optionsPanel != null && !optionsPanel.ClassListContains("hidden"))
+                if (currentScreen != MenuScreen.Home)
                 {
-                    HidePanels();
-                    return;
-                }
-
-                if (deckPanel != null && !deckPanel.ClassListContains("hidden"))
-                {
-                    HidePanels();
-                    return;
-                }
-
-                if (collectionPanel != null && !collectionPanel.ClassListContains("hidden"))
-                {
-                    HidePanels();
+                    GoHome();
                     return;
                 }
 
@@ -281,6 +297,7 @@ namespace EraserWars.UI
 
             director?.SetDebugChromeVisible(false);
             director?.SetStartMenuOpen(true);
+            GoHome();
             RefreshStartButtonLabel();
         }
 
@@ -317,18 +334,45 @@ namespace EraserWars.UI
             Debug.Log($"[EraserWars] StartMenu.HideMenu activeSelf={gameObject.activeSelf} doc={(document != null && document.enabled)}");
         }
 
-        void ShowPanel(VisualElement panel)
+        void NavigateTo(MenuScreen screen)
         {
-            HidePanels();
-            panel?.RemoveFromClassList("hidden");
+            currentScreen = screen;
+            HideDestinationPages();
+            menuContent?.EnableInClassList("dimmed", screen != MenuScreen.Home);
+            menuContent?.EnableInClassList("hidden", screen != MenuScreen.Home);
+
+            var page = screen switch
+            {
+                MenuScreen.Collection => collectionPanel,
+                MenuScreen.Options => optionsPanel,
+                MenuScreen.Deck => deckPanel,
+                MenuScreen.Home => null,
+                _ => null,
+            };
+
+            if (page == null)
+            {
+                Debug.Log($"[EraserWars] StartMenu.NavigateTo Home");
+                return;
+            }
+
+            page.RemoveFromClassList("hidden");
+            page.AddToClassList("entering");
+            page.schedule.Execute(() => page.RemoveFromClassList("entering")).StartingIn(16);
+            Debug.Log($"[EraserWars] StartMenu.NavigateTo {screen}");
         }
 
-        void HidePanels()
+        void HideDestinationPages()
         {
             optionsPanel?.AddToClassList("hidden");
             deckPanel?.AddToClassList("hidden");
             collectionPanel?.AddToClassList("hidden");
+            optionsPanel?.RemoveFromClassList("entering");
+            deckPanel?.RemoveFromClassList("entering");
+            collectionPanel?.RemoveFromClassList("entering");
         }
+
+        void HidePanels() => GoHome();
 
         static void ApplyIcon(VisualElement element, Texture2D texture)
         {

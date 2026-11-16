@@ -16,7 +16,9 @@ MonoBehaviour:
   NameKey: char.hanasaki
   DisplayNameJa: "\u82B1\u54B2 \u307E\u3069\u304B"
   ArchetypeKey: desk_king
-  Portrait: {fileID: 0}
+  UnlockHintJa: "\u6700\u521D\u304B\u3089\u89E3\u653E"
+  BioJa: "\u306E\u308A\u3068\u30B3\u30FC\u30F3\u3067\u673A\u3092\u5EAD\u306B\u3059\u308B\u3002\u304A\u3063\u3068\u308A\u306B\u898B\u3048\u3066\u5B88\u308A\u306F\u9244\u58C1\u3002\u5B89\u5168\u7B2C\u4E00\u304C\u53E3\u7656\u3002"
+  Portrait: {fileID: 21300000, guid: a635ebb8a309ebc419ee405d45a10dcd, type: 3}
   Eraser: {fileID: 11400000, guid: f4338594d2e179841b3a3caee91b1953, type: 2}
   SignatureA: {fileID: 11400000, guid: 659e2424e881b1f4dbfee24e87a9fc99, type: 2}
   SignatureB: {fileID: 11400000, guid: cf7a2a8ff7a426049a6932463553fcee, type: 2}

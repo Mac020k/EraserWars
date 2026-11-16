@@ -16,6 +16,8 @@ MonoBehaviour:
   NameKey: char.soji
   DisplayNameJa: "\u6383\u9664 \u30D4\u30AB"
   ArchetypeKey: teacher
+  UnlockHintJa: "\u6383\u9664\u5F53\u756A\u30925\u56DE\u3053\u306A\u3059"
+  BioJa: "\u7DD1\u306E\u9AD8\u6469\u64E6\u3067\u30AB\u30B9\u3092\u5236\u3059\u3002\u81EA\u5206\u3060\u3051\u6ED1\u3089\u306A\u3044\u306E\u304C\u81EA\u6162\u3002"
   Portrait: {fileID: 0}
   Eraser: {fileID: 11400000, guid: e1a11936bb19fb346bf4ccbaea1c1be1, type: 2}
   SignatureA: {fileID: 0}

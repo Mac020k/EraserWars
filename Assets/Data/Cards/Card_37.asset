@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: card.sig.dosukoi
   DisplayNameJa: "\u3069\u3059\u3053\u3044"
   FamilyKey: signature
-  BuildCost: 3
+  BuildCost: 4
   IsSignature: 1
   MaxCopies: 1
   UsesPerMatch: 1

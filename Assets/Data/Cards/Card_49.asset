@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: card.sig.glue_bomb
   DisplayNameJa: "\u306E\u308A\u7206\u5F3E"
   FamilyKey: signature
-  BuildCost: 3
+  BuildCost: 4
   IsSignature: 1
   MaxCopies: 1
   UsesPerMatch: 1

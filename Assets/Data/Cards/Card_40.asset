@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: card.sig.ruler_laser
   DisplayNameJa: "\u5B9A\u898F\u30EC\u30FC\u30B6\u30FC"
   FamilyKey: signature
-  BuildCost: 3
+  BuildCost: 4
   IsSignature: 1
   MaxCopies: 1
   UsesPerMatch: 1

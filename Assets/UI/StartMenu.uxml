@@ -36,15 +36,26 @@
                 </ui:Button>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="options-panel" class="side-panel hidden">
-            <ui:Label text="オプション" class="panel-title" />
-            <ui:Label text="音量・言語は後続。Esc で閉じる。" class="panel-body" />
-            <ui:Button name="close-options" text="閉じる" class="panel-close" />
+
+        <ui:VisualElement name="options-panel" class="destination-page hidden">
+            <ui:VisualElement class="destination-chrome">
+                <ui:Button name="close-options" text="← もどる" class="destination-back" />
+                <ui:Label text="オプション" class="destination-title" />
+            </ui:VisualElement>
+            <ui:VisualElement class="destination-body options-body">
+                <ui:Label text="音量・言語・操作感はここにまとめます。" class="panel-body" />
+                <ui:Label text="いまは枠のみ。Esc でもホームへ戻れます。" class="panel-body" />
+                <ui:Label text="BGM" class="options-label" />
+                <ui:Slider name="opt-bgm" low-value="0" high-value="100" value="70" />
+                <ui:Label text="SE" class="options-label" />
+                <ui:Slider name="opt-se" low-value="0" high-value="100" value="80" />
+            </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="deck-panel" class="side-panel deck-panel hidden">
-            <ui:VisualElement class="collection-header">
-                <ui:Label text="デッキ" class="panel-title" />
-                <ui:Button name="close-deck" text="閉じる" class="panel-close collection-close" />
+
+        <ui:VisualElement name="deck-panel" class="destination-page deck-panel hidden">
+            <ui:VisualElement class="destination-chrome">
+                <ui:Button name="close-deck" text="← もどる" class="destination-back" />
+                <ui:Label text="デッキ" class="destination-title" />
             </ui:VisualElement>
             <ui:VisualElement class="deck-seats">
                 <ui:Button name="deck-seat-0" text="P1" class="collection-tab selected" />
@@ -65,20 +76,25 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="collection-panel" class="side-panel collection-panel hidden">
-            <ui:VisualElement class="collection-header">
-                <ui:Label text="コレクション" class="panel-title" />
-                <ui:Button name="close-collection" text="閉じる" class="panel-close collection-close" />
+
+        <ui:VisualElement name="collection-panel" class="destination-page collection-panel hidden">
+            <ui:VisualElement class="destination-chrome">
+                <ui:Button name="close-collection" text="← もどる" class="destination-back" />
+                <ui:Label text="コレクション" class="destination-title" />
             </ui:VisualElement>
             <ui:VisualElement class="collection-tabs">
                 <ui:Button name="collection-tab-characters" text="キャラ" class="collection-tab selected" />
                 <ui:Button name="collection-tab-cards" text="カード" class="collection-tab" />
             </ui:VisualElement>
             <ui:VisualElement name="collection-filters" class="collection-filters" />
-            <ui:VisualElement class="collection-body">
-                <ui:ScrollView name="collection-list" class="collection-list" />
+            <ui:ScrollView name="collection-strip-scroll" class="collection-strip-scroll" horizontal-scroller-visibility="AlwaysVisible" vertical-scroller-visibility="Hidden">
+                <ui:VisualElement name="collection-strip" class="collection-strip" />
+            </ui:ScrollView>
+            <ui:VisualElement class="collection-feature">
+                <ui:VisualElement name="collection-portrait" class="collection-portrait" />
                 <ui:VisualElement class="collection-detail">
                     <ui:Label name="collection-detail-title" text="キャラを選んでください" class="collection-detail-title" />
+                    <ui:Label name="collection-detail-unlock" text="" class="collection-detail-unlock" />
                     <ui:Label name="collection-detail-meta" text="" class="collection-detail-meta" />
                     <ui:Label name="collection-detail-body" text="" class="collection-detail-body" />
                 </ui:VisualElement>

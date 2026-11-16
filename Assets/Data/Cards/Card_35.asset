@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: card.sig.another_push
   DisplayNameJa: "\u3082\u3046\u4E00\u62BC\u3057"
   FamilyKey: signature
-  BuildCost: 3
+  BuildCost: 4
   IsSignature: 1
   MaxCopies: 1
   UsesPerMatch: 1

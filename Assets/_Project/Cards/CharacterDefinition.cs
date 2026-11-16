@@ -9,6 +9,8 @@ namespace EraserWars.Cards
         public string NameKey;
         public string DisplayNameJa;
         public string ArchetypeKey = CharacterArchetypes.AllOut;
+        public string UnlockHintJa;
+        [TextArea(3, 8)] public string BioJa;
         public Sprite Portrait;
         public EraserDefinition Eraser;
         public CardDefinition SignatureA;
@@ -17,6 +19,38 @@ namespace EraserWars.Cards
 
         public string DisplayName =>
             string.IsNullOrWhiteSpace(DisplayNameJa) ? NameKey : DisplayNameJa;
+
+        public string MaskedDisplayName => CharacterDisplay.MaskName(DisplayName);
+
+        public string UnlockHint =>
+            string.IsNullOrWhiteSpace(UnlockHintJa) ? "条件未設定" : UnlockHintJa;
+
+        public string Bio =>
+            string.IsNullOrWhiteSpace(BioJa) ? "自己紹介はこれから。" : BioJa;
+    }
+
+    public static class CharacterDisplay
+    {
+        public static string MaskName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return "？？？";
+            }
+
+            var chars = name.ToCharArray();
+            for (var i = 0; i < chars.Length; i++)
+            {
+                if (chars[i] == ' ' || chars[i] == '　')
+                {
+                    continue;
+                }
+
+                chars[i] = '？';
+            }
+
+            return new string(chars);
+        }
     }
 
     public static class CharacterArchetypes
