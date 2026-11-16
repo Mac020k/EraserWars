@@ -4,6 +4,7 @@
     "references": [
         "EraserWars.Core",
         "EraserWars.Cards",
+        "EraserWars.Gameplay",
         "EraserWars.Net",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"

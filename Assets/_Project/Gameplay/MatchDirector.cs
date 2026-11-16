@@ -22,6 +22,7 @@ namespace EraserWars.Gameplay
         readonly Dictionary<int, float> eraserCueScale = new();
         HitstopController hitstop;
         EdgeSlowmoWatcher edgeSlowmo;
+        EffectPhysicsSync effectPhysics;
         MatchState state;
         int activeSeat;
         const float ActiveEraserCueScale = 1.14f;
@@ -95,6 +96,12 @@ namespace EraserWars.Gameplay
         {
             hitstop = GetComponent<HitstopController>();
             EnsureEdgeSlowmo();
+            effectPhysics = GetComponent<EffectPhysicsSync>();
+            if (effectPhysics == null)
+            {
+                effectPhysics = gameObject.AddComponent<EffectPhysicsSync>();
+            }
+
             if (settleWatcher != null)
             {
                 settleWatcher.Settled += OnSettled;
@@ -105,6 +112,7 @@ namespace EraserWars.Gameplay
         {
             TickTurnTimer(Time.unscaledDeltaTime);
             RefreshActiveEraserCue();
+            effectPhysics.Sync(state, erasers);
         }
 
         void RefreshActiveEraserCue()
@@ -433,19 +441,15 @@ namespace EraserWars.Gameplay
             }
 
             pendingExtraFlick = ActiveEffectTuning.HasExtraFlick(state, command.Player);
-            var powerMul = ActiveEffectTuning.PowerMultiplier(state, command.Player);
-            var massMul = ActiveEffectTuning.MassMultiplier(state, command.Player);
-            if (eraser.Body != null && massMul > 0f)
-            {
-                eraser.Body.mass = eraser.Definition != null
-                    ? eraser.Definition.Mass * massMul
-                    : eraser.Body.mass * massMul;
-            }
+            // Mass and surface must be live before the impulse lands, not on the next Update.
+            effectPhysics.Sync(state, erasers);
+            var modifiers = ActiveEffectTuning.For(state, command.Player);
+            Debug.Log($"[EraserWars] Flick P{command.Player.Value + 1} {modifiers} bodyMass={eraser.Body.mass:0.0000} damping={eraser.Body.linearDamping:0.00}");
 
             state = MatchReduce.Reduce(state, new Flicked(command));
             hitstop?.BeginShot();
             EnsureOrbitCamera()?.SetChaseTarget(eraser.transform);
-            flickApplier.Apply(eraser, command, powerMul);
+            flickApplier.Apply(eraser, command, modifiers.Power);
             settleWatcher.Begin(erasers);
         }
 

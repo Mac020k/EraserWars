@@ -16,11 +16,16 @@ namespace EraserWars.Cards
             var next = state;
             foreach (var effect in effects)
             {
-                next = ApplyOne(next, owner, card, effect, target);
+                next = effect is PlaceDeskObject { PrefabKey: "ClearDust" }
+                    ? ClearDust(next)
+                    : ApplyOne(next, owner, card, effect, target);
             }
 
             return next;
         }
+
+        static MatchState ClearDust(MatchState state) =>
+            state with { Effects = state.Effects.RemoveAll(e => e.SpecKind.StartsWith("object:Dust")) };
 
         static MatchState ApplyOne(
             MatchState state,

@@ -3,6 +3,7 @@
     "rootNamespace": "EraserWars.Tests.PlayMode",
     "references": [
         "EraserWars.Core",
+        "EraserWars.Cards",
         "EraserWars.Gameplay",
         "EraserWars.Net",
         "UnityEngine.TestRunner"
