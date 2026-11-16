@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>Deck cost prototype</title>
+  <style>
+    body { margin: 0; background: #111; font-family: "Segoe UI", sans-serif; }
+    .page { display: flex; gap: 16px; padding: 16px; }
+    .panel {
+      width: 720px; height: 640px; box-sizing: border-box;
+      background: rgb(18, 22, 40); border: 8px solid rgb(196, 150, 88);
+      border-radius: 6px; padding: 20px 24px; color: white; display: flex; flex-direction: column;
+    }
+    .chrome { display: flex; align-items: center; margin-bottom: 10px; }
+    .back {
+      width: 110px; height: 36px; margin-right: 12px; font-weight: 700; font-size: 14px;
+      background: rgb(255, 252, 244); color: rgb(40, 36, 48); border-radius: 8px; border: 0;
+    }
+    h1 { font-size: 28px; margin: 0; }
+    .seats { display: flex; gap: 6px; margin-bottom: 6px; }
+    .seat {
+      height: 32px; padding: 0 14px; border-radius: 8px; border: 0;
+      background: rgb(60, 66, 84); color: white; font-weight: 700;
+    }
+    .seat.on { background: rgb(255, 220, 120); color: rgb(32, 28, 20); }
+    .budget {
+      margin-bottom: 8px; padding: 10px 12px; background: rgba(8, 10, 18, 0.55);
+      border-radius: 10px; border: 1px solid rgba(255, 220, 120, 0.45);
+    }
+    .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .label { font-size: 22px; font-weight: 700; color: rgb(255, 248, 230); }
+    .remain { font-size: 16px; font-weight: 700; color: rgb(255, 220, 120); }
+    .remain.full { color: rgb(190, 230, 170); }
+    .remain.over { color: rgb(255, 186, 170); }
+    .track { height: 12px; background: rgba(255,255,255,0.14); border-radius: 6px; overflow: hidden; }
+    .fill { height: 100%; background: rgb(255, 210, 80); }
+    .fill.full { background: rgb(120, 190, 110); }
+    .fill.over { background: rgb(214, 84, 68); }
+    .warn { margin-top: 8px; font-size: 15px; font-weight: 700; color: rgb(255, 214, 196); }
+    .meta { color: rgb(190, 190, 210); font-size: 13px; margin: 4px 0; }
+    .cols { display: flex; gap: 8px; min-height: 0; flex: 1; }
+    .col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .col h2 { margin: 0 0 4px; font-size: 13px; color: rgb(255, 220, 120); }
+    .empty { font-size: 14px; color: rgb(220, 220, 230); margin: 0 0 6px; }
+    .list { background: rgba(10, 12, 20, 0.35); border-radius: 8px; padding: 4px; overflow: auto; }
+    .item, .row {
+      min-height: 44px; margin: 0 0 4px; border-radius: 6px; border: 1px solid rgb(200, 190, 170);
+      background: rgb(255, 252, 244); color: rgb(32, 30, 40); display: flex; align-items: center;
+      padding: 0 8px; font-size: 14px; box-sizing: border-box;
+    }
+    .item.on, .row.in { background: rgb(255, 230, 140); border-color: rgb(40, 40, 48); }
+    .row { padding-right: 4px; }
+    .name { flex: 1; white-space: nowrap; overflow: hidden; }
+    .cost, .count { font-size: 13px; font-weight: 700; color: rgb(60, 48, 36); margin-left: 6px; white-space: nowrap; }
+    button.act {
+      width: 72px; height: 44px; margin-left: 6px; font-size: 15px; font-weight: 700; border-radius: 8px; border-width: 2px; border-style: solid;
+    }
+    button.add { background: rgb(255, 210, 80); color: rgb(32, 28, 20); border-color: rgb(120, 84, 20); }
+    button.remove { background: rgb(255, 252, 244); color: rgb(90, 32, 28); border-color: rgb(180, 90, 80); }
+    .caption { color: #aaa; font-size: 12px; padding: 0 16px 12px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="panel">
+      <div class="chrome"><button class="back">← もどる</button><h1>デッキ</h1></div>
+      <div class="seats"><button class="seat on">P1</button><button class="seat">P2</button></div>
+      <div class="budget">
+        <div class="head"><div class="label">デッキコスト 5/8</div><div class="remain">残り 3</div></div>
+        <div class="track"><div class="fill" style="width:62.5%"></div></div>
+      </div>
+      <div class="meta">P1: 広い / コモン 2/6</div>
+      <div class="meta">固有: なし / なし<br>型: 全力アタック型</div>
+      <div class="cols">
+        <div class="col">
+          <h2>キャラ</h2>
+          <div class="list">
+            <div class="item on">広い (全力アタック型)</div>
+            <div class="item">狭い (席取り上手型)</div>
+          </div>
+        </div>
+        <div class="col">
+          <h2>コモンカード</h2>
+          <div class="list">
+            <div class="row in"><span class="name">重い</span><span class="cost">コスト 3</span><span class="count">1枚</span><button class="act remove">外す</button><button class="act add">追加</button></div>
+            <div class="row in"><span class="name">中</span><span class="cost">コスト 2</span><span class="count">1枚</span><button class="act remove">外す</button><button class="act add">追加</button></div>
+            <div class="row"><span class="name">安い</span><span class="cost">コスト 1</span><button class="act add">追加</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="chrome"><button class="back">← もどる</button><h1>デッキ</h1></div>
+      <div class="seats"><button class="seat on">P1</button><button class="seat">P2</button></div>
+      <div class="budget">
+        <div class="head"><div class="label">デッキコスト 5/2</div><div class="remain over">上限オーバー</div></div>
+        <div class="track"><div class="fill over" style="width:100%"></div></div>
+        <div class="warn">上限を超えています。カードを外してください。</div>
+      </div>
+      <div class="meta">P1: 狭い / コモン 2/6</div>
+      <div class="cols">
+        <div class="col">
+          <h2>キャラ</h2>
+          <div class="list">
+            <div class="item">広い (全力アタック型)</div>
+            <div class="item on">狭い (席取り上手型)</div>
+          </div>
+        </div>
+        <div class="col">
+          <h2>コモンカード</h2>
+          <div class="list">
+            <div class="row in"><span class="name">重い</span><span class="cost">コスト 3</span><span class="count">1枚</span><button class="act remove">外す</button><button class="act add">追加</button></div>
+            <div class="row in"><span class="name">中</span><span class="cost">コスト 2</span><span class="count">1枚</span><button class="act remove">外す</button><button class="act add">追加</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <p class="caption">Layout prototype for the deck cost meter. Not a Play Mode capture. The open Unity editor is on the main checkout.</p>
+</body>
+</html>

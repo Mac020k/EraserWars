@@ -610,10 +610,10 @@
 }
 
 .deck-item {
-    height: 32px;
+    height: 44px;
     margin: 0 0 4px 0;
     padding: 0 8px;
-    font-size: 12px;
+    font-size: 14px;
     -unity-text-align: middle-left;
     background-color: rgb(255, 252, 244);
     color: rgb(32, 30, 40);
@@ -625,4 +625,138 @@
 .deck-item.selected {
     background-color: rgb(255, 230, 140);
     border-color: rgb(40, 40, 48);
+}
+
+.deck-budget {
+    flex-shrink: 0;
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    background-color: rgba(8, 10, 18, 0.55);
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: rgba(255, 220, 120, 0.45);
+}
+
+.deck-budget-head {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.deck-budget-label {
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: rgb(255, 248, 230);
+}
+
+.deck-budget-remain {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(255, 220, 120);
+}
+
+.deck-budget-remain.full {
+    color: rgb(190, 230, 170);
+}
+
+.deck-budget-remain.over {
+    color: rgb(255, 186, 170);
+}
+
+.deck-budget-track {
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.deck-budget-fill {
+    height: 100%;
+    width: 0;
+    background-color: rgb(255, 210, 80);
+    border-radius: 6px;
+}
+
+.deck-budget-fill.full {
+    background-color: rgb(120, 190, 110);
+}
+
+.deck-budget-fill.over {
+    background-color: rgb(214, 84, 68);
+}
+
+.deck-budget-warning {
+    margin-top: 8px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(255, 214, 196);
+    white-space: normal;
+}
+
+.deck-empty {
+    flex-shrink: 0;
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    color: rgb(220, 220, 230);
+    white-space: normal;
+}
+
+.deck-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 44px;
+    margin: 0 0 4px 0;
+    padding: 0 4px 0 8px;
+    background-color: rgb(255, 252, 244);
+    border-width: 1px;
+    border-color: rgb(200, 190, 170);
+    border-radius: 6px;
+}
+
+.deck-row.deck-row-in {
+    background-color: rgb(255, 236, 170);
+    border-color: rgb(40, 40, 48);
+}
+
+.deck-row-name {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 14px;
+    color: rgb(32, 30, 40);
+    -unity-text-align: middle-left;
+    white-space: nowrap;
+}
+
+.deck-row-cost,
+.deck-row-count {
+    flex-shrink: 0;
+    margin-left: 6px;
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(60, 48, 36);
+    white-space: nowrap;
+}
+
+.deck-action {
+    flex-shrink: 0;
+    width: 72px;
+    height: 44px;
+    margin-left: 6px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    border-radius: 8px;
+    border-width: 2px;
+}
+
+.deck-action-add {
+    background-color: rgb(255, 210, 80);
+    color: rgb(32, 28, 20);
+    border-color: rgb(120, 84, 20);
+}
+
+.deck-action-remove {
+    background-color: rgb(255, 252, 244);
+    color: rgb(90, 32, 28);
+    border-color: rgb(180, 90, 80);
 }

@@ -65,6 +65,16 @@
                     <ui:Button name="deck-seat-2" text="P3" class="collection-tab" />
                     <ui:Button name="deck-seat-3" text="P4" class="collection-tab" />
                 </ui:VisualElement>
+                <ui:VisualElement name="deck-budget" class="deck-budget">
+                    <ui:VisualElement class="deck-budget-head">
+                        <ui:Label name="deck-budget-label" text="デッキコスト 0/8" class="deck-budget-label" />
+                        <ui:Label name="deck-budget-remain" text="残り 8" class="deck-budget-remain" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="deck-budget-track">
+                        <ui:VisualElement name="deck-budget-fill" class="deck-budget-fill" />
+                    </ui:VisualElement>
+                    <ui:Label name="deck-budget-warning" text="" class="deck-budget-warning hidden" />
+                </ui:VisualElement>
                 <ui:Label name="deck-status" text="" class="collection-detail-meta" />
                 <ui:Label name="deck-detail" text="" class="collection-detail-body" />
                 <ui:VisualElement class="collection-body">
@@ -74,6 +84,7 @@
                     </ui:VisualElement>
                     <ui:VisualElement class="deck-column">
                         <ui:Label text="コモンカード" class="deck-column-title" />
+                        <ui:Label name="deck-empty" text="デッキは空です。カードの「追加」で入れてください。" class="deck-empty" />
                         <ui:ScrollView name="deck-card-list" class="collection-list deck-list" />
                     </ui:VisualElement>
                 </ui:VisualElement>
