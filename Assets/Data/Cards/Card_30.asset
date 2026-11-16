@@ -16,7 +16,7 @@ MonoBehaviour:
   NameKey: card.safety_first
   DisplayNameJa: "\u5B89\u5168\u7B2C\u4E00"
   FamilyKey: cover
-  BuildCost: 2
+  BuildCost: 3
   IsSignature: 0
   MaxCopies: 1
   UsesPerMatch: 1

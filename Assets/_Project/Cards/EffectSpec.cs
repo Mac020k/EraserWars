@@ -25,20 +25,23 @@ namespace EraserWars.Cards
 
     public sealed record RevealTrajectory(int CollisionDepth) : EffectSpec;
 
+    public sealed record RestoreStock(int Amount) : EffectSpec;
+
     public static class EffectSpecExhaustive
     {
         public static string Describe(EffectSpec spec) => spec switch
         {
             ModifyStat s => $"stat:{s.Stat}*{s.Multiplier}/{s.Turns}",
             ModifyFlick f => $"flick:{f.PowerMultiplier}",
-            ModifyRule r => $"rule:{r.RuleKey}",
+            ModifyRule r => MatchEffectRules.RuleKind(r.RuleKey, r.Value, r.Turns),
             ExtraFlick => "extra-flick",
             SwapPositions => "swap",
             Teleport t => $"teleport:{t.DeskNormalizedX},{t.DeskNormalizedZ}",
             PlaceDeskObject o => $"object:{o.PrefabKey}",
-            GrantShield g => $"shield:{g.ImpulseAbsorb}",
+            GrantShield g => MatchEffectRules.ShieldKind(g.ImpulseAbsorb, g.Hits),
             GrantWeapon w => $"weapon:{w.BonusImpulseOnHit}",
             RevealTrajectory r => $"traj:{r.CollisionDepth}",
+            RestoreStock s => $"stock:+{s.Amount}",
             _ => throw new InvalidOperationException($"Unhandled EffectSpec {spec.GetType().Name}"),
         };
     }

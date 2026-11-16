@@ -77,6 +77,17 @@ After the last seat, one remaining survivor ends the match. Otherwise the next r
 `TurnTimeSeconds` of 0 ignores `TimerExpired`. A disconnected player is skipped when their turn opens.
 `RuleSet.StockCount` is the starting stock. `MatchFactory.CreateHotseat` uses that count, empty hands, and turn order `0..n-1`.
 
+## Card effects
+
+`Assets/Data/Csv/cards.csv` lists each card's family, build cost and an effect string that `EffectSpecParser` turns into an `EffectSpec`.
+`CardResolver.Apply` records each effect as an `ActiveEffect` whose `SpecKind` string encodes its parameters, and `TickEffects` ages them after each settle.
+`MatchEffectRules` holds the pure match-state rules for the families that act on turns and stocks.
+- `ModifyRule:OpponentTurnTime:x:1` scales the next rival's turn clock once at handover, then removes itself.
+- `ModifyRule:SelfTurnTime:x:1` scales the current clock as soon as the card is played.
+- `GrantShield:absorb:hits` lets the owner survive that many falls. The saved eraser respawns at a clear spawn point and the shield lasts a full round of rival turns.
+- `SwapPositions` swaps the owner's eraser with the next living rival in turn order.
+- `RestoreStock:n` gives back up to `n` stocks, capped at `RuleSet.StockCount`.
+
 ## Tests
 
 Close the Unity Editor first. Batch mode cannot open a project that an editor already has open.
