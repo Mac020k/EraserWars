@@ -29,7 +29,24 @@ namespace EraserWars.Gameplay
             public float HeldSeconds { get; }
         }
 
+        readonly struct AimStroke
+        {
+            public AimStroke(LineRenderer line, float lift)
+            {
+                Line = line;
+                Lift = lift;
+            }
+
+            public LineRenderer Line { get; }
+            public float Lift { get; }
+        }
+
         const float MinDrag01 = 0.05f;
+        const int StrokeOutline = 0;
+        const int StrokeCone = 1;
+        const int StrokePower = 2;
+        const int StrokeRelease = 3;
+        const int StrokeCount = 4;
 
         [SerializeField] MatchDirector director;
         [SerializeField] Camera worldCamera;
@@ -45,8 +62,8 @@ namespace EraserWars.Gameplay
         float pressTime;
         TrackpadGesture pending;
         bool hasPending;
-        LineRenderer aimLine;
-        Material lineMaterial;
+        AimStroke[] strokes;
+        Material[] strokeMaterials;
         Color aimColor = Color.white;
 
         void Update()
@@ -86,10 +103,20 @@ namespace EraserWars.Gameplay
 
         void OnDestroy()
         {
-            if (lineMaterial != null)
+            if (strokeMaterials == null)
             {
-                Destroy(lineMaterial);
-                lineMaterial = null;
+                return;
+            }
+
+            for (var i = 0; i < strokeMaterials.Length; i++)
+            {
+                if (strokeMaterials[i] == null)
+                {
+                    continue;
+                }
+
+                Destroy(strokeMaterials[i]);
+                strokeMaterials[i] = null;
             }
         }
 
@@ -299,58 +326,136 @@ namespace EraserWars.Gameplay
                 return;
             }
 
-            EnsureAimLine();
+            EnsureAimStrokes();
             var origin = target.transform.position + Vector3.up * 0.03f;
             var heldSeconds = Time.time - pressTime;
-            var (dx, dz) = FlickMath.SwayedDirection(
+            var sample = FlickMath.SampleAim(
                 pull.x,
                 pull.z,
                 length,
                 heldSeconds,
                 target.SizeFactor,
+                Mathf.Max(0.05f, aimLineMeters),
                 amplitude0,
                 frequency0,
                 frequencySlope);
-            var end = origin + new Vector3(dx, 0f, dz) * (length * Mathf.Max(0.05f, aimLineMeters));
-            aimLine.enabled = true;
-            aimLine.positionCount = 2;
-            aimLine.SetPosition(0, origin);
-            aimLine.SetPosition(1, end);
-            ApplyLineColor(aimColor);
+            DrawShaft(strokes[StrokeOutline], origin, sample);
+            DrawFan(strokes[StrokeCone], origin, sample);
+            DrawShaft(strokes[StrokePower], origin, sample);
+            DrawRelease(strokes[StrokeRelease], origin, sample);
+            ApplyStrokeColor(strokes[StrokePower].Line, strokeMaterials[StrokePower], aimColor);
         }
 
         void HideAim()
         {
-            if (aimLine != null)
-            {
-                aimLine.enabled = false;
-            }
-        }
-
-        void EnsureAimLine()
-        {
-            if (aimLine != null)
+            if (strokes == null)
             {
                 return;
             }
 
-            var host = new GameObject("AimLine");
-            host.transform.SetParent(transform, false);
-            aimLine = host.AddComponent<LineRenderer>();
-            aimLine.useWorldSpace = true;
-            aimLine.alignment = LineAlignment.View;
-            aimLine.loop = false;
-            aimLine.positionCount = 2;
-            aimLine.widthMultiplier = 0.02f;
-            aimLine.numCapVertices = 2;
-            aimLine.shadowCastingMode = ShadowCastingMode.Off;
-            aimLine.receiveShadows = false;
-            aimLine.enabled = false;
-            lineMaterial = CreateLineMaterial();
-            if (lineMaterial != null)
+            for (var i = 0; i < strokes.Length; i++)
             {
-                aimLine.sharedMaterial = lineMaterial;
+                if (strokes[i].Line != null)
+                {
+                    strokes[i].Line.enabled = false;
+                }
             }
+        }
+
+        void DrawShaft(AimStroke stroke, Vector3 origin, FlickAimSample sample)
+        {
+            var line = stroke.Line;
+            line.enabled = true;
+            line.positionCount = 2;
+            line.SetPosition(0, AimPoint(origin, stroke.Lift));
+            line.SetPosition(1, AimPoint(origin, sample.CenterX, sample.CenterY, sample.LengthMeters, stroke.Lift));
+        }
+
+        void DrawFan(AimStroke stroke, Vector3 origin, FlickAimSample sample)
+        {
+            var line = stroke.Line;
+            line.enabled = true;
+            line.positionCount = 3;
+            line.SetPosition(0, AimPoint(origin, sample.LeftX, sample.LeftY, sample.LengthMeters, stroke.Lift));
+            line.SetPosition(1, AimPoint(origin, stroke.Lift));
+            line.SetPosition(2, AimPoint(origin, sample.RightX, sample.RightY, sample.LengthMeters, stroke.Lift));
+        }
+
+        void DrawRelease(AimStroke stroke, Vector3 origin, FlickAimSample sample)
+        {
+            var length = sample.LengthMeters;
+            var head = Mathf.Clamp(length * 0.16f, 0.012f, 0.05f);
+            var cap = length * 0.45f;
+            if (head > cap)
+            {
+                head = cap;
+            }
+
+            var dir = new Vector3(sample.ReleaseX, 0f, sample.ReleaseY);
+            var perp = new Vector3(-dir.z, 0f, dir.x);
+            var tip = origin + dir * length + Vector3.up * stroke.Lift;
+            var notch = tip - dir * head;
+            var wing = head * 0.62f;
+            var line = stroke.Line;
+            line.enabled = true;
+            line.positionCount = 5;
+            line.SetPosition(0, AimPoint(origin, stroke.Lift));
+            line.SetPosition(1, tip);
+            line.SetPosition(2, notch + perp * wing);
+            line.SetPosition(3, tip);
+            line.SetPosition(4, notch - perp * wing);
+        }
+
+        static Vector3 AimPoint(Vector3 origin, float lift)
+        {
+            return origin + Vector3.up * lift;
+        }
+
+        static Vector3 AimPoint(Vector3 origin, float x, float y, float distance, float lift)
+        {
+            return origin + new Vector3(x * distance, lift, y * distance);
+        }
+
+        void EnsureAimStrokes()
+        {
+            if (strokes != null)
+            {
+                return;
+            }
+
+            strokes = new AimStroke[StrokeCount];
+            strokeMaterials = new Material[StrokeCount];
+            strokes[StrokeOutline] = CreateStroke("AimOutline", 0.058f, new Color(0.08f, 0.07f, 0.06f, 1f), 0.002f, StrokeOutline);
+            strokes[StrokeCone] = CreateStroke("AimCone", 0.012f, Color.white, 0.006f, StrokeCone);
+            strokes[StrokePower] = CreateStroke("AimPower", 0.034f, aimColor, 0.010f, StrokePower);
+            strokes[StrokeRelease] = CreateStroke("AimRelease", 0.016f, new Color(0.05f, 0.05f, 0.06f, 1f), 0.016f, StrokeRelease);
+        }
+
+        AimStroke CreateStroke(string name, float width, Color color, float lift, int index)
+        {
+            var host = new GameObject(name);
+            host.transform.SetParent(transform, false);
+            var line = host.AddComponent<LineRenderer>();
+            line.useWorldSpace = true;
+            line.alignment = LineAlignment.View;
+            line.loop = false;
+            line.positionCount = 2;
+            line.widthMultiplier = width;
+            line.numCapVertices = 4;
+            line.numCornerVertices = 2;
+            line.shadowCastingMode = ShadowCastingMode.Off;
+            line.receiveShadows = false;
+            line.sortingOrder = index;
+            line.enabled = false;
+            var material = CreateLineMaterial();
+            strokeMaterials[index] = material;
+            if (material != null)
+            {
+                line.sharedMaterial = material;
+            }
+
+            ApplyStrokeColor(line, material, color);
+            return new AimStroke(line, lift);
         }
 
         static Material CreateLineMaterial()
@@ -374,23 +479,23 @@ namespace EraserWars.Gameplay
             return new Material(shader);
         }
 
-        void ApplyLineColor(Color color)
+        static void ApplyStrokeColor(LineRenderer line, Material material, Color color)
         {
-            aimLine.startColor = color;
-            aimLine.endColor = color;
-            if (lineMaterial == null)
+            line.startColor = color;
+            line.endColor = color;
+            if (material == null)
             {
                 return;
             }
 
-            if (lineMaterial.HasProperty("_BaseColor"))
+            if (material.HasProperty("_BaseColor"))
             {
-                lineMaterial.SetColor("_BaseColor", color);
+                material.SetColor("_BaseColor", color);
             }
 
-            if (lineMaterial.HasProperty("_Color"))
+            if (material.HasProperty("_Color"))
             {
-                lineMaterial.SetColor("_Color", color);
+                material.SetColor("_Color", color);
             }
         }
 
