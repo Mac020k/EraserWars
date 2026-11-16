@@ -1,0 +1,191 @@
+.card-face {
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    border-width: 3px;
+    border-radius: 14px;
+    flex-direction: column;
+    align-items: stretch;
+    transition-property: scale, translate;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out;
+}
+
+.card-face-pattern {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.card-face-mat {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: rgba(36, 24, 15, 0.28);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.card-cost-gem {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    border-width: 2px;
+    border-color: rgb(255, 248, 236);
+    background-color: rgb(22, 18, 16);
+    align-items: center;
+    justify-content: center;
+}
+
+.card-cost-value {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(255, 248, 236);
+}
+
+.card-effect-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: rgb(36, 24, 15);
+    background-color: rgb(255, 252, 246);
+}
+
+.card-ribbon {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 52px;
+    height: 18px;
+    margin: 0;
+    padding: 0 4px;
+    font-size: 12px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(42, 28, 8);
+    background-color: rgb(232, 184, 72);
+    border-radius: 8px;
+}
+
+.card-face-body {
+    flex-grow: 1;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 8px 8px 10px 8px;
+}
+
+.card-face-family {
+    font-size: 12px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+}
+
+.card-face-name {
+    font-size: 14px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.card-face.family-kiai {
+    background-color: rgb(255, 214, 196);
+    border-color: rgb(176, 64, 44);
+}
+
+.card-face.family-kiai .card-face-name,
+.card-face.family-kiai .card-face-family {
+    color: rgb(62, 24, 16);
+}
+
+.card-face.family-homework {
+    background-color: rgb(255, 248, 230);
+    border-color: rgb(46, 96, 168);
+}
+
+.card-face.family-homework .card-face-name,
+.card-face.family-homework .card-face-family {
+    color: rgb(36, 32, 24);
+}
+
+.card-face.family-seat {
+    background-color: rgb(214, 236, 214);
+    border-color: rgb(36, 112, 72);
+}
+
+.card-face.family-seat .card-face-name,
+.card-face.family-seat .card-face-family {
+    color: rgb(16, 48, 32);
+}
+
+.card-face.family-stationery {
+    background-color: rgb(255, 236, 176);
+    border-color: rgb(92, 64, 20);
+}
+
+.card-face.family-stationery .card-face-name,
+.card-face.family-stationery .card-face-family {
+    color: rgb(42, 32, 8);
+}
+
+.card-face.family-cover {
+    background-color: rgb(255, 214, 224);
+    border-color: rgb(176, 72, 104);
+}
+
+.card-face.family-cover .card-face-name,
+.card-face.family-cover .card-face-family {
+    color: rgb(62, 20, 36);
+}
+
+.card-face.family-signature {
+    background-color: rgb(28, 34, 52);
+    border-color: rgb(232, 184, 72);
+}
+
+.card-face.family-signature .card-face-name,
+.card-face.family-signature .card-face-family {
+    color: rgb(255, 246, 220);
+}
+
+.card-face.family-signature .card-face-mat {
+    border-color: rgba(232, 184, 72, 0.75);
+}
+
+.card-face.family-signature .card-cost-gem {
+    background-color: rgb(232, 184, 72);
+    border-color: rgb(255, 248, 220);
+}
+
+.card-face.family-signature .card-cost-value {
+    color: rgb(28, 22, 12);
+}
+
+.card-face.family-unknown {
+    background-color: rgb(236, 236, 232);
+    border-color: rgb(80, 80, 88);
+}
+
+.card-face.family-unknown .card-face-name,
+.card-face.family-unknown .card-face-family {
+    color: rgb(28, 28, 32);
+}
+
+.card-face.signature {
+    border-color: rgb(232, 184, 72);
+}

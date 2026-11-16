@@ -4,6 +4,7 @@
     "references": [
         "EraserWars.Core",
         "EraserWars.Cards",
+        "EraserWars.UI",
         "EraserWars.Gameplay",
         "EraserWars.UI",
         "EraserWars.Audio",

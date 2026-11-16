@@ -89,9 +89,21 @@ After the last seat, one remaining survivor ends the match. Otherwise the next r
 - `SwapPositions` swaps the owner's eraser with the next living rival in turn order.
 - `RestoreStock:n` gives back up to `n` stocks, capped at `RuleSet.StockCount`.
 
+<<<<<<< HEAD
 ## Audio
 
 `AudioBus` starts a generated BGM loop as soon as play mode begins. A UI button click plays `ui-click`. An accepted flick plays `flick`. Volumes are percents in `PlayerPrefs`, owned by `EraserWars.Audio.GameSettings`. The keys match the options sliders `opt-bgm` and `opt-se`. See [`Assets/_Project/Audio/README.md`](Assets/_Project/Audio/README.md).
+=======
+## Card faces
+
+`CardGlance` maps the first effect on a card to a `CardSymbol`.
+`CardFaceBuilder.Paint` draws that symbol on a collection tile and on a match hand card.
+Family color, the inner frame, the cost gem, and the effect badge live in `Assets/UI/CardFace.uss`.
+Glyph vectors live in `Assets/_Project/UI/CardIcons/`.
+`tools/generate_card_icons.py` writes those files and `CardIconSvg.cs`.
+The running game rasterizes the same markup. It does not depend on an SVG importer.
+A contact sheet of the six families is in `docs/prototypes/card-tcg/contact-sheet.png`.
+>>>>>>> origin/agent/card-tcg
 
 ## Tests
 

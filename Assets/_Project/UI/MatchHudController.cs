@@ -222,18 +222,14 @@ namespace EraserWars.UI
             {
                 var cardId = player.Hand[i].Value;
                 director.TryGetCard(cardId, out var definition);
-                var label = definition != null ? definition.DisplayName : $"#{cardId}";
-                var button = new Button();
-                button.AddToClassList("hand-card");
-                var nameLabel = new Label(label) { pickingMode = PickingMode.Ignore };
-                nameLabel.AddToClassList("hand-card-name");
-                button.Add(nameLabel);
-                if (definition != null && definition.IsSignature)
+                var button = new Button { text = string.Empty };
+                if (definition != null)
                 {
-                    button.AddToClassList("signature");
-                    var tag = new Label("★ とくぎ") { pickingMode = PickingMode.Ignore };
-                    tag.AddToClassList("hand-card-tag");
-                    button.Add(tag);
+                    CardFaceBuilder.Paint(button, definition, CardSurface.Hand);
+                }
+                else
+                {
+                    CardFaceBuilder.PaintUnknown(button, $"#{cardId}", CardSurface.Hand);
                 }
 
                 var captured = cardId;
