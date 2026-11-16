@@ -193,7 +193,7 @@ namespace EraserWars.Editor
             so.FindProperty("flickApplier").objectReferenceValue = flick;
             so.FindProperty("settleWatcher").objectReferenceValue = settle;
             so.FindProperty("eraserPrefab").objectReferenceValue = body;
-            so.FindProperty("showDebug").boolValue = false;
+            so.FindProperty("showDebug").boolValue = true;
             var spawnsProp = so.FindProperty("spawnPoints");
             spawnsProp.arraySize = 4;
             for (var i = 0; i < 4; i++)
@@ -336,6 +336,7 @@ namespace EraserWars.Editor
             var startDoc = startGo.AddComponent<UIDocument>();
             startDoc.visualTreeAsset = startUxml;
             startDoc.panelSettings = panelSettings;
+            startDoc.sortingOrder = 100;
             var start = startGo.AddComponent<StartMenuController>();
             var startSo = new SerializedObject(start);
             startSo.FindProperty("director").objectReferenceValue = director;
@@ -355,6 +356,7 @@ namespace EraserWars.Editor
             var hudDoc = hudGo.AddComponent<UIDocument>();
             hudDoc.visualTreeAsset = matchUxml;
             hudDoc.panelSettings = panelSettings;
+            hudDoc.sortingOrder = 50;
             var hud = hudGo.AddComponent<MatchHudController>();
             var hudSo = new SerializedObject(hud);
             hudSo.FindProperty("director").objectReferenceValue = director;

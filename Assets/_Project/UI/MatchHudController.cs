@@ -46,6 +46,8 @@ namespace EraserWars.UI
                 return;
             }
 
+            document.sortingOrder = 50;
+
             if (startMenu == null)
             {
                 startMenu = FindAnyObjectByType<StartMenuController>();

@@ -3,100 +3,105 @@
     <ui:VisualElement name="root" class="root">
         <ui:VisualElement name="backdrop" class="backdrop" />
         <ui:VisualElement name="menu-content" class="menu-content">
-            <ui:VisualElement class="brand-row">
-                <ui:VisualElement class="brand-text">
-                    <ui:Label text="消しピンウォーズ" class="title-ja" />
-                    <ui:Label text="ERASER WARS" class="title-en" />
+            <ui:VisualElement name="home-stack" class="home-stack">
+                <ui:VisualElement class="brand-row">
+                    <ui:VisualElement class="brand-text">
+                        <ui:Label text="消しピンウォーズ" class="title-ja" />
+                        <ui:Label text="ERASER WARS" class="title-en" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="brand-icon" class="brand-icon" />
                 </ui:VisualElement>
-                <ui:VisualElement name="brand-icon" class="brand-icon" />
-            </ui:VisualElement>
-            <ui:VisualElement class="spacer" />
-            <ui:Button name="resume-match" text="つづける" class="cta-button cta-resume hidden" />
-            <ui:Button name="start-match" text="マッチ開始" class="cta-button" />
-            <ui:VisualElement class="tile-row">
-                <ui:Button name="mode-2p" class="tile tile-pink">
-                    <ui:VisualElement name="icon-2p" class="tile-icon" />
-                    <ui:Label text="ホットシート 2P" class="tile-label" />
-                </ui:Button>
-                <ui:Button name="mode-4p" class="tile tile-yellow">
-                    <ui:VisualElement name="icon-4p" class="tile-icon" />
-                    <ui:Label text="ホットシート 4P" class="tile-label" />
-                </ui:Button>
-                <ui:Button name="open-deck" class="tile tile-pink">
-                    <ui:VisualElement name="icon-deck" class="tile-icon" />
-                    <ui:Label text="デッキ" class="tile-label" />
-                </ui:Button>
-                <ui:Button name="open-collection" class="tile tile-yellow">
-                    <ui:VisualElement name="icon-collection" class="tile-icon" />
-                    <ui:Label text="コレクション" class="tile-label" />
-                </ui:Button>
-                <ui:Button name="open-options" class="tile tile-blue">
-                    <ui:VisualElement name="icon-options" class="tile-icon" />
-                    <ui:Label text="オプション" class="tile-label" />
-                </ui:Button>
-            </ui:VisualElement>
-        </ui:VisualElement>
-
-        <ui:VisualElement name="options-panel" class="destination-page hidden">
-            <ui:VisualElement class="destination-chrome">
-                <ui:Button name="close-options" text="← もどる" class="destination-back" />
-                <ui:Label text="オプション" class="destination-title" />
-            </ui:VisualElement>
-            <ui:VisualElement class="destination-body options-body">
-                <ui:Label text="音量・言語・操作感はここにまとめます。" class="panel-body" />
-                <ui:Label text="いまは枠のみ。Esc でもホームへ戻れます。" class="panel-body" />
-                <ui:Label text="BGM" class="options-label" />
-                <ui:Slider name="opt-bgm" low-value="0" high-value="100" value="70" />
-                <ui:Label text="SE" class="options-label" />
-                <ui:Slider name="opt-se" low-value="0" high-value="100" value="80" />
-            </ui:VisualElement>
-        </ui:VisualElement>
-
-        <ui:VisualElement name="deck-panel" class="destination-page deck-panel hidden">
-            <ui:VisualElement class="destination-chrome">
-                <ui:Button name="close-deck" text="← もどる" class="destination-back" />
-                <ui:Label text="デッキ" class="destination-title" />
-            </ui:VisualElement>
-            <ui:VisualElement class="deck-seats">
-                <ui:Button name="deck-seat-0" text="P1" class="collection-tab selected" />
-                <ui:Button name="deck-seat-1" text="P2" class="collection-tab" />
-                <ui:Button name="deck-seat-2" text="P3" class="collection-tab" />
-                <ui:Button name="deck-seat-3" text="P4" class="collection-tab" />
-            </ui:VisualElement>
-            <ui:Label name="deck-status" text="" class="collection-detail-meta" />
-            <ui:Label name="deck-detail" text="" class="collection-detail-body" />
-            <ui:VisualElement class="collection-body">
-                <ui:VisualElement class="deck-column">
-                    <ui:Label text="キャラ" class="deck-column-title" />
-                    <ui:ScrollView name="deck-character-list" class="collection-list deck-list" />
-                </ui:VisualElement>
-                <ui:VisualElement class="deck-column">
-                    <ui:Label text="コモンカード" class="deck-column-title" />
-                    <ui:ScrollView name="deck-card-list" class="collection-list deck-list" />
+                <ui:VisualElement class="spacer" />
+                <ui:Button name="resume-match" text="つづける" class="cta-button cta-resume hidden" />
+                <ui:Button name="start-match" text="マッチ開始" class="cta-button" />
+                <ui:VisualElement class="tile-row">
+                    <ui:Button name="mode-2p" class="tile tile-pink">
+                        <ui:VisualElement name="icon-2p" class="tile-icon" />
+                        <ui:Label text="ホットシート 2P" class="tile-label" />
+                    </ui:Button>
+                    <ui:Button name="mode-4p" class="tile tile-yellow">
+                        <ui:VisualElement name="icon-4p" class="tile-icon" />
+                        <ui:Label text="ホットシート 4P" class="tile-label" />
+                    </ui:Button>
+                    <ui:Button name="open-deck" class="tile tile-pink">
+                        <ui:VisualElement name="icon-deck" class="tile-icon" />
+                        <ui:Label text="デッキ" class="tile-label" />
+                    </ui:Button>
+                    <ui:Button name="open-collection" class="tile tile-yellow">
+                        <ui:VisualElement name="icon-collection" class="tile-icon" />
+                        <ui:Label text="コレクション" class="tile-label" />
+                    </ui:Button>
+                    <ui:Button name="open-options" class="tile tile-blue">
+                        <ui:VisualElement name="icon-options" class="tile-icon" />
+                        <ui:Label text="オプション" class="tile-label" />
+                    </ui:Button>
                 </ui:VisualElement>
             </ui:VisualElement>
-        </ui:VisualElement>
 
-        <ui:VisualElement name="collection-panel" class="destination-page collection-panel hidden">
-            <ui:VisualElement class="destination-chrome">
-                <ui:Button name="close-collection" text="← もどる" class="destination-back" />
-                <ui:Label text="コレクション" class="destination-title" />
+            <ui:VisualElement name="options-panel" class="destination-page hidden">
+                <ui:VisualElement class="destination-chrome">
+                    <ui:Button name="close-options" text="← もどる" class="destination-back" />
+                    <ui:Label text="オプション" class="destination-title" />
+                </ui:VisualElement>
+                <ui:VisualElement class="destination-body options-body">
+                    <ui:Label text="音量・言語・操作感はここにまとめます。" class="panel-body" />
+                    <ui:Label text="いまは枠のみ。Esc でもホームへ戻れます。" class="panel-body" />
+                    <ui:Label text="BGM" class="options-label" />
+                    <ui:Slider name="opt-bgm" low-value="0" high-value="100" value="70" />
+                    <ui:Label text="SE" class="options-label" />
+                    <ui:Slider name="opt-se" low-value="0" high-value="100" value="80" />
+                    <ui:Label text="開発" class="options-label" />
+                    <ui:Button name="opt-debug-mode" text="デバッグモード: ON" class="options-debug-button debug-on" />
+                    <ui:Label text="リリース前にこのボタンを非表示にします。" class="panel-body" />
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement class="collection-tabs">
-                <ui:Button name="collection-tab-characters" text="キャラ" class="collection-tab selected" />
-                <ui:Button name="collection-tab-cards" text="カード" class="collection-tab" />
+
+            <ui:VisualElement name="deck-panel" class="destination-page deck-panel hidden">
+                <ui:VisualElement class="destination-chrome">
+                    <ui:Button name="close-deck" text="← もどる" class="destination-back" />
+                    <ui:Label text="デッキ" class="destination-title" />
+                </ui:VisualElement>
+                <ui:VisualElement class="deck-seats">
+                    <ui:Button name="deck-seat-0" text="P1" class="collection-tab selected" />
+                    <ui:Button name="deck-seat-1" text="P2" class="collection-tab" />
+                    <ui:Button name="deck-seat-2" text="P3" class="collection-tab" />
+                    <ui:Button name="deck-seat-3" text="P4" class="collection-tab" />
+                </ui:VisualElement>
+                <ui:Label name="deck-status" text="" class="collection-detail-meta" />
+                <ui:Label name="deck-detail" text="" class="collection-detail-body" />
+                <ui:VisualElement class="collection-body">
+                    <ui:VisualElement class="deck-column">
+                        <ui:Label text="キャラ" class="deck-column-title" />
+                        <ui:ScrollView name="deck-character-list" class="collection-list deck-list" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="deck-column">
+                        <ui:Label text="コモンカード" class="deck-column-title" />
+                        <ui:ScrollView name="deck-card-list" class="collection-list deck-list" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="collection-filters" class="collection-filters" />
-            <ui:ScrollView name="collection-strip-scroll" class="collection-strip-scroll" horizontal-scroller-visibility="AlwaysVisible" vertical-scroller-visibility="Hidden">
-                <ui:VisualElement name="collection-strip" class="collection-strip" />
-            </ui:ScrollView>
-            <ui:VisualElement class="collection-feature">
-                <ui:VisualElement name="collection-portrait" class="collection-portrait" />
-                <ui:VisualElement class="collection-detail">
-                    <ui:Label name="collection-detail-title" text="キャラを選んでください" class="collection-detail-title" />
-                    <ui:Label name="collection-detail-unlock" text="" class="collection-detail-unlock" />
-                    <ui:Label name="collection-detail-meta" text="" class="collection-detail-meta" />
-                    <ui:Label name="collection-detail-body" text="" class="collection-detail-body" />
+
+            <ui:VisualElement name="collection-panel" class="destination-page collection-panel hidden">
+                <ui:VisualElement class="destination-chrome">
+                    <ui:Button name="close-collection" text="← もどる" class="destination-back" />
+                    <ui:Label text="コレクション" class="destination-title" />
+                </ui:VisualElement>
+                <ui:VisualElement class="collection-tabs">
+                    <ui:Button name="collection-tab-characters" text="キャラ" class="collection-tab selected" />
+                    <ui:Button name="collection-tab-cards" text="カード" class="collection-tab" />
+                </ui:VisualElement>
+                <ui:VisualElement name="collection-filters" class="collection-filters" />
+                <ui:ScrollView name="collection-strip-scroll" class="collection-strip-scroll" horizontal-scroller-visibility="AlwaysVisible" vertical-scroller-visibility="Hidden">
+                    <ui:VisualElement name="collection-strip" class="collection-strip" />
+                </ui:ScrollView>
+                <ui:VisualElement class="collection-feature">
+                    <ui:VisualElement name="collection-portrait" class="collection-portrait" />
+                    <ui:VisualElement class="collection-detail">
+                        <ui:Label name="collection-detail-title" text="キャラを選んでください" class="collection-detail-title" />
+                        <ui:Label name="collection-detail-unlock" text="" class="collection-detail-unlock" />
+                        <ui:Label name="collection-detail-meta" text="" class="collection-detail-meta" />
+                        <ui:Label name="collection-detail-body" text="" class="collection-detail-body" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

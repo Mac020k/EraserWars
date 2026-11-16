@@ -206,7 +206,7 @@ namespace EraserWars.UI
                 art.AddToClassList("char-tile-art");
                 if (character.Portrait != null)
                 {
-                    art.style.backgroundImage = new StyleBackground(character.Portrait.texture);
+                    UiImageUtil.ApplyFaceCrop(art, character.Portrait);
                 }
 
                 var name = new Label(unlocked ? character.DisplayName : character.MaskedDisplayName);
@@ -318,11 +318,11 @@ namespace EraserWars.UI
                 portrait.EnableInClassList("locked", !unlocked);
                 if (unlocked && character.Portrait != null)
                 {
-                    portrait.style.backgroundImage = new StyleBackground(character.Portrait.texture);
+                    UiImageUtil.ApplyFit(portrait, character.Portrait);
                 }
                 else
                 {
-                    portrait.style.backgroundImage = StyleKeyword.None;
+                    UiImageUtil.Clear(portrait);
                 }
             }
         }
@@ -354,10 +354,7 @@ namespace EraserWars.UI
             }
 
             portrait?.EnableInClassList("locked", false);
-            if (portrait != null)
-            {
-                portrait.style.backgroundImage = StyleKeyword.None;
-            }
+            UiImageUtil.Clear(portrait);
         }
 
         void ClearDetail(string title)

@@ -22,7 +22,9 @@ namespace EraserWars.UI
         [SerializeField] Texture2D iconOptions;
 
         VisualElement root;
+        VisualElement boundPanelRoot;
         VisualElement menuContent;
+        VisualElement homeStack;
         VisualElement optionsPanel;
         VisualElement deckPanel;
         VisualElement collectionPanel;
@@ -35,6 +37,9 @@ namespace EraserWars.UI
         bool matchRunning;
         bool suspendedMatch;
         MenuScreen currentScreen = MenuScreen.Home;
+        // Dev default ON; hide the options control before release.
+        bool debugModeEnabled = true;
+        Button debugModeButton;
 
         enum MenuScreen
         {
@@ -52,7 +57,7 @@ namespace EraserWars.UI
 
         void OnEnable()
         {
-            BindDocument();
+            BindDocument(force: true);
             if (root == null)
             {
                 return;
@@ -69,7 +74,7 @@ namespace EraserWars.UI
             }
         }
 
-        void BindDocument()
+        void BindDocument(bool force = false)
         {
             if (document == null)
             {
@@ -81,15 +86,45 @@ namespace EraserWars.UI
                 return;
             }
 
+            document.sortingOrder = 100;
+
             var panelRoot = document.rootVisualElement;
+            if (panelRoot == null)
+            {
+                return;
+            }
+
+            var treeChanged = force || boundPanelRoot != panelRoot;
+            if (!treeChanged && root != null)
+            {
+                RefreshQueries(panelRoot);
+                return;
+            }
+
+            boundPanelRoot = panelRoot;
+            RefreshQueries(panelRoot);
+            RegisterMenuCallbacks();
+            ApplyMenuIcons();
+            EnsureCatalog();
+            EnsureCollectionBound();
+            EnsureDeckBound();
+        }
+
+        void RefreshQueries(VisualElement panelRoot)
+        {
             root = panelRoot.Q("root") ?? panelRoot;
             menuContent = root.Q("menu-content");
+            homeStack = root.Q("home-stack");
             optionsPanel = root.Q("options-panel");
             deckPanel = root.Q("deck-panel");
             collectionPanel = root.Q("collection-panel");
             mode2P = root.Q<Button>("mode-2p");
             mode4P = root.Q<Button>("mode-4p");
+            debugModeButton = root.Q<Button>("opt-debug-mode");
+        }
 
+        void RegisterMenuCallbacks()
+        {
             root.Q<Button>("start-match")?.RegisterCallback<ClickEvent>(_ => StartMatch());
             root.Q<Button>("resume-match")?.RegisterCallback<ClickEvent>(_ => ResumeMatch());
             mode2P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(2));
@@ -100,17 +135,41 @@ namespace EraserWars.UI
             root.Q<Button>("close-options")?.RegisterCallback<ClickEvent>(_ => GoHome());
             root.Q<Button>("close-deck")?.RegisterCallback<ClickEvent>(_ => GoHome());
             root.Q<Button>("close-collection")?.RegisterCallback<ClickEvent>(_ => GoHome());
+            debugModeButton?.RegisterCallback<ClickEvent>(_ => ToggleDebugMode());
+            RefreshDebugModeButton();
+        }
 
-            ApplyIcon(root.Q("brand-icon"), brandIcon);
-            ApplyIcon(root.Q("icon-2p"), icon2P);
-            ApplyIcon(root.Q("icon-4p"), icon4P);
-            ApplyIcon(root.Q("icon-deck"), iconDeck);
-            ApplyIcon(root.Q("icon-collection"), iconCollection);
-            ApplyIcon(root.Q("icon-options"), iconOptions);
+        void ApplyMenuIcons()
+        {
+            UiImageUtil.ApplyFit(root.Q("brand-icon"), brandIcon);
+            UiImageUtil.ApplyFit(root.Q("icon-2p"), icon2P);
+            UiImageUtil.ApplyFit(root.Q("icon-4p"), icon4P);
+            UiImageUtil.ApplyFit(root.Q("icon-deck"), iconDeck);
+            UiImageUtil.ApplyFit(root.Q("icon-collection"), iconCollection);
+            UiImageUtil.ApplyFit(root.Q("icon-options"), iconOptions);
+        }
 
-            EnsureCatalog();
-            EnsureCollectionBound();
-            EnsureDeckBound();
+        void ToggleDebugMode()
+        {
+            debugModeEnabled = !debugModeEnabled;
+            RefreshDebugModeButton();
+            if (matchRunning && director != null)
+            {
+                director.SetDebugChromeVisible(debugModeEnabled);
+            }
+
+            Debug.Log($"[EraserWars] debugModeEnabled={debugModeEnabled}");
+        }
+
+        void RefreshDebugModeButton()
+        {
+            if (debugModeButton == null)
+            {
+                return;
+            }
+
+            debugModeButton.text = debugModeEnabled ? "デバッグモード: ON" : "デバッグモード: OFF";
+            debugModeButton.EnableInClassList("debug-on", debugModeEnabled);
         }
 
         void EnsureCatalog()
@@ -139,6 +198,7 @@ namespace EraserWars.UI
 
         public void OpenCollection()
         {
+            BindDocument();
             EnsureCollectionBound();
             collection?.Refresh();
             NavigateTo(MenuScreen.Collection);
@@ -146,11 +206,13 @@ namespace EraserWars.UI
 
         public void OpenOptions()
         {
+            BindDocument();
             NavigateTo(MenuScreen.Options);
         }
 
         public void OpenDeck()
         {
+            BindDocument();
             EnsureDeckBound();
             deck?.Refresh(selectedPlayers);
             NavigateTo(MenuScreen.Deck);
@@ -230,7 +292,7 @@ namespace EraserWars.UI
                 director.SetSeatCommons(i, loadout.Commons[i]);
             }
 
-            director.SetDebugChromeVisible(false);
+            director.SetDebugChromeVisible(debugModeEnabled);
             director.StartHotseat(playerCount);
             matchRunning = true;
             suspendedMatch = false;
@@ -251,6 +313,7 @@ namespace EraserWars.UI
 
             suspendedMatch = false;
             matchRunning = true;
+            director.SetDebugChromeVisible(debugModeEnabled);
             HideMenu();
             HidePanels();
             FindAnyObjectByType<MatchHudController>()?.RefreshFromState();
@@ -336,10 +399,27 @@ namespace EraserWars.UI
 
         void NavigateTo(MenuScreen screen)
         {
+            BindDocument();
             currentScreen = screen;
+
             HideDestinationPages();
-            menuContent?.EnableInClassList("dimmed", screen != MenuScreen.Home);
-            menuContent?.EnableInClassList("hidden", screen != MenuScreen.Home);
+
+            var showHome = screen == MenuScreen.Home;
+            if (menuContent != null)
+            {
+                menuContent.RemoveFromClassList("hidden");
+                menuContent.RemoveFromClassList("dimmed");
+                menuContent.style.display = DisplayStyle.Flex;
+                menuContent.visible = true;
+            }
+
+            if (homeStack != null)
+            {
+                homeStack.EnableInClassList("hidden", !showHome);
+                homeStack.style.display = showHome ? DisplayStyle.Flex : DisplayStyle.None;
+                homeStack.visible = showHome;
+                homeStack.style.opacity = showHome ? 1f : 0f;
+            }
 
             var page = screen switch
             {
@@ -352,37 +432,54 @@ namespace EraserWars.UI
 
             if (page == null)
             {
-                Debug.Log($"[EraserWars] StartMenu.NavigateTo Home");
+                Debug.Log("[EraserWars] StartMenu.NavigateTo Home");
                 return;
             }
 
+            // Fixed pixel box — left/right/top/bottom stretch resolves to 0x0 on this panel.
+            // ~900x700 is the size that lays out reliably in Editor Game view.
+            const float pageW = 900f;
+            const float pageH = 700f;
+
             page.RemoveFromClassList("hidden");
-            page.AddToClassList("entering");
-            page.schedule.Execute(() => page.RemoveFromClassList("entering")).StartingIn(16);
-            Debug.Log($"[EraserWars] StartMenu.NavigateTo {screen}");
+            page.style.display = DisplayStyle.Flex;
+            page.style.position = Position.Absolute;
+            page.style.left = 40;
+            page.style.top = 40;
+            page.style.right = StyleKeyword.Auto;
+            page.style.bottom = StyleKeyword.Auto;
+            page.style.width = pageW;
+            page.style.height = pageH;
+            page.style.minWidth = pageW;
+            page.style.minHeight = pageH;
+            page.style.backgroundColor = new Color(0.07f, 0.09f, 0.16f, 1f);
+            page.visible = true;
+            page.BringToFront();
+            Debug.Log(
+                $"[EraserWars] StartMenu.NavigateTo {screen} " +
+                $"pageBox={pageW:0}x{pageH:0} parent={page.parent?.name} homeHidden={!showHome}");
         }
 
         void HideDestinationPages()
         {
-            optionsPanel?.AddToClassList("hidden");
-            deckPanel?.AddToClassList("hidden");
-            collectionPanel?.AddToClassList("hidden");
-            optionsPanel?.RemoveFromClassList("entering");
-            deckPanel?.RemoveFromClassList("entering");
-            collectionPanel?.RemoveFromClassList("entering");
+            HideDestinationPage(optionsPanel);
+            HideDestinationPage(deckPanel);
+            HideDestinationPage(collectionPanel);
         }
 
-        void HidePanels() => GoHome();
-
-        static void ApplyIcon(VisualElement element, Texture2D texture)
+        static void HideDestinationPage(VisualElement page)
         {
-            if (element == null || texture == null)
+            if (page == null)
             {
                 return;
             }
 
-            element.style.backgroundImage = new StyleBackground(texture);
-            element.style.backgroundColor = Color.clear;
+            page.AddToClassList("hidden");
+            page.style.display = DisplayStyle.None;
+            page.visible = false;
         }
+
+        void HidePanels() => GoHome();
+
     }
 }

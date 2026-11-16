@@ -603,36 +603,64 @@ namespace EraserWars.Editor
 
             if (!menu.gameObject.activeSelf)
             {
-                menu.ShowMenu(suspendMatch: menu.GetComponentInParent<Transform>() != null);
+                menu.gameObject.SetActive(true);
             }
 
-            menu.gameObject.SetActive(true);
-            menu.ShowMenu(suspendMatch: false);
+            // Avoid ShowMenu() here: it forces GoHome() and races the destination open.
             menu.OpenCollection();
 
-            var catalog = Resources.Load<ContentCatalog>("EraserWars/ContentCatalog");
-            var root = menu.GetComponent<UIDocument>()?.rootVisualElement;
-            var panel = root?.Q("collection-panel");
-            var home = root?.Q("menu-content");
-            var strip = panel?.Q("collection-strip");
-            var hidden = panel == null || panel.ClassListContains("hidden");
-            var homeHidden = home == null || home.ClassListContains("hidden") || home.ClassListContains("dimmed");
-            var stripCount = strip?.childCount ?? -1;
-            var lockedTiles = 0;
-            if (strip != null)
+            var framesLeft = 3;
+            void MeasureAfterLayout()
             {
-                foreach (var child in strip.Children())
+                if (!EditorApplication.isPlaying)
                 {
-                    if (child.ClassListContains("locked"))
+                    EditorApplication.update -= MeasureAfterLayout;
+                    return;
+                }
+
+                framesLeft--;
+                if (framesLeft > 0)
+                {
+                    return;
+                }
+
+                EditorApplication.update -= MeasureAfterLayout;
+
+                var catalog = Resources.Load<ContentCatalog>("EraserWars/ContentCatalog");
+                var root = menu.GetComponent<UIDocument>()?.rootVisualElement;
+                var panel = root?.Q("collection-panel");
+                var home = root?.Q("home-stack");
+                var menuHost = root?.Q("menu-content");
+                var strip = panel?.Q("collection-strip");
+                var startBtn = root?.Q("start-match");
+                var hidden = panel == null || panel.ClassListContains("hidden");
+                var homeHidden = home == null || home.ClassListContains("hidden") ||
+                                 home.resolvedStyle.display == DisplayStyle.None;
+                var stripCount = strip?.childCount ?? -1;
+                Debug.Log(
+                    $"[EraserWars] open-collection-viz: homeVis={home?.visible} homeDisp={home?.resolvedStyle.display} " +
+                    $"menuSize={menuHost?.resolvedStyle.width:0}x{menuHost?.resolvedStyle.height:0} " +
+                    $"panelVis={panel?.visible} panelDisp={panel?.resolvedStyle.display} " +
+                    $"panelSize={panel?.resolvedStyle.width:0}x{panel?.resolvedStyle.height:0} " +
+                    $"startVis={startBtn?.visible} startDisp={startBtn?.resolvedStyle.display}");
+                var lockedTiles = 0;
+                if (strip != null)
+                {
+                    foreach (var child in strip.Children())
                     {
-                        lockedTiles++;
+                        if (child.ClassListContains("locked"))
+                        {
+                            lockedTiles++;
+                        }
                     }
                 }
+
+                var unlockLabel = panel?.Q<Label>("collection-detail-unlock")?.text;
+                Debug.Log(
+                    $"[EraserWars] open-collection: catalogCards={catalog?.Cards?.Count ?? 0} catalogChars={catalog?.Characters?.Count ?? 0} panelHidden={hidden} homeHidden={homeHidden} stripChildren={stripCount} lockedTiles={lockedTiles} unlockLabel='{unlockLabel}'");
             }
 
-            var unlockLabel = panel?.Q<Label>("collection-detail-unlock")?.text;
-            Debug.Log(
-                $"[EraserWars] open-collection: catalogCards={catalog?.Cards?.Count ?? 0} catalogChars={catalog?.Characters?.Count ?? 0} panelHidden={hidden} homeHidden={homeHidden} stripChildren={stripCount} lockedTiles={lockedTiles} unlockLabel='{unlockLabel}'");
+            EditorApplication.update += MeasureAfterLayout;
         }
 
         static bool PeekFlag(string flagRelative)
