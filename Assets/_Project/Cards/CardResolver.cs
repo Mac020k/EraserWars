@@ -29,11 +29,21 @@ namespace EraserWars.Cards
             EffectSpec effect,
             PlayerId? target)
         {
+            switch (effect)
+            {
+                case RestoreStock restore:
+                    return MatchEffectRules.RestoreStock(state, owner, restore.Amount);
+                case ModifyRule { RuleKey: MatchEffectRules.SelfTurnTimeKey } self:
+                    return state with { TurnTimeLeft = state.TurnTimeLeft * self.Value };
+            }
+
+            // A shield must outlive the owner's own settle tick to cover every opponent turn.
             var turns = effect switch
             {
                 ModifyStat s => s.Turns,
                 ModifyRule r => r.Turns,
                 PlaceDeskObject o => o.Turns,
+                GrantShield => state.Players.Length,
                 _ => 1,
             };
 

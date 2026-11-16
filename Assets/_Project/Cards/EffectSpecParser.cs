@@ -48,6 +48,9 @@ namespace EraserWars.Cards
                 case "RevealTrajectory" when parts.Length >= 2:
                     spec = new RevealTrajectory(ParseInt(parts[1]));
                     return true;
+                case "RestoreStock" when parts.Length >= 2:
+                    spec = new RestoreStock(ParseInt(parts[1]));
+                    return true;
                 default:
                     return false;
             }
@@ -91,6 +94,7 @@ namespace EraserWars.Cards
                 GrantShield g => $"シールド 吸収{g.ImpulseAbsorb} / {g.Hits}回",
                 GrantWeapon w => $"武器 追加力積{w.BonusImpulseOnHit} / {w.Hits}回",
                 RevealTrajectory r => $"軌道予測 深さ{r.CollisionDepth}",
+                RestoreStock s => $"ストック回復 +{s.Amount}",
                 _ => throw new InvalidOperationException($"Unhandled EffectSpec {spec.GetType().Name}"),
             };
         }
