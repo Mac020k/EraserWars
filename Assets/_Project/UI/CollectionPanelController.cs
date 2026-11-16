@@ -61,6 +61,11 @@ namespace EraserWars.UI
             RebuildList();
         }
 
+        public void ShowCards()
+        {
+            SetMode("cards");
+        }
+
         public void SelectCharacterById(int id)
         {
             if (catalog == null)
@@ -247,15 +252,8 @@ namespace EraserWars.UI
                     continue;
                 }
 
-                var tile = new Button();
-                tile.AddToClassList("card-tile");
-                tile.EnableInClassList("signature", card.IsSignature);
-                var title = new Label(card.DisplayName);
-                title.AddToClassList("card-tile-name");
-                var cost = new Label($"コスト {card.BuildCost}");
-                cost.AddToClassList("card-tile-cost");
-                tile.Add(title);
-                tile.Add(cost);
+                var tile = new Button { text = string.Empty };
+                CardFaceBuilder.Paint(tile, card, CardSurface.Collection);
                 var captured = card;
                 tile.clicked += () => ShowCard(captured);
                 strip.Add(tile);

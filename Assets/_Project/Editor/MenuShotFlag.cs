@@ -8,7 +8,7 @@ namespace EraserWars.Editor
 {
     /// <summary>
     /// Drop Temp/menu-shot.flag during Play with body
-    /// "&lt;home|collection|options|deck&gt; &lt;output png&gt; [characterId] [16x9]".
+    /// "&lt;home|collection|cards|options|deck&gt; &lt;output png&gt; [characterId] [16x9]".
     /// Shows that menu screen, saves the Game view, logs the smallest button on it,
     /// then hands a running match back.
     /// </summary>
@@ -118,6 +118,9 @@ namespace EraserWars.Editor
                         menu.SelectCollectionCharacter(characterId);
                     }
 
+                    break;
+                case "cards":
+                    menu.OpenCollectionCards();
                     break;
                 case "options":
                     menu.OpenOptions();

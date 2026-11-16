@@ -202,6 +202,14 @@ namespace EraserWars.UI
             NavigateTo(MenuScreen.Collection);
         }
 
+        public void OpenCollectionCards()
+        {
+            BindDocument();
+            EnsureCollectionBound();
+            collection?.ShowCards();
+            NavigateTo(MenuScreen.Collection);
+        }
+
         public void OpenOptions()
         {
             BindDocument();

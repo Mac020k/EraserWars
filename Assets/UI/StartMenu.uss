@@ -1,3 +1,5 @@
+@import url("CardFace.uss");
+
 .root {
     position: relative;
     flex-grow: 1;
@@ -474,32 +476,19 @@
 
 .card-tile {
     width: 120px;
-    height: 160px;
-    margin-right: 8px;
-    padding: 10px;
-    flex-direction: column;
-    justify-content: space-between;
-    background-color: rgb(255, 252, 244);
-    border-radius: 10px;
-    border-width: 2px;
-    border-color: rgb(150, 190, 230);
+    height: 168px;
+    margin-right: 10px;
+    flex-shrink: 0;
 }
 
-.card-tile.signature {
-    border-color: rgb(255, 120, 160);
-    background-color: rgb(255, 236, 210);
+.card-tile:hover {
+    scale: 1.04 1.04;
+    translate: 0 -6px;
 }
 
-.card-tile-name {
-    font-size: 13px;
-    -unity-font-style: bold;
-    color: rgb(32, 30, 40);
-    white-space: normal;
-}
-
-.card-tile-cost {
-    font-size: 12px;
-    color: rgb(70, 90, 140);
+.card-tile:active {
+    scale: 0.98 0.98;
+    translate: 0 0;
 }
 
 .collection-feature {

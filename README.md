@@ -88,6 +88,16 @@ After the last seat, one remaining survivor ends the match. Otherwise the next r
 - `SwapPositions` swaps the owner's eraser with the next living rival in turn order.
 - `RestoreStock:n` gives back up to `n` stocks, capped at `RuleSet.StockCount`.
 
+## Card faces
+
+`CardGlance` maps the first effect on a card to a `CardSymbol`.
+`CardFaceBuilder.Paint` draws that symbol on a collection tile and on a match hand card.
+Family color, the inner frame, the cost gem, and the effect badge live in `Assets/UI/CardFace.uss`.
+Glyph vectors live in `Assets/_Project/UI/CardIcons/`.
+`tools/generate_card_icons.py` writes those files and `CardIconSvg.cs`.
+The running game rasterizes the same markup. It does not depend on an SVG importer.
+A contact sheet of the six families is in `docs/prototypes/card-tcg/contact-sheet.png`.
+
 ## Tests
 
 Close the Unity Editor first. Batch mode cannot open a project that an editor already has open.
