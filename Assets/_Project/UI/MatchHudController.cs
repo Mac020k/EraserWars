@@ -67,13 +67,26 @@ namespace EraserWars.UI
 
         void Update()
         {
+            if (director == null)
+            {
+                director = FindFirstObjectByType<MatchDirector>();
+            }
+
+            if (startMenu == null)
+            {
+                startMenu = FindFirstObjectByType<StartMenuController>(FindObjectsInactive.Include);
+            }
+
             if (director?.State == null)
             {
                 SetVisible(false);
                 return;
             }
 
-            if (startMenu != null && startMenu.IsMenuVisible)
+            var menuUp = startMenu != null
+                && startMenu.isActiveAndEnabled
+                && startMenu.IsMenuVisible;
+            if (menuUp)
             {
                 SetVisible(false);
                 return;

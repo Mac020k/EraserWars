@@ -4,3 +4,6 @@ ts	phase	decision	why	evidence	result
 2026-11-15T14:16:19Z	inventory	P0 gap is turn timer never ticks and TimerExpired never fires	HUD shows time but MatchDirector never decrements TurnTimeLeft	MatchDirector.cs grep TurnTimeLeft	open
 2026-11-15T14:16:19Z	timer	added TickTurnTimer and active-eraser scale cue; CardSelect HUD says �˂炦!	P1 milestone requires auto-pass on timeout; card UI not shipped yet	MatchDirector.cs MatchHudController.cs	open
 2026-11-15T14:19:46Z	timer	committed turn timer tick + eraser cue + HUD phase text	core smoke 5/5 green; Play Mode click still pending domain reload	commit HEAD core-smoke	tests green, play verify open
+2026-11-15T14:24:07Z	winner	MatchState.Winner + result banner + enter/unpause/start-hotseat flags	Play Mode click path kept failing on Pause; flags are the verification lever	commit HEAD	commit done, play verify next
+2026-11-15T14:26:43Z	play	BeginMatch(2) via flag succeeded after settle Cancel fix	log shows StartMenuController.BeginMatch(2); verifying HUD visually next	Editor.log	measured
+2026-11-16T09:32:57Z	menu	SetActive(false) on StartMenu after BeginMatch; IsMenuVisible checks active+enabled	log CardSelect; visual verify next	e611965	measured

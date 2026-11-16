@@ -356,6 +356,7 @@ namespace EraserWars.Editor
             var hudSo = new SerializedObject(hud);
             hudSo.FindProperty("director").objectReferenceValue = director;
             hudSo.FindProperty("document").objectReferenceValue = hudDoc;
+            hudSo.FindProperty("startMenu").objectReferenceValue = start;
             hudSo.FindProperty("iconStock").objectReferenceValue = UiIconBuilder.IconStock;
             hudSo.FindProperty("iconPass").objectReferenceValue = UiIconBuilder.IconPass;
             hudSo.ApplyModifiedPropertiesWithoutUndo();
