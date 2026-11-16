@@ -1,0 +1,7 @@
+ts	phase	decision	why	evidence	result
+2026-11-17T01:20:00+09:00	frame	exit predicates on main@633b3fb	operator requested final verify before absorb close	.audit/final-verify-2026-11-17.tsv	open
+2026-11-17T01:22:00+09:00	blocker	removed duplicate EraserWars.UI ref in EraserWars.Tests.EditMode.asmdef	Unity batchmode exited Scripts have compiler errors with no CS line; only asmdef dup listed	Logs/Editor.log batch exit 0 after fix	fixed
+2026-11-17T01:23:00+09:00	verify-1	Start/Collection/Options menu-shots in Play	home+collection+options PNGs; options log buttons=7 smallest=opt-shake; options applied master=1.00 bgm=0.70 se=0.80 flick=1.00 turn=20 shake=True	.audit/final-verify-2026-11-17/01-menu-{home,collection,options}.png; Logs/Editor.log	PASS
+2026-11-17T01:24:00+09:00	verify-2	Collection cards tab TCG faces	menu-shot cards saved; row shows cost badge + family color + effect icon	.audit/final-verify-2026-11-17/02-collection-cards.png; docs/prototypes/card-tcg/unity-cards.png parity	PASS
+2026-11-17T01:25:00+09:00	verify-3	2P hotseat turn callout + MatchEnd finish + 3D	flag Start→flick→knock-out; dump-ui CardSelect and MatchEnd; captures show P2 callout desks and finish card	.audit/final-verify-2026-11-17/{03-in-match,04-match-end}.png; Logs/Editor.log knock-out phase=MatchEnd	PASS
+2026-11-17T01:26:00+09:00	verify-4	AudioBus present	EditMode AudioBusTests 8/8; PlayMode BgmLoopPlaysAtTheDefaultGain 1/1	TestResults/{EditMode,PlayMode}-results.xml; Assets/_Project/Audio/AudioBus.cs	PASS
