@@ -133,6 +133,15 @@ namespace EraserWars.Editor
                 }
             }
 
+            if (name == "Mat_EraserBase")
+            {
+                var toon = Shader.Find("EraserWars/EraserToon");
+                if (toon != null && mat.shader != toon)
+                {
+                    mat.shader = toon;
+                }
+            }
+
             Texture2D tex = null;
             if (!string.IsNullOrEmpty(textureName))
             {
