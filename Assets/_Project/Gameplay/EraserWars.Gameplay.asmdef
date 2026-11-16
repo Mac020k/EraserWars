@@ -6,6 +6,7 @@
         "EraserWars.Cards",
         "EraserWars.CameraRig",
         "EraserWars.Audio",
+        "EraserWars.Persistence",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],

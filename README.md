@@ -81,6 +81,14 @@ The start menu segment `mode-stock` / `mode-points` stores `eraserwars.winMode` 
 `MatchDirector.StartHotseat` reads that key for both 2-player and 4-player hotseat, then applies the saved turn time.
 Points loads `RuleSet.PointsTrial`, which ends after 8 rounds. Stock loads `RuleSet.CasualStock`. Rematch and the debug Hotseat buttons read the same key.
 
+## Match log
+
+`MatchLogWriter` writes one file when a hotseat match reaches `Phase.MatchEnd`.
+`MatchDirector` writes that file from `Update`. `StartHotseat` writes the same match if that write has not succeeded. `Rematch` and the debug Hotseat buttons call `StartHotseat`, so the finished match is stored before the next one starts.
+In the editor the directory is `playtests/match-logs/`. A player build uses `Application.persistentDataPath/MatchLogs`.
+Each file records the match id, start and end in UTC, `WinMode`, stock count, point-round cap, ending round, winner seat or a draw, and each seat's stocks, points, and eliminated round.
+P3 can measure match length from the two timestamps and group matches by `WinMode`. Comeback counts and one-punch counts are not in this file.
+
 ## Card effects
 
 `Assets/Data/Csv/cards.csv` lists each card's family, build cost and an effect string that `EffectSpecParser` turns into an `EffectSpec`.

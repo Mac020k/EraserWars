@@ -9,6 +9,7 @@
         "EraserWars.CameraRig",
         "EraserWars.Audio",
         "EraserWars.Net",
+        "EraserWars.Persistence",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

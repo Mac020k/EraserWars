@@ -5,6 +5,7 @@ using EraserWars.Audio;
 using EraserWars.CameraRig;
 using EraserWars.Cards;
 using EraserWars.Core;
+using EraserWars.Persistence;
 using UnityEngine;
 
 namespace EraserWars.Gameplay
@@ -26,6 +27,7 @@ namespace EraserWars.Gameplay
         EdgeSlowmoWatcher edgeSlowmo;
         EffectPhysicsSync effectPhysics;
         MatchState state;
+        readonly MatchLogSession matchLog = new();
         CardCutIn? cardCutIn;
         int activeSeat;
         const float ActiveEraserCueScale = 1.14f;
@@ -144,6 +146,7 @@ namespace EraserWars.Gameplay
             AdvanceMatchClock(Time.unscaledDeltaTime);
             RefreshActiveEraserCue();
             effectPhysics.Sync(state, erasers);
+            PersistMatchLog(retry: false);
         }
 
         public void AdvanceMatchClock(float deltaSeconds)
@@ -238,6 +241,8 @@ namespace EraserWars.Gameplay
             {
                 settleWatcher.Settled -= OnSettled;
             }
+
+            PersistMatchLog(retry: true);
         }
 
         CharacterDefinition[] seatRoster = new CharacterDefinition[4];
@@ -283,6 +288,8 @@ namespace EraserWars.Gameplay
 
         public void StartHotseat(int playerCount)
         {
+            PersistMatchLog(retry: true);
+            matchLog.Begin(DateTime.UtcNow, Guid.NewGuid().ToString("N"));
             cardCutIn = null;
             EnsureEdgeSlowmo();
             edgeSlowmo.BeginMatch();
@@ -404,6 +411,19 @@ namespace EraserWars.Gameplay
             }
 
             StartHotseat(state.Players.Length);
+        }
+
+        void PersistMatchLog(bool retry)
+        {
+            if (matchLog.TryCommit(state, DateTime.UtcNow, MatchLogWriter.DefaultDirectory(), retry, out var error))
+            {
+                return;
+            }
+
+            if (error != null)
+            {
+                Debug.LogError("[EraserWars] Match log was not written. " + error);
+            }
         }
 
         public void Pass()
