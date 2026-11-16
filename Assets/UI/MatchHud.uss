@@ -197,6 +197,11 @@
     color: rgb(255, 255, 255);
 }
 
+.turn-yield.yield-cutoff {
+    background-color: rgb(36, 48, 72);
+    color: rgb(232, 240, 255);
+}
+
 .turn-yield.seat-0 { border-color: rgb(255, 120, 160); }
 .turn-yield.seat-1 { border-color: rgb(70, 130, 240); }
 .turn-yield.seat-2 { border-color: rgb(70, 190, 100); }

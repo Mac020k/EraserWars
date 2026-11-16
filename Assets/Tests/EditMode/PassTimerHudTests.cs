@@ -89,6 +89,51 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual("flick", CueName());
         }
 
+        [Test]
+        public void SettleCutoffStampsTheFlickerAndPlaysItsOwnCue()
+        {
+            using var rig = new Rig();
+            rig.StartMatch();
+            var seat = rig.Director.State.CurrentPlayerId;
+            var watcher = ArmedWatcher(rig.Director);
+            var cutoff = SerializedSeconds(watcher, "maxSimSeconds");
+            Assert.AreEqual(8f, cutoff, 0.001f);
+
+            rig.Director.SubmitFlick(new FlickCommand(seat, 1f, 0f, 0.4f, 0f, 0f, 0f));
+            Assert.AreEqual(Phase.Simulating, rig.Director.State.Phase);
+            SetSlide(rig.Director, moving: true);
+            Pump(watcher, cutoff + 0.02f);
+
+            Assert.AreNotEqual(Phase.Simulating, rig.Director.State.Phase);
+            rig.Hud.RefreshFromState();
+            AssertStamp(rig, TurnYieldKind.Cutoff, seat.Value);
+            Assert.AreEqual("settle-cutoff", CueName());
+
+            rig.Director.AdvanceMatchClock(TurnYieldNotice.Seconds);
+            rig.Hud.RefreshFromState();
+            Assert.IsTrue(rig.YieldHidden, "The cutoff stamp should leave with the other stamps.");
+        }
+
+        [Test]
+        public void NaturalSettleEndsTheFlickWithoutTheCutoffStamp()
+        {
+            using var rig = new Rig();
+            rig.StartMatch();
+            var seat = rig.Director.State.CurrentPlayerId;
+            var watcher = ArmedWatcher(rig.Director);
+            var hold = SerializedSeconds(watcher, "settleHoldSeconds");
+
+            rig.Director.SubmitFlick(new FlickCommand(seat, 1f, 0f, 0.4f, 0f, 0f, 0f));
+            Assert.AreEqual("flick", CueName());
+            SetSlide(rig.Director, moving: false);
+            Pump(watcher, hold + 0.02f);
+
+            Assert.AreNotEqual(Phase.Simulating, rig.Director.State.Phase);
+            rig.Hud.RefreshFromState();
+            Assert.IsTrue(rig.YieldHidden, "A natural stop should not stamp the cutoff.");
+            Assert.AreEqual("flick", CueName());
+        }
+
         static void AssertBriefStamp()
         {
             Assert.GreaterOrEqual(TurnYieldNotice.Seconds, 0.45f);
@@ -100,9 +145,82 @@ namespace EraserWars.Tests.EditMode
             var stamp = rig.Yield;
             Assert.IsFalse(rig.YieldHidden);
             Assert.AreEqual(new TurnYieldNotice(kind, seat).Label, stamp.text);
-            Assert.IsTrue(stamp.ClassListContains(kind == TurnYieldKind.Pass ? "yield-pass" : "yield-time"));
-            Assert.IsFalse(stamp.ClassListContains(kind == TurnYieldKind.Pass ? "yield-time" : "yield-pass"));
+            var expected = YieldClass(kind);
+            Assert.IsTrue(stamp.ClassListContains(expected));
+            AssertAbsent(stamp, "yield-pass", expected);
+            AssertAbsent(stamp, "yield-time", expected);
+            AssertAbsent(stamp, "yield-cutoff", expected);
             Assert.IsTrue(stamp.ClassListContains($"seat-{seat}"));
+        }
+
+        static void AssertAbsent(Label stamp, string className, string expected)
+        {
+            if (className != expected)
+            {
+                Assert.IsFalse(stamp.ClassListContains(className));
+            }
+        }
+
+        static string YieldClass(TurnYieldKind kind)
+        {
+            switch (kind)
+            {
+                case TurnYieldKind.Pass:
+                    return "yield-pass";
+                case TurnYieldKind.Time:
+                    return "yield-time";
+                case TurnYieldKind.Cutoff:
+                    return "yield-cutoff";
+                default:
+                    Assert.Fail($"Unhandled {kind}");
+                    return "";
+            }
+        }
+
+        static SettleWatcher ArmedWatcher(MatchDirector director)
+        {
+            director.ListenForSettle();
+            var field = typeof(MatchDirector).GetField(
+                "settleWatcher",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.NotNull(field, "MatchDirector.settleWatcher was renamed.");
+            var watcher = (SettleWatcher)field.GetValue(director);
+            Assert.NotNull(watcher, "The director has no settle watcher.");
+            Assert.AreSame(watcher, director.GetComponent<SettleWatcher>());
+            return watcher;
+        }
+
+        static float SerializedSeconds(SettleWatcher watcher, string property)
+        {
+            var so = new SerializedObject(watcher);
+            var prop = so.FindProperty(property);
+            Assert.NotNull(prop, property);
+            return prop.floatValue;
+        }
+
+        static void SetSlide(MatchDirector director, bool moving)
+        {
+            var velocity = moving ? new Vector3(1.5f, 0f, 0f) : Vector3.zero;
+            var count = 0;
+            foreach (var eraser in director.Erasers)
+            {
+                Assert.NotNull(eraser.Body, "The watched eraser needs a body.");
+                eraser.Body.linearVelocity = velocity;
+                eraser.Body.angularVelocity = Vector3.zero;
+                count++;
+            }
+
+            Assert.Greater(count, 0);
+        }
+
+        static void Pump(SettleWatcher watcher, float seconds)
+        {
+            const float dt = 0.02f;
+            var steps = Mathf.CeilToInt(seconds / dt);
+            for (var i = 0; i < steps; i++)
+            {
+                watcher.Tick(dt);
+            }
         }
 
         static string CueName()
@@ -158,6 +276,7 @@ namespace EraserWars.Tests.EditMode
                 SetField(Director, "eraserPrefab", eraserPrefab);
                 SetField(Director, "showDebug", false);
                 directorGo.SetActive(true);
+                Director.ListenForSettle();
                 var physics = directorGo.GetComponent<EffectPhysicsSync>();
                 if (physics == null)
                 {

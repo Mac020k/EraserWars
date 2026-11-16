@@ -18,6 +18,8 @@ namespace EraserWars.Gameplay
 
         public event Action Settled;
 
+        public bool EndedByCutoff { get; private set; }
+
         public void Begin(IEnumerable<EraserBody> bodies)
         {
             erasers.Clear();
@@ -37,12 +39,17 @@ namespace EraserWars.Gameplay
 
         void FixedUpdate()
         {
-            if (!watching)
+            Tick(Time.fixedDeltaTime);
+        }
+
+        public void Tick(float deltaSeconds)
+        {
+            if (!watching || deltaSeconds <= 0f)
             {
                 return;
             }
 
-            simTimer += Time.fixedDeltaTime;
+            simTimer += deltaSeconds;
             var allSettled = true;
             for (var i = 0; i < erasers.Count; i++)
             {
@@ -61,7 +68,7 @@ namespace EraserWars.Gameplay
 
             if (allSettled)
             {
-                settledTimer += Time.fixedDeltaTime;
+                settledTimer += deltaSeconds;
             }
             else
             {
@@ -70,8 +77,17 @@ namespace EraserWars.Gameplay
 
             if (settledTimer >= settleHoldSeconds || simTimer >= maxSimSeconds)
             {
+                var cutoff = settledTimer < settleHoldSeconds;
                 watching = false;
-                Settled?.Invoke();
+                EndedByCutoff = cutoff;
+                try
+                {
+                    Settled?.Invoke();
+                }
+                finally
+                {
+                    EndedByCutoff = false;
+                }
             }
         }
     }

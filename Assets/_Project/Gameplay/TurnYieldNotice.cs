@@ -6,6 +6,7 @@ namespace EraserWars.Gameplay
     {
         Pass,
         Time,
+        Cutoff,
     }
 
     public readonly struct TurnYieldNotice
@@ -31,6 +32,8 @@ namespace EraserWars.Gameplay
                     return "パスした";
                 case TurnYieldKind.Time:
                     return "じかんぎれ";
+                case TurnYieldKind.Cutoff:
+                    return "うちきり";
                 default:
                     return Never(kind);
             }
@@ -40,6 +43,7 @@ namespace EraserWars.Gameplay
         {
             TurnYieldKind.Pass => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
             TurnYieldKind.Time => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
+            TurnYieldKind.Cutoff => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
         };
     }
 }

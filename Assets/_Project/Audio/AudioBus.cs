@@ -13,6 +13,7 @@ namespace EraserWars.Audio
         CardPlay,
         CardPlaySignature,
         Pass,
+        SettleCutoff,
     }
 
     public sealed class AudioBus : MonoBehaviour
@@ -28,6 +29,7 @@ namespace EraserWars.Audio
         static AudioClip cardPlayClip;
         static AudioClip cardPlaySignatureClip;
         static AudioClip passClip;
+        static AudioClip settleCutoffClip;
 
         AudioSource bgmSource;
         AudioSource seSource;
@@ -239,6 +241,8 @@ namespace EraserWars.Audio
                     return CardPlaySignatureClip();
                 case AudioCue.Pass:
                     return PassClip();
+                case AudioCue.SettleCutoff:
+                    return SettleCutoffClip();
                 default:
                     throw UnhandledCue(cue);
             }
@@ -253,6 +257,7 @@ namespace EraserWars.Audio
             AudioCue.CardPlay => new ArgumentOutOfRangeException(nameof(cue), cue, null),
             AudioCue.CardPlaySignature => new ArgumentOutOfRangeException(nameof(cue), cue, null),
             AudioCue.Pass => new ArgumentOutOfRangeException(nameof(cue), cue, null),
+            AudioCue.SettleCutoff => new ArgumentOutOfRangeException(nameof(cue), cue, null),
         };
 
         static AudioClip BgmClip()
@@ -404,6 +409,16 @@ namespace EraserWars.Audio
             return passClip;
         }
 
+        static AudioClip SettleCutoffClip()
+        {
+            if (settleCutoffClip == null)
+            {
+                settleCutoffClip = BuildSettleCutoff();
+            }
+
+            return settleCutoffClip;
+        }
+
         static AudioClip BuildFall()
         {
             var data = new float[(int)(0.22 * SampleRate)];
@@ -472,6 +487,23 @@ namespace EraserWars.Audio
             data[0] = 0f;
             data[data.Length - 1] = 0f;
             return MakeClip("turn-pass", data);
+        }
+
+        static AudioClip BuildSettleCutoff()
+        {
+            var data = new float[(int)(0.16 * SampleRate)];
+            for (var i = 0; i < data.Length; i++)
+            {
+                var t = i / (double)SampleRate;
+                var env = (float)Math.Exp(-t * 18.0);
+                var body = (float)Math.Sin(2 * Math.PI * 180.0 * t);
+                var knock = (float)Math.Sin(2 * Math.PI * 90.0 * t);
+                data[i] = env * (0.55f * body + 0.35f * knock);
+            }
+
+            data[0] = 0f;
+            data[data.Length - 1] = 0f;
+            return MakeClip("settle-cutoff", data);
         }
 
         static void AddNote(float[] data, double start, double duration, double hz, float amp)

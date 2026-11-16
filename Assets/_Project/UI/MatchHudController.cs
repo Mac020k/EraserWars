@@ -300,10 +300,17 @@ namespace EraserWars.UI
                 case TurnYieldKind.Pass:
                     turnYieldLabel.EnableInClassList("yield-pass", true);
                     turnYieldLabel.EnableInClassList("yield-time", false);
+                    turnYieldLabel.EnableInClassList("yield-cutoff", false);
                     break;
                 case TurnYieldKind.Time:
                     turnYieldLabel.EnableInClassList("yield-pass", false);
                     turnYieldLabel.EnableInClassList("yield-time", true);
+                    turnYieldLabel.EnableInClassList("yield-cutoff", false);
+                    break;
+                case TurnYieldKind.Cutoff:
+                    turnYieldLabel.EnableInClassList("yield-pass", false);
+                    turnYieldLabel.EnableInClassList("yield-time", false);
+                    turnYieldLabel.EnableInClassList("yield-cutoff", true);
                     break;
                 default:
                     throw UnhandledYield(notice.Kind);
@@ -314,6 +321,7 @@ namespace EraserWars.UI
         {
             TurnYieldKind.Pass => new ArgumentOutOfRangeException(nameof(kind), kind, null),
             TurnYieldKind.Time => new ArgumentOutOfRangeException(nameof(kind), kind, null),
+            TurnYieldKind.Cutoff => new ArgumentOutOfRangeException(nameof(kind), kind, null),
         };
 
         void RefreshActions(MatchState state)
