@@ -9,3 +9,5 @@ ts	phase	decision	why	evidence	result
 2026-11-16T09:32:57Z	menu	SetActive(false) on StartMenu after BeginMatch; IsMenuVisible checks active+enabled	log CardSelect; visual verify next	e611965	measured
 2026-11-16T09:38:57Z	flick	flag flick-current reached Simulating; HideMenu activeSelf=False	vision still reports Start Menu overlay despite inactive GO; treat as vision/cache risk, trust log	Editor.log 87500-87542	measured flick; HUD visual inconclusive
 2026-11-16T09:58:44Z	hud	MatchHud shows ROUND1 ÇÀÇÁÇ¶! / ÇÃÇ±ÇË20ïb with StartMenu inactive	measured dump-ui; screenshot vision unreliable	dump-ui log	HUD+flick verified; timer frame advance next
+2026-11-16T10:04:06Z	timer	turnLeft fell 20Å®19 under advancing frames after domain-reload Play	heartbeat frame 80..91; Step used when wedged	b576df8	measured
+2026-11-16T10:13:08Z	end	MatchEnd winner=P0 then RematchÅ®CardSelect turnLeft=20	knock-out + rematch flags; HUD MatchEnd dump	60aa6ac	exit predicate core path VERIFIED
