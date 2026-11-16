@@ -148,10 +148,18 @@ namespace EraserWars.Gameplay
                 effectPhysics = gameObject.AddComponent<EffectPhysicsSync>();
             }
 
-            if (settleWatcher != null)
+            ListenForSettle();
+        }
+
+        public void ListenForSettle()
+        {
+            if (settleWatcher == null)
             {
-                settleWatcher.Settled += OnSettled;
+                return;
             }
+
+            settleWatcher.Settled -= OnSettled;
+            settleWatcher.Settled += OnSettled;
         }
 
         void Update()
@@ -676,6 +684,11 @@ namespace EraserWars.Gameplay
 
         void OnSettled()
         {
+            if (settleWatcher != null && settleWatcher.EndedByCutoff)
+            {
+                PresentSettleCutoff();
+            }
+
             if (pendingExtraFlick)
             {
                 pendingExtraFlick = false;
@@ -695,6 +708,18 @@ namespace EraserWars.Gameplay
             EnsureOrbitCamera()?.ClearChaseTarget();
             SyncActiveSeat();
             RespawnIfNeeded();
+        }
+
+        void PresentSettleCutoff()
+        {
+            if (state == null)
+            {
+                return;
+            }
+
+            turnYieldNotice = new TurnYieldNotice(TurnYieldKind.Cutoff, state.CurrentPlayerId.Value);
+            turnYieldSecondsLeft = TurnYieldNotice.Seconds;
+            AudioBus.Ensure().Play(AudioCue.SettleCutoff);
         }
 
         static MatchState ConsumeExtraFlick(MatchState current)
