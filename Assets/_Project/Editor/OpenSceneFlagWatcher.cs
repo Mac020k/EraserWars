@@ -290,8 +290,27 @@ namespace EraserWars.Editor
                     $"phaseLabel='{phase}' timer='{timer}' hiddenClass={hidden} display={hudRoot?.resolvedStyle.display}";
             }
 
+            var scaleBits = "(no-erasers)";
+            if (director != null && director.Erasers.Count > 0)
+            {
+                var parts = new System.Collections.Generic.List<string>();
+                for (var i = 0; i < director.Erasers.Count; i++)
+                {
+                    var e = director.Erasers[i];
+                    if (e == null)
+                    {
+                        continue;
+                    }
+
+                    var s = e.transform.localScale;
+                    parts.Add($"P{e.PlayerIndex + 1}=({s.x:0.000},{s.y:0.000},{s.z:0.000})");
+                }
+
+                scaleBits = string.Join(" ", parts);
+            }
+
             Debug.Log(
-                $"[EraserWars] dump-ui: match phase={director?.State?.Phase} players={director?.State?.Players.Length} turnLeft={director?.State?.TurnTimeLeft:0.0} frame={Time.frameCount} | {hudBits}");
+                $"[EraserWars] dump-ui: match phase={director?.State?.Phase} players={director?.State?.Players.Length} turnLeft={director?.State?.TurnTimeLeft:0.0} frame={Time.frameCount} | {hudBits} | {scaleBits}");
         }
 
         static void TickHeartbeat()

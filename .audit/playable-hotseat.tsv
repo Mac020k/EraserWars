@@ -12,3 +12,5 @@ ts	phase	decision	why	evidence	result
 2026-11-16T10:04:06Z	timer	turnLeft fell 20Å®19 under advancing frames after domain-reload Play	heartbeat frame 80..91; Step used when wedged	b576df8	measured
 2026-11-16T10:13:08Z	end	MatchEnd winner=P0 then RematchÅ®CardSelect turnLeft=20	knock-out + rematch flags; HUD MatchEnd dump	60aa6ac	exit predicate core path VERIFIED
 2026-11-16T10:20:13Z	menu-gate	IsStartMenuOpen blocks HotseatFlickInput.CanTrack	inventory P0-3 from gap agent; winner+timer already shipped	HotseatFlickInput MatchDirector StartMenuController	committed
+2026-11-16T11:23:47Z	eraser-scale	cue multiplies baseScale instead of lerping to 1.14	operator saw giant erasers; prefab is 0.06x0.018x0.028	MatchDirector.cs	fix committed
+2026-11-16T11:23:47Z	resume	Esc suspend + Ç¬Ç√ÇØÇÈ CTA; new match still available	inventory P1 menu resume	StartMenuController uxml uss	committed

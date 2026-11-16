@@ -312,12 +312,65 @@ namespace EraserWars.Gameplay
                 return;
             }
 
-            var spawn = spawnPoints[player.Id.Value % spawnPoints.Length];
-            eraser.transform.SetPositionAndRotation(spawn.position, spawn.rotation);
+            var pose = FindClearSpawn(player.Id.Value);
+            eraser.transform.SetPositionAndRotation(pose.position, pose.rotation);
             eraser.Body.linearVelocity = Vector3.zero;
             eraser.Body.angularVelocity = Vector3.zero;
             eraser.GetComponent<FalloutDetector>()?.ResetReport();
             eraser.gameObject.SetActive(true);
+        }
+
+        (Vector3 position, Quaternion rotation) FindClearSpawn(int seat)
+        {
+            var preferred = spawnPoints[seat % spawnPoints.Length];
+            var bestPos = preferred.position;
+            var bestRot = preferred.rotation;
+            var bestClearance = -1f;
+
+            for (var i = 0; i < spawnPoints.Length; i++)
+            {
+                var candidate = spawnPoints[(seat + i) % spawnPoints.Length];
+                var clearance = MinDistanceToActiveErasers(candidate.position, seat);
+                if (clearance > bestClearance)
+                {
+                    bestClearance = clearance;
+                    bestPos = candidate.position;
+                    bestRot = candidate.rotation;
+                }
+
+                if (clearance >= 0.12f)
+                {
+                    break;
+                }
+            }
+
+            if (bestClearance < 0.08f)
+            {
+                bestPos += preferred.right * 0.08f;
+            }
+
+            return (bestPos, bestRot);
+        }
+
+        float MinDistanceToActiveErasers(Vector3 position, int ignoreSeat)
+        {
+            var min = float.PositiveInfinity;
+            for (var i = 0; i < erasers.Count; i++)
+            {
+                var other = erasers[i];
+                if (other == null || !other.gameObject.activeSelf || other.PlayerIndex == ignoreSeat)
+                {
+                    continue;
+                }
+
+                var d = Vector3.Distance(position, other.transform.position);
+                if (d < min)
+                {
+                    min = d;
+                }
+            }
+
+            return float.IsPositiveInfinity(min) ? float.PositiveInfinity : min;
         }
 
         void BindEraserHitstop(EraserBody eraser)
