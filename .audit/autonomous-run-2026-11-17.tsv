@@ -37,3 +37,4 @@
 2026-11-17T08:42:54+09:00	wave5-spawn	6 worktrees from main@1486583	replay cpu secret collection options e2e	main	spawn
 2026-11-17T08:47:55+09:00	absorb-tick12	wave4 6/6; wave5 0/6; ready=	main@9da9d90	ok
 2026-11-17T08:52:52+09:00	merge	merged agent/hotseat-e2e-harness@e4f3986	wave5 1/6	main@99cc19c	merged
+2026-11-17T08:56:31+09:00	merge	merged agent/replay-stub@6ab9dfc; fix Cutoff UiText after loc	wave5 2/6	main	merged

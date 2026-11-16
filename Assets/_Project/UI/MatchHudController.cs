@@ -327,6 +327,7 @@ namespace EraserWars.UI
                     turnYieldLabel.EnableInClassList("yield-cutoff", false);
                     break;
                 case TurnYieldKind.Cutoff:
+                    turnYieldLabel.text = UiText.Get(UiKey.HudYieldCutoff);
                     turnYieldLabel.EnableInClassList("yield-pass", false);
                     turnYieldLabel.EnableInClassList("yield-time", false);
                     turnYieldLabel.EnableInClassList("yield-cutoff", true);

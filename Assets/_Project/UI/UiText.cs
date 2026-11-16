@@ -115,6 +115,7 @@ namespace EraserWars.UI
         HudNow,
         HudYieldPass,
         HudYieldTime,
+        HudYieldCutoff,
     }
 
     public static class UiText
@@ -221,6 +222,7 @@ namespace EraserWars.UI
             { UiKey.HudNow, new Line("いま", "Now") },
             { UiKey.HudYieldPass, new Line("パスした", "Passed") },
             { UiKey.HudYieldTime, new Line("じかんぎれ", "Time's up") },
+            { UiKey.HudYieldCutoff, new Line("うちきり", "Cutoff") },
         };
 
         public static readonly Slot[] StartMenuSlots =
