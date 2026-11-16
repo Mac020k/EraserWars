@@ -9,10 +9,11 @@ namespace EraserWars.Gameplay
 {
     public sealed class HotseatFlickInput : MonoBehaviour
     {
-        enum TrackpadPhase
+        enum AimPhase
         {
             Idle,
-            Aiming,
+            MouseAiming,
+            PadAiming,
             Released,
         }
 
@@ -57,13 +58,13 @@ namespace EraserWars.Gameplay
         [SerializeField] float frequency0 = FlickMath.DefaultSwayFrequency;
         [SerializeField] float frequencySlope = FlickMath.DefaultSwayFrequencySlope;
 
-        TrackpadPhase phase;
+        AimPhase phase;
         OrbitCamera orbit;
         EraserBody target;
         Vector2 pressScreen;
         float pressTime;
-        TrackpadGesture pending;
-        bool hasPending;
+        FlickCommand pendingCommand;
+        bool hasPendingCommand;
         AimStroke[] strokes;
         Material[] strokeMaterials;
         Color aimColor = Color.white;
@@ -77,31 +78,67 @@ namespace EraserWars.Gameplay
                 return;
             }
 
-            var keyboard = Keyboard.current;
-            if (keyboard != null && keyboard.spaceKey.wasPressedThisFrame)
+            if (PassPressed())
             {
                 ClearGesture();
                 director.Pass();
                 return;
             }
 
+            phase = Step(phase);
+            if (phase == AimPhase.MouseAiming && !MouseHeld())
+            {
+                phase = Step(phase);
+            }
+            else if (phase == AimPhase.PadAiming && !FlickHeld(Gamepad.current))
+            {
+                phase = Step(phase);
+            }
+
+            if (phase == AimPhase.Released)
+            {
+                phase = Step(phase);
+            }
+        }
+
+        bool PassPressed()
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.spaceKey.wasPressedThisFrame)
+            {
+                return true;
+            }
+
+            var pad = Gamepad.current;
+            return pad != null && pad.buttonEast.wasPressedThisFrame;
+        }
+
+        static bool MouseHeld()
+        {
             var mouse = Mouse.current;
-            if (mouse == null)
+            return mouse != null && mouse.leftButton.isPressed;
+        }
+
+        static bool FlickHeld(Gamepad pad)
+        {
+            if (pad == null)
             {
-                ClearGesture();
-                return;
+                return false;
             }
 
-            phase = Step(phase, mouse);
-            if (phase == TrackpadPhase.Aiming && !mouse.leftButton.isPressed)
+            return pad.rightTrigger.isPressed || pad.leftTrigger.isPressed || pad.buttonSouth.isPressed;
+        }
+
+        static bool FlickPressed(Gamepad pad)
+        {
+            if (pad == null)
             {
-                phase = Step(phase, mouse);
+                return false;
             }
 
-            if (phase == TrackpadPhase.Released)
-            {
-                phase = Step(phase, mouse);
-            }
+            return pad.rightTrigger.wasPressedThisFrame
+                || pad.leftTrigger.wasPressedThisFrame
+                || pad.buttonSouth.wasPressedThisFrame;
         }
 
         void OnDestroy()
@@ -134,90 +171,198 @@ namespace EraserWars.Gameplay
             return matchPhase != Phase.MatchEnd && matchPhase != Phase.Simulating;
         }
 
-        TrackpadPhase Step(TrackpadPhase current, Mouse mouse)
+        AimPhase Step(AimPhase current)
         {
             switch (current)
             {
-                case TrackpadPhase.Idle:
-                    return TickIdle(mouse);
-                case TrackpadPhase.Aiming:
-                    return TickAiming(mouse);
-                case TrackpadPhase.Released:
-                    return TickReleased();
+                case AimPhase.Idle:
+                    return TickIdle();
+                case AimPhase.MouseAiming:
+                    return TickMouseAiming();
+                case AimPhase.PadAiming:
+                    return TickPadAiming();
+                case AimPhase.Released:
+                    return TickCommit();
                 default:
                     var unexpected = current;
                     throw new ArgumentOutOfRangeException(nameof(current), unexpected, null);
             }
         }
 
-        TrackpadPhase TickIdle(Mouse mouse)
+        AimPhase TickIdle()
         {
-            if (!mouse.leftButton.wasPressedThisFrame)
+            var mouse = Mouse.current;
+            if (mouse != null && mouse.leftButton.wasPressedThisFrame)
             {
-                return TrackpadPhase.Idle;
+                return BeginMouse(mouse);
             }
 
+            if (FlickPressed(Gamepad.current))
+            {
+                return BeginPad();
+            }
+
+            return AimPhase.Idle;
+        }
+
+        AimPhase BeginMouse(Mouse mouse)
+        {
             var screen = mouse.position.ReadValue();
             if (director.IsOverDebugChrome(screen))
             {
-                return TrackpadPhase.Idle;
+                return AimPhase.Idle;
             }
 
             if (!director.TryGetCurrentEraser(out var eraser))
             {
-                return TrackpadPhase.Idle;
+                return AimPhase.Idle;
             }
 
-            target = eraser;
+            Arm(eraser);
             pressScreen = screen;
-            pressTime = Time.time;
-            aimColor = ReadTint(eraser);
-            return TrackpadPhase.Aiming;
+            return AimPhase.MouseAiming;
         }
 
-        TrackpadPhase TickAiming(Mouse mouse)
+        AimPhase BeginPad()
         {
+            if (!director.TryGetCurrentEraser(out var eraser))
+            {
+                return AimPhase.Idle;
+            }
+
+            Arm(eraser);
+            return AimPhase.PadAiming;
+        }
+
+        void Arm(EraserBody eraser)
+        {
+            target = eraser;
+            pressTime = Time.time;
+            aimColor = ReadTint(eraser);
+        }
+
+        AimPhase TickMouseAiming()
+        {
+            var mouse = Mouse.current;
+            if (mouse == null)
+            {
+                ClearGesture();
+                return AimPhase.Idle;
+            }
+
             var screen = mouse.position.ReadValue();
             if (mouse.leftButton.isPressed)
             {
                 ShowAim(screen);
-                return TrackpadPhase.Aiming;
+                return AimPhase.MouseAiming;
             }
 
-            pending = new TrackpadGesture(pressScreen, screen, Time.time - pressTime);
-            hasPending = true;
-            return TrackpadPhase.Released;
+            if (target != null)
+            {
+                var gesture = new TrackpadGesture(pressScreen, screen, Time.time - pressTime);
+                if (TryMap(gesture, target, out var command))
+                {
+                    pendingCommand = command;
+                    hasPendingCommand = true;
+                }
+            }
+
+            return AimPhase.Released;
         }
 
-        TrackpadPhase TickReleased()
+        AimPhase TickPadAiming()
         {
-            var gesture = pending;
+            var pad = Gamepad.current;
+            if (pad == null)
+            {
+                ClearGesture();
+                return AimPhase.Idle;
+            }
+
+            if (FlickHeld(pad))
+            {
+                if (TryStick(out var live))
+                {
+                    DrawAim(live.DirectionX, live.DirectionY, live.DragLength01, live.ReleaseTime);
+                }
+                else
+                {
+                    HideAim();
+                }
+
+                return AimPhase.PadAiming;
+            }
+
+            if (TryStick(out var command))
+            {
+                pendingCommand = command;
+                hasPendingCommand = true;
+            }
+
+            return AimPhase.Released;
+        }
+
+        AimPhase TickCommit()
+        {
+            var command = pendingCommand;
             var eraser = target;
-            var armed = hasPending;
+            var armed = hasPendingCommand;
             ClearGesture();
             if (!armed || eraser == null || director.State == null)
             {
-                return TrackpadPhase.Idle;
+                return AimPhase.Idle;
             }
 
             if (!director.TryGetCurrentEraser(out var current) || current != eraser)
             {
-                return TrackpadPhase.Idle;
-            }
-
-            if (!TryMap(gesture, eraser, out var command))
-            {
-                return TrackpadPhase.Idle;
+                return AimPhase.Idle;
             }
 
             director.SubmitFlick(command);
-            return TrackpadPhase.Idle;
+            return AimPhase.Idle;
+        }
+
+        bool TryStick(out FlickCommand command)
+        {
+            command = default;
+            var pad = Gamepad.current;
+            if (pad == null || director == null || director.State == null)
+            {
+                return false;
+            }
+
+            var rightX = 0f;
+            var rightZ = 0f;
+            var forwardX = 0f;
+            var forwardZ = 0f;
+            var camera = ResolveCamera();
+            if (camera != null)
+            {
+                var right = camera.transform.right;
+                var forward = camera.transform.forward;
+                rightX = right.x;
+                rightZ = right.z;
+                forwardX = forward.x;
+                forwardZ = forward.z;
+            }
+
+            var stick = pad.leftStick.ReadValue();
+            return StickFlick.TryCommand(
+                director.State.CurrentPlayerId,
+                stick.x,
+                stick.y,
+                rightX,
+                rightZ,
+                forwardX,
+                forwardZ,
+                Time.time - pressTime,
+                out command);
         }
 
         void ClearGesture()
         {
-            phase = TrackpadPhase.Idle;
-            hasPending = false;
+            phase = AimPhase.Idle;
+            hasPendingCommand = false;
             target = null;
             HideAim();
         }
@@ -354,12 +499,22 @@ namespace EraserWars.Gameplay
                 return;
             }
 
+            DrawAim(pull.x, pull.z, length, Time.time - pressTime);
+        }
+
+        void DrawAim(float directionX, float directionZ, float length, float heldSeconds)
+        {
+            if (target == null || length < 0.02f)
+            {
+                HideAim();
+                return;
+            }
+
             EnsureAimStrokes();
             var origin = target.transform.position + Vector3.up * 0.03f;
-            var heldSeconds = Time.time - pressTime;
             var sample = FlickMath.SampleAim(
-                pull.x,
-                pull.z,
+                directionX,
+                directionZ,
                 length,
                 heldSeconds,
                 target.SizeFactor,
