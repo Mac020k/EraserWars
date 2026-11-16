@@ -494,6 +494,11 @@ namespace EraserWars.UI
 
         public void GoHome()
         {
+            if (currentScreen == MenuScreen.Deck)
+            {
+                deck?.TrySave();
+            }
+
             NavigateTo(MenuScreen.Home);
         }
 

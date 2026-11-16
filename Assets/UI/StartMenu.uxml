@@ -106,6 +106,7 @@
                         <ui:VisualElement name="deck-budget-fill" class="deck-budget-fill" />
                     </ui:VisualElement>
                     <ui:Label name="deck-budget-warning" text="" class="deck-budget-warning hidden" />
+                    <ui:Button name="deck-save" text="保存" class="deck-save" />
                 </ui:VisualElement>
                 <ui:Label name="deck-status" text="" class="collection-detail-meta" />
                 <ui:Label name="deck-detail" text="" class="collection-detail-body" />

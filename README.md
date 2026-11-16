@@ -109,12 +109,24 @@ P3 can measure match length from the two timestamps and group matches by `WinMod
 `CardGlance` maps the first effect on a card to a `CardSymbol`.
 `CardFaceBuilder.Paint` draws that symbol on a collection tile, on a match hand card, and on the card cut-in.
 Each common-card row in the deck builder uses the collection face, so the cost gem, family color, and effect icon match the collection.
-The deck cost meter above the lists is unchanged.
+The deck cost meter above the lists is unchanged by the face work.
 Family color, the inner frame, the cost gem, and the effect badge live in `Assets/UI/CardFace.uss`.
 Glyph vectors live in `Assets/_Project/UI/CardIcons/`.
 `tools/generate_card_icons.py` writes those files and `CardIconSvg.cs`.
 The running game rasterizes the same markup. It does not depend on an SVG importer.
 A contact sheet of the six families is in `docs/prototypes/card-tcg/contact-sheet.png`.
+
+## Deck save
+
+`DeckRules.Evaluate` checks one seat before that seat is stored.
+The deck screen keeps a working list and writes it to the hotseat loadout only while the check passes.
+保存 stays disabled while the working list fails, and the cost meter shows the reason.
+The check fails when the eraser is missing, when the seat holds more than six commons, when one card passes its copy limit, or when the build cost passes that eraser's cap.
+A legal edit is stored immediately.
+An illegal edit stays off the stored seat.
+Switching to an eraser whose cap is below the cards already in the list is one of those edits.
+Leaving the deck screen stores the working list only when the check passes.
+The match keeps reading the last stored seat.
 
 ## Card cut-in
 

@@ -769,6 +769,24 @@
     white-space: normal;
 }
 
+.deck-save {
+    margin-top: 8px;
+    height: 44px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    background-color: rgb(255, 210, 80);
+    color: rgb(32, 28, 20);
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgb(120, 84, 20);
+}
+
+.deck-save:disabled {
+    background-color: rgb(90, 86, 96);
+    color: rgb(210, 206, 214);
+    border-color: rgb(70, 66, 76);
+}
+
 .deck-empty {
     flex-shrink: 0;
     margin: 0 0 6px 0;
