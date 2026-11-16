@@ -708,8 +708,59 @@ namespace EraserWars.Editor
             Box(room, "CorrFar_Door", V(far - 0.03f, FloorTop, 1.0f), V(far, FloorTop + 2.0f, 2.0f), doorMat);
         }
 
+        public static ChalkWallPiece[] ChalkWallPieces()
+        {
+            return ChalkWallDressing.Build(RoomHalfZ, FloorTop);
+        }
+
+        public static string ChalkWallLayoutFailure()
+        {
+            return ChalkWallDressing.LayoutFailure(ChalkWallPieces(), RoomHalfZ, FloorTop, RoomHalfX);
+        }
+
+        public static void PlaceChalkWallDressing(Transform room)
+        {
+            if (room == null)
+            {
+                throw new System.ArgumentNullException(nameof(room));
+            }
+
+            var pieces = ChalkWallPieces();
+            var failure = ChalkWallDressing.LayoutFailure(pieces, RoomHalfZ, FloorTop, RoomHalfX);
+            if (failure != null)
+            {
+                throw new System.InvalidOperationException(failure);
+            }
+
+            for (var i = 0; i < pieces.Length; i++)
+            {
+                PlaceChalkWallPiece(room, pieces[i]);
+            }
+        }
+
+        static void PlaceChalkWallPiece(Transform room, ChalkWallPiece piece)
+        {
+            if (piece.Kind == ChalkWallPieceKind.Ledge)
+            {
+                var cube = CreateDecor(room, piece.Name, piece.Center, piece.Size, ColorMaterial(piece.Color));
+                cube.transform.rotation = Quaternion.Euler(piece.TiltDegrees, piece.YawDegrees, 0f);
+                return;
+            }
+
+            PlacePaper(
+                room,
+                piece.Name,
+                piece.Center,
+                piece.Color,
+                piece.Size.x,
+                piece.Size.y,
+                piece.YawDegrees,
+                piece.TiltDegrees,
+                doubleSided: true);
+        }
+
         // Board front must sit nearer the room than the frame front, otherwise the frame hides the green.
-        // Parent is Wall_Front so chalk/side boards hide with the front wall.
+        // Parent is Wall_Front so chalk, posters, and the tray hide with the front wall.
         static void BuildChalkboardWall(Transform room, Material chalkMat, Material trimMat)
         {
             const float front = RoomHalfZ;
@@ -721,12 +772,6 @@ namespace EraserWars.Editor
             CreateDecor(room, "ChalkFrame", new Vector3(0f, boardY, front - 0.02f), new Vector3(boardW + 0.2f, boardH + 0.1f, 0.04f), trimMat);
             CreateDecor(room, "Chalkboard", new Vector3(0f, boardY, front - 0.04f), new Vector3(boardW, boardH, 0.04f), chalkMat);
             CreateDecor(room, "ChalkLedge", new Vector3(0f, ledgeTop - 0.025f, front - 0.11f), new Vector3(boardW + 0.1f, 0.05f, 0.14f), trimMat);
-            var chalkY = ledgeTop + 0.0125f;
-            CreateDecor(room, "Chalk_White", new Vector3(-0.8f, chalkY, front - 0.14f), new Vector3(0.09f, 0.025f, 0.025f), ColorMaterial(Color.white));
-            CreateDecor(room, "Chalk_Yellow", new Vector3(-0.6f, chalkY, front - 0.12f), new Vector3(0.08f, 0.025f, 0.025f), ColorMaterial(new Color(0.98f, 0.88f, 0.30f)));
-            CreateDecor(room, "Chalk_Pink", new Vector3(-0.4f, chalkY, front - 0.14f), new Vector3(0.08f, 0.025f, 0.025f), ColorMaterial(new Color(0.98f, 0.60f, 0.70f)));
-            CreateDecor(room, "ChalkEraser_A", new Vector3(0.9f, chalkY + 0.005f, front - 0.12f), new Vector3(0.14f, 0.035f, 0.06f), ColorMaterial(new Color(0.30f, 0.30f, 0.34f)));
-            CreateDecor(room, "ChalkEraser_B", new Vector3(1.15f, chalkY + 0.005f, front - 0.14f), new Vector3(0.14f, 0.035f, 0.06f), ColorMaterial(new Color(0.45f, 0.40f, 0.34f)));
             CreateDecor(room, "Speaker", new Vector3(0f, 2.78f, front - 0.09f), new Vector3(0.45f, 0.26f, 0.12f), ColorMaterial(new Color(0.38f, 0.38f, 0.40f)));
 
             var boardGreen = PrototypeLookBuilder.BoardGreenMaterial;
@@ -735,8 +780,6 @@ namespace EraserWars.Editor
             {
                 var x = side * sideX;
                 CreateDecor(room, "Bulletin_Side", new Vector3(x, 1.65f, front - 0.02f), new Vector3(1.1f, 1.4f, 0.04f), boardGreen);
-                PlacePaper(room, "Paper_Side_A", new Vector3(x - 0.2f, 1.9f, front - 0.07f), new Color(0.98f, 0.96f, 0.88f), facePositiveZ: false);
-                PlacePaper(room, "Paper_Side_B", new Vector3(x + 0.2f, 1.45f, front - 0.07f), new Color(0.98f, 0.90f, 0.55f), facePositiveZ: false);
 
                 var shelf = new Vector3(x - side * 0.05f, FloorTop + 0.35f, front - 0.2f);
                 CreateDecor(room, "Shelf", shelf, new Vector3(0.9f, 0.7f, 0.35f), PrototypeLookBuilder.DeskMaterial);
@@ -759,6 +802,8 @@ namespace EraserWars.Editor
             {
                 CreateDecor(room, "Book", new Vector3(sideX - 0.15f + i * 0.09f, shelfTopY + 0.13f + (i % 2) * 0.015f, front - 0.2f), new Vector3(0.07f, 0.24f + (i % 2) * 0.03f, 0.2f), ColorMaterial(bookColors[i]));
             }
+
+            PlaceChalkWallDressing(room);
         }
 
         // One cleaning locker on the left; long low storage with vertical bays + corkboard above.
@@ -918,17 +963,36 @@ namespace EraserWars.Editor
 
         static void PlacePaper(Transform parent, string name, Vector3 position, Color color, bool facePositiveZ = true)
         {
+            PlacePaper(parent, name, position, color, 0.35f, 0.45f, facePositiveZ ? 180f : 0f, 0f, doubleSided: false);
+        }
+
+        static void PlacePaper(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Color color,
+            float width,
+            float height,
+            float yawDegrees,
+            float rollDegrees,
+            bool doubleSided)
+        {
             var paper = GameObject.CreatePrimitive(PrimitiveType.Quad);
             paper.name = name;
             paper.transform.SetParent(parent, false);
             paper.transform.position = position;
-            paper.transform.rotation = Quaternion.Euler(0f, facePositiveZ ? 180f : 0f, 0f);
-            paper.transform.localScale = new Vector3(0.35f, 0.45f, 1f);
+            paper.transform.rotation = Quaternion.Euler(0f, yawDegrees, rollDegrees);
+            paper.transform.localScale = new Vector3(width, height, 1f);
             var mat = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"));
             mat.color = color;
             if (mat.HasProperty("_BaseColor"))
             {
                 mat.SetColor("_BaseColor", color);
+            }
+
+            if (doubleSided && mat.HasProperty("_Cull"))
+            {
+                mat.SetFloat("_Cull", 0f);
             }
 
             paper.GetComponent<Renderer>().sharedMaterial = mat;
