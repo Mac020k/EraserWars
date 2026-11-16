@@ -1,4 +1,5 @@
 using System;
+using EraserWars.CameraRig;
 using EraserWars.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -57,6 +58,7 @@ namespace EraserWars.Gameplay
         [SerializeField] float frequencySlope = FlickMath.DefaultSwayFrequencySlope;
 
         TrackpadPhase phase;
+        OrbitCamera orbit;
         EraserBody target;
         Vector2 pressScreen;
         float pressTime;
@@ -68,6 +70,7 @@ namespace EraserWars.Gameplay
 
         void Update()
         {
+            PublishActiveEraser();
             if (!CanTrack())
             {
                 ClearGesture();
@@ -522,6 +525,33 @@ namespace EraserWars.Gameplay
             {
                 material.SetColor("_Color", color);
             }
+        }
+
+        void PublishActiveEraser()
+        {
+            if (director == null || !director.TryGetCurrentEraser(out var eraser) || eraser == null)
+            {
+                return;
+            }
+
+            ResolveOrbit()?.SetActiveEraser(eraser.transform);
+        }
+
+        OrbitCamera ResolveOrbit()
+        {
+            if (orbit != null)
+            {
+                return orbit;
+            }
+
+            var camera = ResolveCamera();
+            if (camera == null)
+            {
+                return null;
+            }
+
+            orbit = camera.GetComponent<OrbitCamera>();
+            return orbit;
         }
 
         Camera ResolveCamera()

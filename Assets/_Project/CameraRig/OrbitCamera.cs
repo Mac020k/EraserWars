@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,12 @@ namespace EraserWars.CameraRig
         const float OverviewPitch = 54f;
         // Bias slightly toward the desk top so the play surface dominates the frame.
         const float OverviewFocusBiasY = 0.06f;
+        // 48° FOV. This distance keeps the 1.2×0.8 m arena inside a near-overhead frame.
+        const float TopDownPitch = 87f;
+        const float TopDownDistance = 1.75f;
+        // Nearer and lower than chase orbit so the active eraser reads large, and an aim stroke still fits.
+        const float CloseUpPitch = 32f;
+        const float CloseUpDistance = 0.9f;
 
         [SerializeField] Transform focus;
         [SerializeField] float distance = OverviewDistance;
@@ -28,6 +35,7 @@ namespace EraserWars.CameraRig
         const float FallGlanceDistanceScale = 0.72f;
 
         Transform chaseTarget;
+        Transform activeEraser;
         Vector3 smoothedFocus;
         bool hasSmoothedFocus;
         FallLeave leave;
@@ -42,6 +50,8 @@ namespace EraserWars.CameraRig
 
         Mode mode = Mode.Orbit;
 
+        public Mode View => mode;
+
         public void SetChaseTarget(Transform target)
         {
             chaseTarget = target;
@@ -50,6 +60,11 @@ namespace EraserWars.CameraRig
                 smoothedFocus = target.position;
                 hasSmoothedFocus = true;
             }
+        }
+
+        public void SetActiveEraser(Transform eraser)
+        {
+            activeEraser = eraser;
         }
 
         public void ClearChaseTarget()
@@ -78,6 +93,26 @@ namespace EraserWars.CameraRig
             punch = CameraPunch.Begin(worldDirection, scaled, nowUnscaled, duration);
         }
 
+        public void ToggleOverview()
+        {
+            mode = mode == Mode.TopDown ? Mode.Orbit : Mode.TopDown;
+        }
+
+        public void ToggleCloseUp()
+        {
+            mode = mode == Mode.CloseUp ? Mode.Orbit : Mode.CloseUp;
+        }
+
+        public void Snap()
+        {
+            Apply(immediate: true, Time.unscaledTime, 0f, 0f);
+        }
+
+        public void Tick(float nowUnscaled, float unscaledDelta, float scaledDelta)
+        {
+            Apply(immediate: false, nowUnscaled, unscaledDelta, scaledDelta);
+        }
+
         public void FrameDeskOverview()
         {
             leave = default;
@@ -89,11 +124,11 @@ namespace EraserWars.CameraRig
             mode = Mode.Orbit;
             if (focus != null)
             {
-                smoothedFocus = OverviewAnchor(focus.position);
+                smoothedFocus = DeskAnchor();
                 hasSmoothedFocus = true;
             }
 
-            Apply(immediate: true);
+            Apply(immediate: true, Time.unscaledTime, 0f, 0f);
         }
 
         void Start()
@@ -103,48 +138,85 @@ namespace EraserWars.CameraRig
 
         void LateUpdate()
         {
+            ReadViewKeys();
+            ReadOrbitDrag();
+            Tick(Time.unscaledTime, Time.unscaledDeltaTime, Time.deltaTime);
+        }
+
+        void ReadViewKeys()
+        {
             var keyboard = Keyboard.current;
-            var mouse = Mouse.current;
-
-            if (keyboard != null)
+            if (keyboard == null)
             {
-                if (keyboard.tabKey.wasPressedThisFrame)
-                {
-                    mode = mode == Mode.TopDown ? Mode.Orbit : Mode.TopDown;
-                }
-
-                if (keyboard.cKey.wasPressedThisFrame)
-                {
-                    mode = mode == Mode.CloseUp ? Mode.Orbit : Mode.CloseUp;
-                }
+                return;
             }
 
-            if (mouse != null)
+            if (keyboard.tabKey.wasPressedThisFrame)
             {
-                if (mouse.rightButton.isPressed)
+                ToggleOverview();
+            }
+
+            if (keyboard.cKey.wasPressedThisFrame)
+            {
+                ToggleCloseUp();
+            }
+        }
+
+        void ReadOrbitDrag()
+        {
+            var mouse = Mouse.current;
+            if (mouse == null)
+            {
+                return;
+            }
+
+            if (mouse.rightButton.isPressed)
+            {
+                var delta = mouse.delta.ReadValue();
+                yaw += delta.x * mouseSensitivity;
+                if (mode == Mode.Orbit)
                 {
-                    var delta = mouse.delta.ReadValue();
-                    yaw += delta.x * mouseSensitivity;
                     pitch -= delta.y * mouseSensitivity;
                     pitch = Mathf.Clamp(pitch, 16f, 82f);
                 }
-
-                var scroll = mouse.scroll.ReadValue().y;
-                if (Mathf.Abs(scroll) > 0.01f)
-                {
-                    // Proportional zoom: same feel near and far, much snappier than the old *0.01 path.
-                    var step = scroll * zoomSpeed * 0.01f * Mathf.Max(1.2f, distance);
-                    distance = Mathf.Clamp(distance - step, minDistance, maxDistance);
-                }
             }
 
-            Apply(immediate: false);
+            if (mode != Mode.Orbit)
+            {
+                return;
+            }
+
+            var scroll = mouse.scroll.ReadValue().y;
+            if (Mathf.Abs(scroll) > 0.01f)
+            {
+                // Proportional zoom: same feel near and far, much snappier than the old *0.01 path.
+                var step = scroll * zoomSpeed * 0.01f * Mathf.Max(1.2f, distance);
+                distance = Mathf.Clamp(distance - step, minDistance, maxDistance);
+            }
         }
 
-        void Apply(bool immediate)
+        void Apply(bool immediate, float nowUnscaled, float unscaledDelta, float scaledDelta)
         {
-            var deskFocus = focus != null ? focus.position : new Vector3(0f, 0.77f, 0f);
-            var glancing = leave.Active(Time.unscaledTime);
+            switch (mode)
+            {
+                case Mode.TopDown:
+                    Place(DeskAnchor(), TopDownPitch, yaw, TopDownDistance, nowUnscaled);
+                    return;
+                case Mode.CloseUp:
+                    Place(CloseUpAnchor(), CloseUpPitch, yaw, CloseUpDistance, nowUnscaled);
+                    return;
+                case Mode.Orbit:
+                    PlaceOrbit(immediate, nowUnscaled, unscaledDelta, scaledDelta);
+                    return;
+                default:
+                    var unexpected = mode;
+                    throw new ArgumentOutOfRangeException(nameof(mode), unexpected, null);
+            }
+        }
+
+        void PlaceOrbit(bool immediate, float nowUnscaled, float unscaledDelta, float scaledDelta)
+        {
+            var glancing = leave.Active(nowUnscaled);
             Vector3 anchor;
             if (glancing || chaseTarget != null)
             {
@@ -161,7 +233,7 @@ namespace EraserWars.CameraRig
                 }
                 else
                 {
-                    var step = glancing ? Time.unscaledDeltaTime : Time.deltaTime;
+                    var step = glancing ? unscaledDelta : scaledDelta;
                     smoothedFocus = Vector3.Lerp(
                         smoothedFocus,
                         desired,
@@ -172,24 +244,40 @@ namespace EraserWars.CameraRig
             }
             else
             {
-                smoothedFocus = OverviewAnchor(deskFocus);
+                smoothedFocus = DeskAnchor();
                 hasSmoothedFocus = true;
                 anchor = smoothedFocus;
             }
 
-            var usePitch = mode == Mode.TopDown ? 85f : mode == Mode.CloseUp ? 32f : pitch;
-            var useDistance = mode == Mode.CloseUp ? distance * 0.42f : distance;
-            if (glancing && mode == Mode.Orbit)
+            var useDistance = distance;
+            if (glancing)
             {
                 useDistance *= FallGlanceDistanceScale;
             }
-            else if (chaseTarget != null && mode == Mode.Orbit)
+            else if (chaseTarget != null)
             {
                 useDistance *= chaseDistanceScale;
             }
 
-            var rotation = Quaternion.Euler(usePitch, yaw, 0f);
-            var kick = punch.OffsetAt(Time.unscaledTime);
+            Place(anchor, pitch, yaw, useDistance, nowUnscaled);
+        }
+
+        Vector3 CloseUpAnchor()
+        {
+            var subject = activeEraser != null ? activeEraser : chaseTarget;
+            return subject != null ? subject.position : DeskAnchor();
+        }
+
+        Vector3 DeskAnchor()
+        {
+            var deskFocus = focus != null ? focus.position : new Vector3(0f, 0.77f, 0f);
+            return OverviewAnchor(deskFocus);
+        }
+
+        void Place(Vector3 anchor, float usePitch, float useYaw, float useDistance, float nowUnscaled)
+        {
+            var rotation = Quaternion.Euler(usePitch, useYaw, 0f);
+            var kick = punch.OffsetAt(nowUnscaled);
             transform.position = anchor + rotation * (Vector3.back * useDistance) + kick;
             transform.LookAt(anchor);
         }
