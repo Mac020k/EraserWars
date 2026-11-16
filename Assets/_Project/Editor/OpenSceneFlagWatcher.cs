@@ -237,6 +237,12 @@ namespace EraserWars.Editor
 
             heartbeatLeft--;
             ForceUnpausedPlay();
+            // Player loop can stall at frame 1 with Enter Play Mode Options; Step advances it.
+            if (Time.frameCount <= 1 || Time.frameCount == heartbeatLastFrame)
+            {
+                EditorApplication.Step();
+            }
+
             var frame = Time.frameCount;
             if (heartbeatLeft % 15 == 0 || frame != heartbeatLastFrame)
             {
@@ -326,9 +332,10 @@ namespace EraserWars.Editor
     {
         public static void ClearErrorPause()
         {
+            EditorPrefs.SetBool("ConsoleWindow.ErrorPause", false);
             try
             {
-                var type = System.Type.GetType("UnityEditor.ConsoleWindow,UnityEditor.dll");
+                var type = typeof(EditorWindow).Assembly.GetType("UnityEditor.ConsoleWindow");
                 var setErrorPause = type?.GetMethod(
                     "SetConsoleErrorPause",
                     System.Reflection.BindingFlags.Static
