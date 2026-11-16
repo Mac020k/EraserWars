@@ -16,6 +16,7 @@
                 <ui:VisualElement name="timer-box" class="timer-box" picking-mode="Ignore">
                     <ui:Label name="timer" text="--" class="hud-timer" picking-mode="Ignore" />
                     <ui:Label name="timer-unit" text="秒" class="timer-unit" picking-mode="Ignore" />
+                    <ui:Label name="turn-yield" text="" class="turn-yield hidden" picking-mode="Ignore" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="players" class="players-row" picking-mode="Ignore" />

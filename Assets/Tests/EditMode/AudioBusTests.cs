@@ -97,6 +97,23 @@ namespace EraserWars.Tests.EditMode
         }
 
         [Test]
+        public void PassCueIsAShortHandoffDistinctFromTheClick()
+        {
+            GameSettings.SaveSePercent(50f);
+            var bus = AudioBus.Ensure();
+            bus.Play(AudioCue.Pass);
+            var se = OneShotSource(bus);
+            Assert.AreEqual(0.5f, se.volume, 0.001f);
+            AssertSeClip(se.clip, "turn-pass");
+            Assert.Greater(se.clip.length, 0.1f);
+            Assert.Less(se.clip.length, 0.25f);
+
+            bus.Play(AudioCue.UiClick);
+            Assert.AreEqual("ui-click", se.clip.name);
+            Assert.Less(se.clip.length, 0.1f);
+        }
+
+        [Test]
         public void CollisionAndFallUseDistinctClipsAtTheSeGain()
         {
             GameSettings.SaveSePercent(0f);

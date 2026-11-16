@@ -40,6 +40,7 @@ namespace EraserWars.UI
         Label passHintLabel;
         VisualElement turnCallout;
         VisualElement timerBox;
+        Label turnYieldLabel;
         VisualElement cardCutIn;
         VisualElement cardCutInDim;
         VisualElement cardCutInBanner;
@@ -122,6 +123,7 @@ namespace EraserWars.UI
             passHintLabel = root.Q<Label>("pass-hint");
             turnCallout = root.Q("turn-callout");
             timerBox = root.Q("timer-box");
+            turnYieldLabel = root.Q<Label>("turn-yield");
             cardCutIn = root.Q("card-cutin");
             cardCutInDim = root.Q("card-cutin-dim");
             cardCutInBanner = root.Q("card-cutin-banner");
@@ -239,7 +241,45 @@ namespace EraserWars.UI
             timerUnit?.EnableInClassList(HiddenClass, !chrome.TimerTicking);
             timerBox?.EnableInClassList(TimerIdleClass, !chrome.TimerTicking);
             timerBox?.EnableInClassList(TimerUrgentClass, chrome.TimerUrgent);
+            PaintTurnYield(cutInUp);
         }
+
+        void PaintTurnYield(bool suppressed)
+        {
+            if (turnYieldLabel == null)
+            {
+                return;
+            }
+
+            if (suppressed || director == null || !director.TryGetTurnYield(out var notice))
+            {
+                turnYieldLabel.EnableInClassList(HiddenClass, true);
+                return;
+            }
+
+            turnYieldLabel.EnableInClassList(HiddenClass, false);
+            turnYieldLabel.text = notice.Label;
+            SetSeatClass(turnYieldLabel, notice.Seat);
+            switch (notice.Kind)
+            {
+                case TurnYieldKind.Pass:
+                    turnYieldLabel.EnableInClassList("yield-pass", true);
+                    turnYieldLabel.EnableInClassList("yield-time", false);
+                    break;
+                case TurnYieldKind.Time:
+                    turnYieldLabel.EnableInClassList("yield-pass", false);
+                    turnYieldLabel.EnableInClassList("yield-time", true);
+                    break;
+                default:
+                    throw UnhandledYield(notice.Kind);
+            }
+        }
+
+        static ArgumentOutOfRangeException UnhandledYield(TurnYieldKind kind) => kind switch
+        {
+            TurnYieldKind.Pass => new ArgumentOutOfRangeException(nameof(kind), kind, null),
+            TurnYieldKind.Time => new ArgumentOutOfRangeException(nameof(kind), kind, null),
+        };
 
         void RefreshActions(MatchState state)
         {

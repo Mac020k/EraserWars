@@ -10,6 +10,7 @@ namespace EraserWars.Audio
         Flick,
         Collision,
         Fall,
+        Pass,
     }
 
     public sealed class AudioBus : MonoBehaviour
@@ -22,6 +23,7 @@ namespace EraserWars.Audio
         static AudioClip flickClip;
         static AudioClip collisionClip;
         static AudioClip fallClip;
+        static AudioClip passClip;
 
         AudioSource bgmSource;
         AudioSource seSource;
@@ -227,6 +229,8 @@ namespace EraserWars.Audio
                     return CollisionClip();
                 case AudioCue.Fall:
                     return FallClip();
+                case AudioCue.Pass:
+                    return PassClip();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(cue), cue, null);
             }
@@ -351,6 +355,16 @@ namespace EraserWars.Audio
             return MakeClip("eraser-hit", data);
         }
 
+        static AudioClip PassClip()
+        {
+            if (passClip == null)
+            {
+                passClip = BuildPass();
+            }
+
+            return passClip;
+        }
+
         static AudioClip BuildFall()
         {
             var data = new float[(int)(0.22 * SampleRate)];
@@ -366,6 +380,16 @@ namespace EraserWars.Audio
             data[0] = 0f;
             data[data.Length - 1] = 0f;
             return MakeClip("floor-hit", data);
+        }
+
+        static AudioClip BuildPass()
+        {
+            var data = new float[(int)(0.18 * SampleRate)];
+            AddNote(data, 0.00, 0.08, 988.0, 0.45f);
+            AddNote(data, 0.08, 0.10, 740.0, 0.40f);
+            data[0] = 0f;
+            data[data.Length - 1] = 0f;
+            return MakeClip("turn-pass", data);
         }
 
         static void AddNote(float[] data, double start, double duration, double hz, float amp)

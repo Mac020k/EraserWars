@@ -27,6 +27,8 @@ namespace EraserWars.Gameplay
         EffectPhysicsSync effectPhysics;
         MatchState state;
         CardCutIn? cardCutIn;
+        TurnYieldNotice turnYieldNotice;
+        float turnYieldSecondsLeft;
         int activeSeat;
         const float ActiveEraserCueScale = 1.14f;
 
@@ -148,8 +150,15 @@ namespace EraserWars.Gameplay
 
         public void AdvanceMatchClock(float deltaSeconds)
         {
+            TickTurnYield(deltaSeconds);
             TickCardCutIn(deltaSeconds);
             TickTurnTimer(deltaSeconds);
+        }
+
+        public bool TryGetTurnYield(out TurnYieldNotice notice)
+        {
+            notice = turnYieldNotice;
+            return turnYieldSecondsLeft > 0f;
         }
 
         void TickCardCutIn(float deltaSeconds)
@@ -225,11 +234,48 @@ namespace EraserWars.Gameplay
                 return;
             }
 
+            var before = state;
             state = state with { TurnTimeLeft = 0f };
-            state = MatchReduce.Reduce(state, new TimerExpired(state.CurrentPlayerId));
-            state = MatchEffectRules.OnTurnHandover(state);
+            var reduced = MatchReduce.Reduce(state, new TimerExpired(state.CurrentPlayerId));
+            if (ReferenceEquals(reduced, state))
+            {
+                return;
+            }
+
+            state = MatchEffectRules.OnTurnHandover(reduced);
             SyncActiveSeat();
             RespawnIfNeeded();
+            CommitTurnYield(TurnYieldKind.Time, before, state);
+        }
+
+        void TickTurnYield(float deltaSeconds)
+        {
+            if (turnYieldSecondsLeft <= 0f || deltaSeconds <= 0f)
+            {
+                return;
+            }
+
+            turnYieldSecondsLeft = Mathf.Max(0f, turnYieldSecondsLeft - deltaSeconds);
+        }
+
+        void CommitTurnYield(TurnYieldKind kind, MatchState before, MatchState after)
+        {
+            if (after.Phase == Phase.MatchEnd || !TurnMoved(before, after))
+            {
+                return;
+            }
+
+            turnYieldNotice = new TurnYieldNotice(kind, before.CurrentPlayerId.Value);
+            turnYieldSecondsLeft = TurnYieldNotice.Seconds;
+            AudioBus.Ensure().Play(AudioCue.Pass);
+        }
+
+        static bool TurnMoved(MatchState before, MatchState after)
+        {
+            return before.TurnIndex != after.TurnIndex
+                || before.Round != after.Round
+                || before.Phase != after.Phase
+                || before.CurrentPlayerId.Value != after.CurrentPlayerId.Value;
         }
 
         void OnDestroy()
@@ -284,6 +330,7 @@ namespace EraserWars.Gameplay
         public void StartHotseat(int playerCount)
         {
             cardCutIn = null;
+            turnYieldSecondsLeft = 0f;
             EnsureEdgeSlowmo();
             edgeSlowmo.BeginMatch();
             ClearErasers();
@@ -413,9 +460,16 @@ namespace EraserWars.Gameplay
                 return;
             }
 
-            state = MatchReduce.Reduce(state, new Passed(state.CurrentPlayerId));
-            state = MatchEffectRules.OnTurnHandover(state);
+            var next = MatchReduce.Reduce(state, new Passed(state.CurrentPlayerId));
+            if (ReferenceEquals(next, state))
+            {
+                return;
+            }
+
+            var before = state;
+            state = MatchEffectRules.OnTurnHandover(next);
             SyncActiveSeat();
+            CommitTurnYield(TurnYieldKind.Pass, before, state);
         }
 
         public void PlayCard(int cardId)
