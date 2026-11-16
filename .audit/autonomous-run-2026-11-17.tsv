@@ -34,3 +34,4 @@
 2026-11-17T08:38:21+09:00	merge	merged agent/stage-props-polish@36ca319	wave4 5/6	main@c372812	merged
 2026-11-17T08:38:44+09:00	absorb-tick11	wave4 5/6; stage already merged; loc still building	main@72acad2	ok
 2026-11-17T08:42:32+09:00	merge	merged agent/localization-scaffold@4ffb3d9	wave4 6/6 complete	main@6529307	merged
+2026-11-17T08:42:54+09:00	wave5-spawn	6 worktrees from main@1486583	replay cpu secret collection options e2e	main	spawn
