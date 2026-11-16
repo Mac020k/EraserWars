@@ -182,6 +182,42 @@
     background-color: rgb(50, 160, 80);
 }
 
+.home-tip {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 8px 10px 8px 14px;
+    background-color: rgb(255, 248, 230);
+    border-radius: 12px;
+    border-width: 3px;
+    border-color: rgb(40, 40, 48);
+    flex-shrink: 0;
+}
+
+.home-tip-copy {
+    flex-grow: 1;
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(48, 44, 56);
+    white-space: normal;
+}
+
+.home-tip-dismiss {
+    height: 36px;
+    min-width: 72px;
+    margin-left: 8px;
+    padding: 0 10px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(48, 44, 56);
+    background-color: rgb(255, 255, 255);
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgb(40, 40, 48);
+    flex-shrink: 0;
+}
+
 .nav-row {
     flex-direction: row;
     width: 58%;

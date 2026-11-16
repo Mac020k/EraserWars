@@ -80,6 +80,7 @@ After the last seat, one remaining survivor ends the match. Otherwise the next r
 The start menu segment `mode-stock` / `mode-points` stores `eraserwars.winMode` in PlayerPrefs. `0` is stock and `1` is points.
 `MatchDirector.StartHotseat` reads that key for both 2-player and 4-player hotseat, then applies the saved turn time.
 Points loads `RuleSet.PointsTrial`, which ends after 8 rounds. Stock loads `RuleSet.CasualStock`. Rematch and the debug Hotseat buttons read the same key.
+The home strip `home-tip` reads "カードを1枚出して、ドラッグではじく。" until the player taps わかった. That tap writes `eraserwars.firstCoach` as `1`. Match start does not read `eraserwars.firstCoach`, and the start button stays enabled while the strip is up.
 
 ## Match log
 

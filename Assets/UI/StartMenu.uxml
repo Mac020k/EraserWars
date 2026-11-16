@@ -28,6 +28,10 @@
                             <ui:VisualElement name="seat-picker-row" class="seat-picker-row" />
                         </ui:ScrollView>
                     </ui:VisualElement>
+                    <ui:VisualElement name="home-tip" class="home-tip">
+                        <ui:Label name="home-tip-copy" text="カードを1枚出して、ドラッグではじく。" class="home-tip-copy" />
+                        <ui:Button name="home-tip-dismiss" text="わかった" class="home-tip-dismiss" />
+                    </ui:VisualElement>
                     <ui:Button name="resume-match" text="つづける" class="cta-button cta-resume hidden" />
                     <ui:Button name="start-match" text="マッチ開始" class="cta-button" />
                 </ui:VisualElement>
