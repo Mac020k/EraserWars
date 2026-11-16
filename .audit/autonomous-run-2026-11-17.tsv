@@ -1,0 +1,8 @@
+﻿ts	phase	decision	why	evidence	result
+2026-11-17T06:46:00+09:00	start	wave1 eight grok streams from GDD/milestones	complete hotseat juice: SE aim cutin KO points charpick deckfaces fall	worktrees se/aim/cutin/ko/points/char/deck/fall	started
+2026-11-17T06:57:00+09:00	verify	HotseatRulesTests Unity batchmode spawned pid=4356	points-mode agent; results XML not ready yet	wt-points-mode/TestResults	pending
+2026-11-17T06:58:00+09:00	loop	wave absorb tick 1: wave1 still WIP no pushes	8 grok agents mid-flight	worktrees	wait
+2026-11-17T07:01:00+09:00	verify	se-collision EditMode 62/63 fail=1 exit=2	agent should fix failing case	wt-se-collision	fail
+2026-11-17T07:02:30+09:00	aim-line	split power shaft from blur fan and release arrow	one swayed line made a hard pull look like a bad aim	docs/prototypes/aim/power-vs-blur.png; FlickMathTests 8 pass outside Unity; Play Mode skipped, no Library; PR 3	pushed e5dc12a2b75432389f776dc1ac323d7415125b60
+2026-11-17T07:02:00+09:00	merge	merged agent/deck-faces@27e7cc8 (PR2)	deck rows use CardFaceBuilder; cost meter kept	main	merged
+2026-11-17T07:02:00+09:00	merge	merged agent/deck-faces@27e7cc8 (PR2)	deck rows use CardFaceBuilder; cost meter kept	main@27e7cc8	merged
