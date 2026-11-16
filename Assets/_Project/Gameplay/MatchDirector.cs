@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using EraserWars.Audio;
 using EraserWars.CameraRig;
 using EraserWars.Cards;
 using EraserWars.Core;
@@ -450,6 +451,7 @@ namespace EraserWars.Gameplay
             hitstop?.BeginShot();
             EnsureOrbitCamera()?.SetChaseTarget(eraser.transform);
             flickApplier.Apply(eraser, command, modifiers.Power);
+            AudioBus.Ensure().Play(AudioCue.Flick);
             settleWatcher.Begin(erasers);
         }
 

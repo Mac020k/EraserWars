@@ -42,6 +42,7 @@ Assets/
     View/          VFX, shake, fall cutscene
     UI/            HUD, hand, deck builder (UI Toolkit)
     AI/            CPU shot planner
+    Audio/         BGM loop, UI click and flick cues, volume prefs
     Net/           Network boundary: command validation, disconnect policy, Fish-Net spike HUD
     Steam/         Lobby and Steam transport
     Persistence/   Save data, match log
@@ -60,7 +61,7 @@ tools/             Batch scripts for tests and builds
 Assembly references point one way.
 `Core` references nothing.
 `Cards` references `Core`.
-`Gameplay` references `Core` and `Cards`.
+`Gameplay` references `Core`, `Cards`, and `Audio`.
 `View`, `AI` and `Net` reference `Gameplay`.
 `UI` references `Core`, `Cards`, `Gameplay` and `View`. `Steam` references `Net`.
 `Core` uses `noEngineReferences` and never references Fish-Net or Steam, so card and rule logic runs in tests with no network.
@@ -87,6 +88,10 @@ After the last seat, one remaining survivor ends the match. Otherwise the next r
 - `GrantShield:absorb:hits` lets the owner survive that many falls. The saved eraser respawns at a clear spawn point and the shield lasts a full round of rival turns.
 - `SwapPositions` swaps the owner's eraser with the next living rival in turn order.
 - `RestoreStock:n` gives back up to `n` stocks, capped at `RuleSet.StockCount`.
+
+## Audio
+
+`AudioBus` starts a generated BGM loop as soon as play mode begins. A UI button click plays `ui-click`. An accepted flick plays `flick`. Volumes are percents in `PlayerPrefs`, owned by `EraserWars.Audio.GameSettings`. The keys match the options sliders `opt-bgm` and `opt-se`. See [`Assets/_Project/Audio/README.md`](Assets/_Project/Audio/README.md).
 
 ## Tests
 
