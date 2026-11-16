@@ -29,6 +29,7 @@ namespace EraserWars.Gameplay
         MatchState state;
         readonly MatchLogSession matchLog = new();
         CardCutIn? cardCutIn;
+        TurnAnnounce? turnAnnounce;
         int activeSeat;
         const float ActiveEraserCueScale = 1.14f;
 
@@ -70,6 +71,18 @@ namespace EraserWars.Gameplay
             }
 
             cutIn = default;
+            return false;
+        }
+
+        public bool TryGetTurnAnnounce(out TurnAnnounce announce)
+        {
+            if (turnAnnounce is TurnAnnounce current && current.IsShowing)
+            {
+                announce = current;
+                return true;
+            }
+
+            announce = default;
             return false;
         }
 
@@ -152,7 +165,22 @@ namespace EraserWars.Gameplay
         public void AdvanceMatchClock(float deltaSeconds)
         {
             TickCardCutIn(deltaSeconds);
+            TickTurnAnnounce(deltaSeconds);
             TickTurnTimer(deltaSeconds);
+        }
+
+        void TickTurnAnnounce(float deltaSeconds)
+        {
+            if (turnAnnounce is not TurnAnnounce current
+                || deltaSeconds <= 0f
+                || IsStartMenuOpen
+                || cardCutIn.HasValue)
+            {
+                return;
+            }
+
+            var next = current.Advance(deltaSeconds);
+            turnAnnounce = next.IsShowing ? next : null;
         }
 
         void TickCardCutIn(float deltaSeconds)
@@ -293,6 +321,7 @@ namespace EraserWars.Gameplay
             PersistMatchLog(retry: true);
             matchLog.Begin(DateTime.UtcNow, Guid.NewGuid().ToString("N"));
             cardCutIn = null;
+            turnAnnounce = null;
             EnsureEdgeSlowmo();
             edgeSlowmo.BeginMatch();
             ClearErasers();
@@ -334,6 +363,7 @@ namespace EraserWars.Gameplay
 
             activeSeat = 0;
             state = MatchReduce.Reduce(state, new TurnStarted(state.CurrentPlayerId));
+            NoteSeat(opening: true);
             EnsureOrbitCamera()?.FrameDeskOverview();
         }
 
@@ -654,9 +684,17 @@ namespace EraserWars.Gameplay
             return orbitCamera;
         }
 
+        void NoteSeat(bool opening)
+        {
+            var seat = state.CurrentPlayerId.Value;
+            var next = TurnAnnounce.Next(turnAnnounce, activeSeat, seat, state.Phase, opening);
+            turnAnnounce = next is TurnAnnounce announce && announce.IsShowing ? announce : null;
+            activeSeat = seat;
+        }
+
         void SyncActiveSeat()
         {
-            activeSeat = state.CurrentPlayerId.Value;
+            NoteSeat(opening: false);
             if ((state.Phase is Phase.Aim or Phase.CardSelect or Phase.TurnStart)
                 && TryGetCurrentEraser(out var eraser)
                 && eraser != null)

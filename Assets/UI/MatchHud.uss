@@ -488,6 +488,51 @@
     border-top-color: rgba(255, 255, 255, 0.92);
 }
 
+.turn-announce {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 34%;
+    align-items: center;
+    justify-content: center;
+}
+
+.turn-announce.hidden {
+    display: none;
+}
+
+.turn-announce-line {
+    font-size: 72px;
+    -unity-font-style: bold;
+    color: rgb(50, 42, 60);
+    background-color: rgba(255, 252, 248, 0.96);
+    border-radius: 28px;
+    border-width: 8px;
+    border-color: rgb(180, 170, 184);
+    padding: 12px 36px;
+    white-space: nowrap;
+}
+
+.turn-announce.seat-0 .turn-announce-line {
+    color: rgb(176, 32, 84);
+    border-color: rgb(255, 120, 160);
+}
+
+.turn-announce.seat-1 .turn-announce-line {
+    color: rgb(28, 72, 176);
+    border-color: rgb(70, 130, 240);
+}
+
+.turn-announce.seat-2 .turn-announce-line {
+    color: rgb(16, 118, 52);
+    border-color: rgb(70, 190, 100);
+}
+
+.turn-announce.seat-3 .turn-announce-line {
+    color: rgb(176, 88, 8);
+    border-color: rgb(255, 160, 50);
+}
+
 .card-cutin {
     position: absolute;
     left: 0;

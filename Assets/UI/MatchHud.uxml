@@ -42,6 +42,9 @@
                 <ui:Label text="パス" class="action-label" picking-mode="Ignore" />
             </ui:Button>
         </ui:VisualElement>
+        <ui:VisualElement name="turn-announce" class="turn-announce hidden" picking-mode="Ignore">
+            <ui:Label name="turn-announce-line" text="" class="turn-announce-line" picking-mode="Ignore" />
+        </ui:VisualElement>
         <ui:VisualElement name="card-cutin" class="card-cutin hidden" picking-mode="Ignore">
             <ui:VisualElement name="card-cutin-dim" class="card-cutin-dim" picking-mode="Ignore" />
             <ui:VisualElement name="card-cutin-banner" class="card-cutin-banner" picking-mode="Ignore">

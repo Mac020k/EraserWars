@@ -34,6 +34,8 @@ namespace EraserWars.UI
         public bool TimerUrgent { get; }
         public bool ShowCallout => Seat >= 0;
 
+        public static string SeatLine(int seat) => "P" + (seat + 1) + " のばん";
+
         public static TurnChrome From(MatchState state)
         {
             if (state.Phase == Phase.MatchEnd)
@@ -48,7 +50,7 @@ namespace EraserWars.UI
             var seconds = (int)Math.Ceiling(Math.Max(0f, state.TurnTimeLeft));
             return new TurnChrome(
                 seat,
-                $"{label} のばん",
+                SeatLine(seat),
                 $"このきを {label} にわたして",
                 deviceTurn,
                 ticking ? seconds.ToString() : "--",

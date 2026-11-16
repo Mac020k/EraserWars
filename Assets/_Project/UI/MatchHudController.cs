@@ -39,6 +39,8 @@ namespace EraserWars.UI
         Label turnLabel;
         Label passHintLabel;
         VisualElement turnCallout;
+        VisualElement turnAnnounce;
+        Label turnAnnounceLine;
         VisualElement timerBox;
         VisualElement cardCutIn;
         VisualElement cardCutInDim;
@@ -121,6 +123,8 @@ namespace EraserWars.UI
             turnLabel = root.Q<Label>("turn");
             passHintLabel = root.Q<Label>("pass-hint");
             turnCallout = root.Q("turn-callout");
+            turnAnnounce = root.Q("turn-announce");
+            turnAnnounceLine = root.Q<Label>("turn-announce-line");
             timerBox = root.Q("timer-box");
             cardCutIn = root.Q("card-cutin");
             cardCutInDim = root.Q("card-cutin-dim");
@@ -203,6 +207,7 @@ namespace EraserWars.UI
             }
 
             RefreshTurnChrome(state);
+            RefreshTurnAnnounce(state);
             RefreshActions(state);
             RefreshPills(state);
             RefreshHand(state);
@@ -239,6 +244,29 @@ namespace EraserWars.UI
             timerUnit?.EnableInClassList(HiddenClass, !chrome.TimerTicking);
             timerBox?.EnableInClassList(TimerIdleClass, !chrome.TimerTicking);
             timerBox?.EnableInClassList(TimerUrgentClass, chrome.TimerUrgent);
+        }
+
+        void RefreshTurnAnnounce(MatchState state)
+        {
+            if (turnAnnounce == null)
+            {
+                return;
+            }
+
+            var covered = (director != null && director.IsCardCutInShowing) || state.Phase == Phase.MatchEnd;
+            if (director == null || !director.TryGetTurnAnnounce(out var announce))
+            {
+                turnAnnounce.EnableInClassList(HiddenClass, true);
+                return;
+            }
+
+            turnAnnounce.EnableInClassList(HiddenClass, !announce.IsOnScreen(covered));
+
+            SetSeatClass(turnAnnounce, announce.Seat);
+            if (turnAnnounceLine != null)
+            {
+                turnAnnounceLine.text = TurnChrome.SeatLine(announce.Seat);
+            }
         }
 
         void RefreshActions(MatchState state)
