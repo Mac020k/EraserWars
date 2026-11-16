@@ -1,4 +1,6 @@
 using System.IO;
+using EraserWars.Core;
+using EraserWars.Gameplay;
 using EraserWars.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -18,6 +20,7 @@ namespace EraserWars.Editor
         const string FlagEnterPlay = "Temp/enter-play.flag";
         const string FlagUnpause = "Temp/unpause.flag";
         const string FlagStartHotseat2 = "Temp/start-hotseat-2.flag";
+        const string FlagFlickCurrent = "Temp/flick-current.flag";
         const string FlagRebuildFishNet = "Temp/rebuild-fishnet-spike.flag";
         const string FlagRebuildClassroom = "Temp/rebuild-classroom.flag";
 
@@ -35,6 +38,7 @@ namespace EraserWars.Editor
             TryOpen(FlagClassroom, "Assets/Scenes/Classroom_Casual.unity");
             TryEnterPlay();
             TryStartHotseat2();
+            TryFlickCurrent();
         }
 
         static void TryStopPlay()
@@ -108,6 +112,49 @@ namespace EraserWars.Editor
             }
 
             Debug.LogWarning("[EraserWars] start-hotseat-2: StartMenuController missing");
+        }
+
+        static void TryFlickCurrent()
+        {
+            if (!PeekFlag(FlagFlickCurrent))
+            {
+                return;
+            }
+
+            if (!EditorApplication.isPlaying || EditorApplication.isCompiling)
+            {
+                return;
+            }
+
+            if (!ConsumeFlag(FlagFlickCurrent))
+            {
+                return;
+            }
+
+            EditorApplication.isPaused = false;
+            var director = Object.FindAnyObjectByType<MatchDirector>();
+            if (director == null || director.State == null)
+            {
+                Debug.LogWarning("[EraserWars] flick-current: MatchDirector/state missing");
+                return;
+            }
+
+            if (!director.TryGetCurrentEraser(out _))
+            {
+                Debug.LogWarning("[EraserWars] flick-current: no current eraser");
+                return;
+            }
+
+            var command = new FlickCommand(
+                director.State.CurrentPlayerId,
+                0f,
+                1f,
+                0.85f,
+                0f,
+                0f,
+                0.2f);
+            director.SubmitFlick(command);
+            Debug.Log($"[EraserWars] flick-current: P{director.State.CurrentPlayerId.Value + 1} phase={director.State.Phase}");
         }
 
         static void TryRebuild()

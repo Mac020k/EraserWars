@@ -36,6 +36,25 @@ namespace EraserWars.UI
 
         void OnEnable()
         {
+            BindDocument();
+            if (root == null)
+            {
+                return;
+            }
+
+            SelectPlayers(selectedPlayers);
+            if (!matchRunning)
+            {
+                ShowMenu();
+            }
+            else
+            {
+                HideMenu();
+            }
+        }
+
+        void BindDocument()
+        {
             if (document == null)
             {
                 document = GetComponent<UIDocument>();
@@ -46,7 +65,8 @@ namespace EraserWars.UI
                 return;
             }
 
-            root = document.rootVisualElement;
+            var panelRoot = document.rootVisualElement;
+            root = panelRoot.Q("root") ?? panelRoot;
             optionsPanel = root.Q("options-panel");
             deckPanel = root.Q("deck-panel");
             collectionPanel = root.Q("collection-panel");
@@ -69,8 +89,6 @@ namespace EraserWars.UI
             ApplyIcon(root.Q("icon-deck"), iconDeck);
             ApplyIcon(root.Q("icon-collection"), iconCollection);
             ApplyIcon(root.Q("icon-options"), iconOptions);
-            SelectPlayers(selectedPlayers);
-            ShowMenu();
         }
 
         void Update()
@@ -181,15 +199,18 @@ namespace EraserWars.UI
             if (root != null)
             {
                 root.style.display = DisplayStyle.None;
+                root.visible = false;
             }
 
             if (document != null)
             {
+                document.rootVisualElement.style.display = DisplayStyle.None;
                 document.enabled = false;
             }
 
             // Whole GameObject off so Game view cannot keep painting the title screen.
             gameObject.SetActive(false);
+            Debug.Log($"[EraserWars] StartMenu.HideMenu activeSelf={gameObject.activeSelf} doc={(document != null && document.enabled)}");
         }
 
         void ShowPanel(VisualElement panel)
