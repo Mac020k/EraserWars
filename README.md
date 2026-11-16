@@ -156,6 +156,16 @@ It also fails if Unity produced no results XML, and the log file says why.
 `tools/run-core-smoke.ps1` runs the reducer tests in `tools/CoreSmoke` with `dotnet test`, without Unity.
 The project compiles the `Core` sources directly, so it catches rule regressions in seconds.
 
+## Language
+
+`UiText` in `Assets/_Project/UI/UiText.cs` holds the start menu and match HUD lines.
+Each `UiKey` has a Japanese line and an English line.
+The game shows Japanese until a caller uses `UiLocale.Set`.
+That call stores `ja` or `en` under the PlayerPrefs key `eraserwars.locale`.
+The options page has no language row.
+`StartMenuController` and `MatchHudController` call `UiLocale.Load` when they enable, then read `UiText` for the lines they draw.
+Deck status, collection detail, and seat names stay in the Japanese written in those controllers.
+
 ## Classroom scene
 
 The eraser prefab uses `Mat_EraserBase` with shader `EraserWars/EraserToon`.

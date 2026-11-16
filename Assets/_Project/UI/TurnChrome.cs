@@ -34,24 +34,23 @@ namespace EraserWars.UI
         public bool TimerUrgent { get; }
         public bool ShowCallout => Seat >= 0;
 
-        public static string SeatLine(int seat) => "P" + (seat + 1) + " のばん";
+        public static string SeatLine(int seat) => UiText.Format(UiKey.HudSeatTurn, seat + 1);
 
         public static TurnChrome From(MatchState state)
         {
             if (state.Phase == Phase.MatchEnd)
             {
-                return new TurnChrome(-1, "おわり", string.Empty, false, "--", false, false);
+                return new TurnChrome(-1, UiText.Get(UiKey.HudTurnOver), string.Empty, false, "--", false, false);
             }
 
             var seat = state.CurrentPlayerId.Value;
-            var label = "P" + (seat + 1);
             var deviceTurn = IsDeviceTurn(state.Phase);
             var ticking = deviceTurn && state.Rules.TurnTimeSeconds > 0f;
             var seconds = (int)Math.Ceiling(Math.Max(0f, state.TurnTimeLeft));
             return new TurnChrome(
                 seat,
                 SeatLine(seat),
-                $"このきを {label} にわたして",
+                UiText.Format(UiKey.HudPassHint, seat + 1),
                 deviceTurn,
                 ticking ? seconds.ToString() : "--",
                 ticking,
