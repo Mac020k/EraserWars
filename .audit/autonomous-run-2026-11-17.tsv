@@ -6,3 +6,18 @@
 2026-11-17T07:02:30+09:00	aim-line	split power shaft from blur fan and release arrow	one swayed line made a hard pull look like a bad aim	docs/prototypes/aim/power-vs-blur.png; FlickMathTests 8 pass outside Unity; Play Mode skipped, no Library; PR 3	pushed e5dc12a2b75432389f776dc1ac323d7415125b60
 2026-11-17T07:02:00+09:00	merge	merged agent/deck-faces@27e7cc8 (PR2)	deck rows use CardFaceBuilder; cost meter kept	main	merged
 2026-11-17T07:02:00+09:00	merge	merged agent/deck-faces@27e7cc8 (PR2)	deck rows use CardFaceBuilder; cost meter kept	main@27e7cc8	merged
+2026-11-17T07:04:00+09:00	merge	merged agent/aim-line@e5dc12a (PR3)	FlickAimSample shaft/fan/arrow; FlickMathTests 8/8 claimed	main@40c3c45	merged
+2026-11-17T07:06:00+09:00	merge	merged agent/fall-fx@d85773e (PR4)	0.45s camera lean + FallSilhouette; no confetti	main	merged
+2026-11-17T07:07:00+09:00	merge	merged agent/points-mode@54868b4	home chips stock/points; HotseatRulesTests 4/4	main	merged
+2026-11-17T07:07:00+09:00	verify	wt-char-pick EditMode 65/65 exit=0	full suite green before char-pick push	wt-char-pick	pass
+2026-11-17T07:07:23+09:00	ship	Collision and Fall on the SE bus	pair impulse plays eraser-hit and floor contact plays floor-hit once until reset, both through sePercent	EditMode AudioBusTests+ImpactCueTests 11/11 exit 0; SHA 8b97900823693f8a791bdec3a89e7e68ccfba2ea; PR 5	verified
+2026-11-17T07:09:00+09:00	merge	merged agent/ko-confetti@a026199 (conflict resolved)	points+fall+praise kept; KnockPraiseBurst 9/9 claimed	main	merged
+2026-11-17T07:10:00+09:00	merge	merged agent/se-collision@8b97900	hit/floor AudioCue	main	merged
+2026-11-17T07:12:00+09:00	merge	merged agent/char-pick@73d4a2a (uxml resolved)	stock/points + seat strip kept	main	merged
+2026-11-17T07:09:00+09:00	absorb-tick2	wave1 7/8 on main@49ee3df; cut-in WIP uncommitted	SE/char-pick/KO already absorbed; wait card-cutin	main	ok
+2026-11-17T07:15:00+09:00	merge	merged agent/card-cutin@6b19111 (conflicts resolved)	wave1 8/8 complete	main	merged
+2026-11-17T07:16:00+09:00	wave2-spawn	creating 8 worktrees from main@60fa05a	flick-spin cam-modes hit-shake cutin-se matchend-polish turn-announce pass-timer-fx match-log	main	spawn
+2026-11-17T07:18:00+09:00	wave2-spawned	8 grok agents on main@60fa05a	flick-spin cam-modes hit-shake cutin-se matchend-broadcast turn-announce pass-timer-fx match-log	main	running
+2026-11-17T07:17:00+09:00	absorb-tick3	wave1 done; wave2 8 running; no merges yet this tick	waiting agent pushes	main	ok
+2026-11-17T07:17:30+09:00	absorb-tick3	wave2 0/8 remote tips; agents still building	no merge	main	ok
+2026-11-17T07:20:00+09:00	plan	extend campaign through wave5 with 6 agents each for W3-W5	W2 still 8 in flight; W3-W5 backlog written	main	planned

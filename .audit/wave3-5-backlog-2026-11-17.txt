@@ -1,0 +1,23 @@
+﻿wave3 (6 after W2):
+1. controller-input — gamepad aim/flick/pass (milestones P2)
+2. edge-slowmo-fx — visible edge-slowmo cue tied to EdgeSlowmoWatcher
+3. rematch-xp-stub — match-end XP/unlock stub toward Q51/Q82
+4. deck-validate-ux — same-name/cost-over save block with clear HUD (P4)
+5. active-eraser-pulse — stronger active-seat eraser cue beyond scale
+6. first-match-coach — one-shot home tip strip for flick+card (P0 juice)
+
+wave4 (6 after W3):
+1. localization-scaffold — Localization string keys ja/en for StartMenu+MatchHud
+2. stage-props-polish — classroom prop density / chalkboard posters (ADR-0009)
+3. eraser-toon-mat — simple URP toon/outline material on eraser prefab (P5 start)
+4. hand-dock-polish — hand dock HIG spacing / selected card juice
+5. settle-timeout-fx — 8s settle cutoff feedback
+6. points-hud — points-mode round score pills on MatchHud
+
+wave5 (6 after W4):
+1. replay-stub — write/read tiny replay of last flick sequence
+2. cpu-pass-ai — dumb CPU seat that auto-passes or weak flick (P7 spike)
+3. secret-room-stub — local join code placeholder UI
+4. collection-unlock-fx — unlock flash when roster expands
+5. options-accessibility — colorblind seat palette / reduce motion pref
+6. hotseat-e2e-harness — flag-driven 2P smoke script + audit capture
