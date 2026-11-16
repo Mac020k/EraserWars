@@ -18,7 +18,7 @@ MonoBehaviour:
   ArchetypeKey: seat_take
   UnlockHintJa: "\u30DB\u30C3\u30C8\u30B7\u30FC\u30C8\u30923\u52DD\u3059\u308B"
   BioJa: "\u8EE2\u6821\u521D\u65E5\u3067\u3082\u5E2D\u66FF\u3048\u306F\u4EFB\u305B\u3066\u3002\u82F1\u8A9E\u4EA4\u3058\u308A\u306E\u5408\u56F3\u3067\u6ED1\u8D70\u3092\u59CB\u3081\u308B\u30CB\u30E5\u30FC\u30AB\u30DE\u30FC\u3002"
-  Portrait: {fileID: 0}
+  Portrait: {fileID: 21300000, guid: c97a54d21832be647b54d7da5365d0f2, type: 3}
   Eraser: {fileID: 11400000, guid: c1529446e216a6b47be44550842fa850, type: 2}
   SignatureA: {fileID: 11400000, guid: 14c868d3b7e34aa45be9b93ff307ca7d, type: 2}
   SignatureB: {fileID: 11400000, guid: dbac59ba896c7194f8e1580139e4f999, type: 2}

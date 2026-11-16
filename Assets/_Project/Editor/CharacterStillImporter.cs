@@ -15,6 +15,10 @@ namespace EraserWars.Editor
             (1, "char_still_01_todoroki.jpg"),
             (2, "char_still_02_minazuki.jpg"),
             (3, "char_still_03_hanasaki.jpg"),
+            (4, "char_still_04_alex.jpg"),
+            (5, "char_still_05_ohori.jpg"),
+            (6, "char_still_06_kuroe.jpg"),
+            (7, "char_still_07_mei.jpg"),
         };
 
         [MenuItem("EraserWars/Import Character Stills")]
