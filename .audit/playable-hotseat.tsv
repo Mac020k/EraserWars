@@ -20,3 +20,4 @@ ts	phase	decision	why	evidence	result
 2026-11-16T12:29:59Z	roster	StartHotseat applies Character 0/1 eraser defs (mass 0.020/0.032)	dump-ui rosterBits	91eac68+	measured
 2026-11-16T12:34:32Z	hand	PlayCard 35 ‚à‚¤ˆê‰Ÿ‚µ moves CardSelect¨Aim with 1 effect; handLeft 2	play-first-card flag	f7f2bb5+	measured
 2026-11-16T12:34:55Z	hand	PlayCard 35 ‚à‚¤ˆê‰Ÿ‚µ moves CardSelect¨Aim with 1 effect; handLeft 2	play-first-card flag	f7f2bb5+	measured
+2026-11-16T12:45:11Z	extra-flick	Card 35 ExtraFlick grants second Aim after settle	force-settle after play+flick	333c56b+	measured

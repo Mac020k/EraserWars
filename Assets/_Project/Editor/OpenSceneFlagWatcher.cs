@@ -33,6 +33,7 @@ namespace EraserWars.Editor
         const string FlagOpenCollection = "Temp/open-collection.flag";
         const string FlagRefreshAssets = "Temp/refresh-assets.flag";
         const string FlagPlayFirstCard = "Temp/play-first-card.flag";
+        const string FlagForceSettle = "Temp/force-settle.flag";
 
         static int heartbeatLeft;
         static int heartbeatLastFrame = -1;
@@ -58,6 +59,7 @@ namespace EraserWars.Editor
             TryRematch();
             TryOpenCollection();
             TryPlayFirstCard();
+            TryForceSettle();
             TryDumpUi();
             TickHeartbeat();
         }
@@ -415,6 +417,35 @@ namespace EraserWars.Editor
 
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
             Debug.Log("[EraserWars] refresh-assets: AssetDatabase.Refresh done");
+        }
+
+        static void TryForceSettle()
+        {
+            if (!PeekFlag(FlagForceSettle))
+            {
+                return;
+            }
+
+            if (!EditorApplication.isPlaying || EditorApplication.isCompiling)
+            {
+                return;
+            }
+
+            if (!ConsumeFlag(FlagForceSettle))
+            {
+                return;
+            }
+
+            ForceUnpausedPlay();
+            var director = Object.FindAnyObjectByType<MatchDirector>();
+            if (director == null)
+            {
+                Debug.LogWarning("[EraserWars] force-settle: no director");
+                return;
+            }
+
+            director.DebugSettle();
+            Debug.Log($"[EraserWars] force-settle: phase={director.State?.Phase}");
         }
 
         static void TryPlayFirstCard()

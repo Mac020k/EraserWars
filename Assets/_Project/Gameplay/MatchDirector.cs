@@ -374,6 +374,8 @@ namespace EraserWars.Gameplay
             Debug.Log($"[EraserWars] PlayCard id={cardId} '{definition.DisplayName}' phase={state.Phase} effects={effects.Count}");
         }
 
+        bool pendingExtraFlick;
+
         public void SubmitFlick(FlickCommand command)
         {
             if (!byPlayer.TryGetValue(command.Player.Value, out var eraser))
@@ -381,10 +383,20 @@ namespace EraserWars.Gameplay
                 return;
             }
 
+            pendingExtraFlick = ActiveEffectTuning.HasExtraFlick(state, command.Player);
+            var powerMul = ActiveEffectTuning.PowerMultiplier(state, command.Player);
+            var massMul = ActiveEffectTuning.MassMultiplier(state, command.Player);
+            if (eraser.Body != null && massMul > 0f)
+            {
+                eraser.Body.mass = eraser.Definition != null
+                    ? eraser.Definition.Mass * massMul
+                    : eraser.Body.mass * massMul;
+            }
+
             state = MatchReduce.Reduce(state, new Flicked(command));
             hitstop?.BeginShot();
             EnsureOrbitCamera()?.SetChaseTarget(eraser.transform);
-            flickApplier.Apply(eraser, command);
+            flickApplier.Apply(eraser, command, powerMul);
             settleWatcher.Begin(erasers);
         }
 
@@ -417,11 +429,40 @@ namespace EraserWars.Gameplay
 
         void OnSettled()
         {
+            if (pendingExtraFlick)
+            {
+                pendingExtraFlick = false;
+                state = CardResolver.TickEffects(ConsumeExtraFlick(state));
+                state = state with { Phase = Phase.Aim };
+                EnsureOrbitCamera()?.ClearChaseTarget();
+                SyncActiveSeat();
+                RespawnIfNeeded();
+                Debug.Log($"[EraserWars] ExtraFlick: P{state.CurrentPlayerId.Value + 1} gets another aim");
+                return;
+            }
+
             state = MatchReduce.Reduce(state, new SimulationSettled());
+            state = CardResolver.TickEffects(state);
             // Keep the player's orbit framing from the previous turn; only drop chase focus.
             EnsureOrbitCamera()?.ClearChaseTarget();
             SyncActiveSeat();
             RespawnIfNeeded();
+        }
+
+        static MatchState ConsumeExtraFlick(MatchState current)
+        {
+            var builder = current.Effects.ToBuilder();
+            for (var i = builder.Count - 1; i >= 0; i--)
+            {
+                var effect = builder[i];
+                if (effect.Owner.Equals(current.CurrentPlayerId) && effect.SpecKind == "extra-flick")
+                {
+                    builder.RemoveAt(i);
+                    break;
+                }
+            }
+
+            return current with { Effects = builder.ToImmutable() };
         }
 
         OrbitCamera EnsureOrbitCamera()

@@ -10,7 +10,7 @@ namespace EraserWars.Gameplay
         [SerializeField] float frequency0 = FlickMath.DefaultSwayFrequency;
         [SerializeField] float frequencySlope = FlickMath.DefaultSwayFrequencySlope;
 
-        public void Apply(EraserBody eraser, FlickCommand command)
+        public void Apply(EraserBody eraser, FlickCommand command, float powerMultiplier = 1f)
         {
             var (dx, dy) = FlickMath.SwayedDirection(
                 command.DirectionX,
@@ -21,7 +21,8 @@ namespace EraserWars.Gameplay
                 amplitude0,
                 frequency0,
                 frequencySlope);
-            var impulseMag = FlickMath.Impulse(eraser.Power, jMax, command.DragLength01);
+            var power = eraser.Power * UnityEngine.Mathf.Max(0.05f, powerMultiplier);
+            var impulseMag = FlickMath.Impulse(power, jMax, command.DragLength01);
             var impulse = new Vector3(dx, 0f, dy) * impulseMag;
 
             var half = eraser.Body.GetComponent<Collider>() is BoxCollider box
