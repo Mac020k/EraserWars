@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using EraserWars.Cards;
 using EraserWars.Core;
@@ -39,8 +40,11 @@ namespace EraserWars.UI
         VisualElement timerBox;
         Button passButton;
         Button rematchButton;
-        VisualElement resultBanner;
+        Button matchEndMenuButton;
+        VisualElement matchEnd;
+        VisualElement matchEndCard;
         Label resultText;
+        Label resultSummary;
         string handFingerprint = string.Empty;
 
         sealed class PlayerPill
@@ -72,6 +76,7 @@ namespace EraserWars.UI
             handTitle = root.Q<Label>("hand-title");
             passButton = root.Q<Button>("pass");
             rematchButton = root.Q<Button>("rematch");
+            matchEndMenuButton = root.Q<Button>("match-end-menu");
             phaseLabel = root.Q<Label>("phase");
             timerLabel = root.Q<Label>("timer");
             timerUnit = root.Q<Label>("timer-unit");
@@ -79,8 +84,10 @@ namespace EraserWars.UI
             passHintLabel = root.Q<Label>("pass-hint");
             turnCallout = root.Q("turn-callout");
             timerBox = root.Q("timer-box");
-            resultBanner = root.Q("result-banner");
+            matchEnd = root.Q("match-end");
+            matchEndCard = root.Q("match-end-card");
             resultText = root.Q<Label>("result-text");
+            resultSummary = root.Q<Label>("result-summary");
             pills.Clear();
             playersRow?.Clear();
             handRow?.Clear();
@@ -89,6 +96,7 @@ namespace EraserWars.UI
             ApplyIcon(root.Q("pass-icon"), iconPass);
             passButton?.RegisterCallback<ClickEvent>(_ => director?.Pass());
             rematchButton?.RegisterCallback<ClickEvent>(_ => director?.Rematch());
+            matchEndMenuButton?.RegisterCallback<ClickEvent>(_ => startMenu?.ShowMenu());
             root.Q<Button>("menu")?.RegisterCallback<ClickEvent>(_ => startMenu?.ShowMenu());
             SetVisible(false);
         }
@@ -174,7 +182,6 @@ namespace EraserWars.UI
             var ended = state.Phase == Phase.MatchEnd;
             passButton?.EnableInClassList(HiddenClass, ended);
             passButton?.SetEnabled(state.Phase is Phase.CardSelect or Phase.Aim or Phase.TurnStart);
-            rematchButton?.EnableInClassList(HiddenClass, !ended);
         }
 
         void RefreshHand(MatchState state)
@@ -237,26 +244,82 @@ namespace EraserWars.UI
 
         void RefreshResultBanner(MatchState state)
         {
-            if (resultBanner == null)
+            if (matchEnd == null)
             {
                 return;
             }
 
             var ended = state.Phase == Phase.MatchEnd;
-            resultBanner.EnableInClassList(HiddenClass, !ended);
+            matchEnd.EnableInClassList(HiddenClass, !ended);
             if (!ended)
             {
                 return;
             }
 
-            var winner = state.Winner;
-            SetSeatClass(resultBanner, winner is PlayerId id ? id.Value : -1);
+            var copy = DescribeMatchEnd(state);
+            if (matchEndCard != null)
+            {
+                SetSeatClass(matchEndCard, copy.Seat);
+            }
 
             if (resultText != null)
             {
-                resultText.text = winner is PlayerId w
-                    ? $"P{w.Value + 1} のかち!"
-                    : "ひきわけ!";
+                resultText.text = copy.Title;
+            }
+
+            if (resultSummary != null)
+            {
+                resultSummary.text = copy.Summary;
+            }
+        }
+
+        readonly struct MatchEndCopy
+        {
+            public MatchEndCopy(string title, string summary, int seat)
+            {
+                Title = title;
+                Summary = summary;
+                Seat = seat;
+            }
+
+            public string Title { get; }
+            public string Summary { get; }
+            public int Seat { get; }
+        }
+
+        static MatchEndCopy DescribeMatchEnd(MatchState state)
+        {
+            var winner = state.Winner;
+            var seat = winner is PlayerId id ? id.Value : -1;
+            var title = winner is PlayerId won
+                ? $"P{won.Value + 1} のかち!"
+                : "ひきわけ!";
+            return new MatchEndCopy(title, SummarizeSeats(state), seat);
+        }
+
+        static string SummarizeSeats(MatchState state)
+        {
+            var mode = state.Rules.WinMode;
+            var parts = new string[state.Players.Length];
+            for (var i = 0; i < state.Players.Length; i++)
+            {
+                parts[i] = FormatSeat(mode, state.Players[i]);
+            }
+
+            return string.Join("  ·  ", parts);
+        }
+
+        static string FormatSeat(WinMode mode, PlayerState player)
+        {
+            var seat = $"P{player.Id.Value + 1}";
+            switch (mode)
+            {
+                case WinMode.Stock:
+                    return $"{seat} ストック {player.Stocks}";
+                case WinMode.Points:
+                    return $"{seat} {player.Points}点";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unhandled win mode.");
             }
         }
 

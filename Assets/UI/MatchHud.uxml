@@ -20,9 +20,17 @@
             </ui:VisualElement>
             <ui:VisualElement name="players" class="players-row" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement name="result-banner" class="result-banner hidden" picking-mode="Ignore">
-            <ui:Label name="result-text" text="" class="result-text" picking-mode="Ignore" />
-            <ui:Label name="result-hint" text="「再戦」でもういちど!" class="result-hint" picking-mode="Ignore" />
+        <ui:VisualElement name="match-end" class="match-end hidden" picking-mode="Ignore">
+            <ui:VisualElement name="match-end-dim" class="match-end-dim" picking-mode="Ignore" />
+            <ui:VisualElement name="match-end-card" class="match-end-card">
+                <ui:Label name="result-kicker" text="しょうぶあり" class="result-kicker" picking-mode="Ignore" />
+                <ui:Label name="result-text" text="" class="result-text" picking-mode="Ignore" />
+                <ui:Label name="result-summary" text="" class="result-summary" picking-mode="Ignore" />
+                <ui:VisualElement class="match-end-actions">
+                    <ui:Button name="rematch" text="再戦" class="match-end-button action-rematch" />
+                    <ui:Button name="match-end-menu" text="メニューへ" class="match-end-button match-end-menu" />
+                </ui:VisualElement>
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="hand-dock" class="hand-dock hidden" picking-mode="Ignore">
             <ui:Label name="hand-title" text="" class="hand-title" picking-mode="Ignore" />
@@ -33,7 +41,6 @@
                 <ui:VisualElement name="pass-icon" class="action-icon" picking-mode="Ignore" />
                 <ui:Label text="パス" class="action-label" picking-mode="Ignore" />
             </ui:Button>
-            <ui:Button name="rematch" text="再戦" class="action-chip action-rematch hidden" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -282,42 +282,91 @@
     opacity: 0.4;
 }
 
-.result-banner {
+.match-end {
     position: absolute;
-    left: 10%;
-    right: 10%;
-    top: 38%;
-    padding: 18px 24px;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     align-items: center;
-    background-color: rgba(255, 250, 225, 0.96);
-    border-radius: 24px;
+    justify-content: center;
+}
+
+.match-end.hidden { display: none; }
+
+.match-end-dim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(28, 20, 36, 0.38);
+}
+
+.match-end-card {
+    width: 56%;
+    max-width: 680px;
+    min-width: 340px;
+    padding: 28px 32px 22px 32px;
+    align-items: center;
+    background-color: rgba(255, 250, 236, 0.97);
+    border-radius: 28px;
     border-width: 6px;
-    border-color: rgb(210, 210, 210);
+    border-color: rgb(120, 110, 130);
 }
 
-.result-banner.hidden { display: none; }
-.result-banner.seat-0 { border-color: rgb(255, 120, 160); }
-.result-banner.seat-1 { border-color: rgb(70, 130, 240); }
-.result-banner.seat-2 { border-color: rgb(70, 190, 100); }
-.result-banner.seat-3 { border-color: rgb(255, 160, 50); }
+.match-end-card.seat-0 { border-color: rgb(255, 120, 160); }
+.match-end-card.seat-1 { border-color: rgb(70, 130, 240); }
+.match-end-card.seat-2 { border-color: rgb(70, 190, 100); }
+.match-end-card.seat-3 { border-color: rgb(255, 160, 50); }
 
-.result-text {
-    font-size: 48px;
-    -unity-font-style: bold;
-    color: rgb(70, 60, 80);
-}
-
-.result-hint {
-    margin-top: 4px;
-    font-size: 18px;
+.result-kicker {
+    font-size: 16px;
     -unity-font-style: bold;
     color: rgb(120, 110, 130);
+    margin-bottom: 4px;
 }
 
-.result-banner.seat-0 .result-text { color: rgb(230, 70, 120); }
-.result-banner.seat-1 .result-text { color: rgb(50, 100, 220); }
-.result-banner.seat-2 .result-text { color: rgb(40, 150, 70); }
-.result-banner.seat-3 .result-text { color: rgb(220, 120, 20); }
+.result-text {
+    font-size: 52px;
+    -unity-font-style: bold;
+    color: rgb(70, 60, 80);
+    -unity-text-align: middle-center;
+}
+
+.result-summary {
+    margin-top: 8px;
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: rgb(70, 60, 80);
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.match-end-card.seat-0 .result-text { color: rgb(230, 70, 120); }
+.match-end-card.seat-1 .result-text { color: rgb(50, 100, 220); }
+.match-end-card.seat-2 .result-text { color: rgb(40, 150, 70); }
+.match-end-card.seat-3 .result-text { color: rgb(220, 120, 20); }
+
+.match-end-actions {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.match-end-button {
+    min-width: 168px;
+    height: 52px;
+    margin: 0 8px;
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: rgb(255, 255, 255);
+}
+
+.match-end-menu { background-color: rgb(255, 120, 160); }
 
 .hand-dock {
     position: absolute;
