@@ -294,15 +294,19 @@ namespace EraserWars.Editor
             var director = Object.FindAnyObjectByType<MatchDirector>();
             var hud = Object.FindAnyObjectByType<MatchHudController>();
             var hudBits = "(no-hud)";
+            VisualElement hudRoot = null;
             if (hud != null)
             {
                 var hudDoc = hud.GetComponent<UIDocument>();
-                var hudRoot = hudDoc?.rootVisualElement?.Q("root") ?? hudDoc?.rootVisualElement;
+                hudRoot = hudDoc?.rootVisualElement?.Q("root") ?? hudDoc?.rootVisualElement;
                 var phase = hudRoot?.Q<Label>("phase")?.text;
                 var timer = hudRoot?.Q<Label>("timer")?.text;
                 var hidden = hudRoot != null && hudRoot.ClassListContains("hidden");
+                var cutName = hudRoot?.Q<Label>("card-cutin-name")?.text;
+                var cutHidden = hudRoot?.Q("card-cutin")?.ClassListContains("hidden") ?? true;
+                var calloutHidden = hudRoot?.Q("turn-callout")?.ClassListContains("hidden") ?? true;
                 hudBits =
-                    $"phaseLabel='{phase}' timer='{timer}' hiddenClass={hidden} display={hudRoot?.resolvedStyle.display}";
+                    $"phaseLabel='{phase}' timer='{timer}' hiddenClass={hidden} display={hudRoot?.resolvedStyle.display} cutName='{cutName}' cutHidden={cutHidden} calloutHidden={calloutHidden}";
             }
 
             var scaleBits = "(no-erasers)";
@@ -343,8 +347,14 @@ namespace EraserWars.Editor
                 rosterBits = string.Join(" ", names);
             }
 
+            var cutInBits = "cutin=(none)";
+            if (director != null && director.TryGetCardCutIn(out var cut))
+            {
+                cutInBits = $"cutin='{cut.DisplayName}' sig={cut.Signature} left={cut.RemainingSeconds:0.00}";
+            }
+
             Debug.Log(
-                $"[EraserWars] dump-ui: match phase={director?.State?.Phase} players={director?.State?.Players.Length} turnLeft={director?.State?.TurnTimeLeft:0.0} frame={Time.frameCount} | {hudBits} | {scaleBits} | {rosterBits}");
+                $"[EraserWars] dump-ui: match phase={director?.State?.Phase} players={director?.State?.Players.Length} turnLeft={director?.State?.TurnTimeLeft:0.0} frame={Time.frameCount} | {hudBits} | {scaleBits} | {rosterBits} | {cutInBits}");
         }
 
         static void TickHeartbeat()

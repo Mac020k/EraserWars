@@ -38,6 +38,14 @@ namespace EraserWars.UI
         Label passHintLabel;
         VisualElement turnCallout;
         VisualElement timerBox;
+        VisualElement cardCutIn;
+        VisualElement cardCutInDim;
+        VisualElement cardCutInBanner;
+        VisualElement cardCutInFace;
+        Label cardCutInKicker;
+        Label cardCutInName;
+        int paintedCutInCardId = int.MinValue;
+        int paintedCutInSeat = int.MinValue;
         Button passButton;
         Button rematchButton;
         Button matchEndMenuButton;
@@ -46,6 +54,7 @@ namespace EraserWars.UI
         Label resultText;
         Label resultSummary;
         string handFingerprint = string.Empty;
+        Button boundPass;
 
         sealed class PlayerPill
         {
@@ -69,12 +78,39 @@ namespace EraserWars.UI
                 startMenu = FindAnyObjectByType<StartMenuController>();
             }
 
-            root = document.rootVisualElement.Q("root") ?? document.rootVisualElement;
+            BindTree();
+            SetVisible(false);
+        }
+
+        void BindTree()
+        {
+            if (document == null)
+            {
+                return;
+            }
+
+            var tree = document.rootVisualElement;
+            if (tree == null)
+            {
+                return;
+            }
+
+            var next = tree.Q("root") ?? tree;
+            var liveName = next.Q<Label>("card-cutin-name");
+            var livePass = next.Q<Button>("pass");
+            if (liveName != null
+                && ReferenceEquals(liveName, cardCutInName)
+                && ReferenceEquals(livePass, passButton))
+            {
+                return;
+            }
+
+            root = next;
             playersRow = root.Q("players");
             handDock = root.Q("hand-dock");
             handRow = root.Q("hand");
             handTitle = root.Q<Label>("hand-title");
-            passButton = root.Q<Button>("pass");
+            passButton = livePass;
             rematchButton = root.Q<Button>("rematch");
             matchEndMenuButton = root.Q<Button>("match-end-menu");
             phaseLabel = root.Q<Label>("phase");
@@ -84,21 +120,34 @@ namespace EraserWars.UI
             passHintLabel = root.Q<Label>("pass-hint");
             turnCallout = root.Q("turn-callout");
             timerBox = root.Q("timer-box");
+            cardCutIn = root.Q("card-cutin");
+            cardCutInDim = root.Q("card-cutin-dim");
+            cardCutInBanner = root.Q("card-cutin-banner");
+            cardCutInFace = root.Q("card-cutin-face");
+            cardCutInKicker = root.Q<Label>("card-cutin-kicker");
+            cardCutInName = liveName;
+            paintedCutInCardId = int.MinValue;
+            paintedCutInSeat = int.MinValue;
             matchEnd = root.Q("match-end");
             matchEndCard = root.Q("match-end-card");
             resultText = root.Q<Label>("result-text");
             resultSummary = root.Q<Label>("result-summary");
+
+            if (passButton == null || ReferenceEquals(passButton, boundPass))
+            {
+                return;
+            }
+
+            boundPass = passButton;
             pills.Clear();
             playersRow?.Clear();
             handRow?.Clear();
             handFingerprint = string.Empty;
-
             ApplyIcon(root.Q("pass-icon"), iconPass);
-            passButton?.RegisterCallback<ClickEvent>(_ => director?.Pass());
+            passButton.RegisterCallback<ClickEvent>(_ => director?.Pass());
             rematchButton?.RegisterCallback<ClickEvent>(_ => director?.Rematch());
             matchEndMenuButton?.RegisterCallback<ClickEvent>(_ => startMenu?.ShowMenu());
             root.Q<Button>("menu")?.RegisterCallback<ClickEvent>(_ => startMenu?.ShowMenu());
-            SetVisible(false);
         }
 
         void Update()
@@ -108,6 +157,7 @@ namespace EraserWars.UI
 
         public void RefreshFromState()
         {
+            BindTree();
             if (director == null)
             {
                 director = FindAnyObjectByType<MatchDirector>();
@@ -145,14 +195,16 @@ namespace EraserWars.UI
             RefreshPills(state);
             RefreshHand(state);
             RefreshResultBanner(state);
+            RefreshCardCutIn();
         }
 
         void RefreshTurnChrome(MatchState state)
         {
             var chrome = TurnChrome.From(state);
+            var cutInUp = director != null && director.IsCardCutInShowing;
             if (turnCallout != null)
             {
-                turnCallout.EnableInClassList(HiddenClass, !chrome.ShowCallout);
+                turnCallout.EnableInClassList(HiddenClass, !chrome.ShowCallout || cutInUp);
                 SetSeatClass(turnCallout, chrome.Seat);
             }
 
@@ -180,7 +232,8 @@ namespace EraserWars.UI
         void RefreshActions(MatchState state)
         {
             var ended = state.Phase == Phase.MatchEnd;
-            passButton?.EnableInClassList(HiddenClass, ended);
+            var cutInUp = director != null && director.IsCardCutInShowing;
+            passButton?.EnableInClassList(HiddenClass, ended || cutInUp);
             passButton?.SetEnabled(state.Phase is Phase.CardSelect or Phase.Aim or Phase.TurnStart);
         }
 
@@ -192,7 +245,8 @@ namespace EraserWars.UI
             }
 
             var canPlay = state.Phase is Phase.CardSelect or Phase.Aim;
-            handDock.EnableInClassList(HiddenClass, !canPlay);
+            var cutInUp = director != null && director.IsCardCutInShowing;
+            handDock.EnableInClassList(HiddenClass, !canPlay || cutInUp);
             if (!canPlay)
             {
                 return;
@@ -235,6 +289,65 @@ namespace EraserWars.UI
                 var captured = cardId;
                 button.clicked += () => director?.PlayCard(captured);
                 handRow.Add(button);
+            }
+        }
+
+        void RefreshCardCutIn()
+        {
+            if (cardCutIn == null)
+            {
+                return;
+            }
+
+            if (director == null || !director.TryGetCardCutIn(out var cut))
+            {
+                cardCutIn.EnableInClassList(HiddenClass, true);
+                paintedCutInCardId = int.MinValue;
+                paintedCutInSeat = int.MinValue;
+                return;
+            }
+
+            cardCutIn.EnableInClassList(HiddenClass, false);
+            cardCutIn.EnableInClassList("card-cutin-signature", cut.Signature);
+            var pose = cut.Pose();
+            if (cardCutInBanner != null)
+            {
+                SetSeatClass(cardCutInBanner, cut.Seat);
+                cardCutInBanner.style.translate = new Translate(new Length(pose.SlidePixels), new Length(0f));
+                cardCutInBanner.style.opacity = pose.Opacity;
+            }
+
+            if (cardCutInDim != null)
+            {
+                cardCutInDim.style.opacity = pose.Opacity;
+            }
+
+            if (cardCutInKicker != null)
+            {
+                cardCutInKicker.text = cut.Signature
+                    ? $"P{cut.Seat + 1}  とくぎ"
+                    : $"P{cut.Seat + 1}  カード";
+            }
+
+            if (cardCutInName != null)
+            {
+                cardCutInName.text = cut.DisplayName;
+            }
+
+            if (cardCutInFace == null || (paintedCutInCardId == cut.CardId && paintedCutInSeat == cut.Seat))
+            {
+                return;
+            }
+
+            paintedCutInCardId = cut.CardId;
+            paintedCutInSeat = cut.Seat;
+            if (director.TryGetCard(cut.CardId, out var definition) && definition != null)
+            {
+                CardFaceBuilder.Paint(cardCutInFace, definition, CardSurface.CutIn);
+            }
+            else
+            {
+                CardFaceBuilder.PaintUnknown(cardCutInFace, cut.DisplayName, CardSurface.CutIn);
             }
         }
 

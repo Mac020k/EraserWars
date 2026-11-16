@@ -96,12 +96,21 @@ After the last seat, one remaining survivor ends the match. Otherwise the next r
 ## Card faces
 
 `CardGlance` maps the first effect on a card to a `CardSymbol`.
-`CardFaceBuilder.Paint` draws that symbol on a collection tile and on a match hand card.
+`CardFaceBuilder.Paint` draws that symbol on a collection tile, on a match hand card, and on the card cut-in.
 Family color, the inner frame, the cost gem, and the effect badge live in `Assets/UI/CardFace.uss`.
 Glyph vectors live in `Assets/_Project/UI/CardIcons/`.
 `tools/generate_card_icons.py` writes those files and `CardIconSvg.cs`.
 The running game rasterizes the same markup. It does not depend on an SVG importer.
 A contact sheet of the six families is in `docs/prototypes/card-tcg/contact-sheet.png`.
+
+## Card cut-in
+
+Playing a card shows a tilted banner over the match.
+The banner names the seat and the card, and paints the card face with `CardFaceBuilder` on `CardSurface.CutIn`.
+A signature card holds for 1.2 seconds. A common card holds for 0.8 seconds. Each of those times includes a 0.2 second slash in and a 0.2 second slash out.
+While the banner is up, the turn callout, the hand, and the pass button hide, and the turn clock does not move.
+Flicks and passes from the player wait until the banner ends. `SubmitFlick` still accepts a command, so a test can play a card and flick in the same call.
+The match is already in Aim under the banner. When the banner finishes, the player can aim.
 
 ## Tests
 

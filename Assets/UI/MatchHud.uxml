@@ -42,5 +42,15 @@
                 <ui:Label text="パス" class="action-label" picking-mode="Ignore" />
             </ui:Button>
         </ui:VisualElement>
+        <ui:VisualElement name="card-cutin" class="card-cutin hidden" picking-mode="Ignore">
+            <ui:VisualElement name="card-cutin-dim" class="card-cutin-dim" picking-mode="Ignore" />
+            <ui:VisualElement name="card-cutin-banner" class="card-cutin-banner" picking-mode="Ignore">
+                <ui:VisualElement name="card-cutin-face" class="card-cutin-face" picking-mode="Ignore" />
+                <ui:VisualElement class="card-cutin-copy" picking-mode="Ignore">
+                    <ui:Label name="card-cutin-kicker" text="" class="card-cutin-kicker" picking-mode="Ignore" />
+                    <ui:Label name="card-cutin-name" text="" class="card-cutin-name" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
