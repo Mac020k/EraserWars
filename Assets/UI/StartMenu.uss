@@ -100,6 +100,20 @@
     background-color: rgb(36, 100, 200);
 }
 
+.cta-resume {
+    background-color: rgb(70, 190, 100);
+    -unity-text-outline-color: rgb(20, 70, 40);
+    border-color: rgb(30, 80, 45);
+}
+
+.cta-resume:hover {
+    background-color: rgb(90, 210, 120);
+}
+
+.cta-resume:active {
+    background-color: rgb(50, 160, 80);
+}
+
 .tile-row {
     flex-direction: row;
     width: 92%;
@@ -174,6 +188,10 @@
     border-radius: 12px;
     border-top-width: 4px;
     border-top-color: rgb(255, 200, 64);
+}
+
+.hidden {
+    display: none;
 }
 
 .side-panel.hidden {

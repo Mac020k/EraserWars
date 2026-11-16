@@ -11,6 +11,7 @@
                 <ui:VisualElement name="brand-icon" class="brand-icon" />
             </ui:VisualElement>
             <ui:VisualElement class="spacer" />
+            <ui:Button name="resume-match" text="つづける" class="cta-button cta-resume hidden" />
             <ui:Button name="start-match" text="マッチ開始" class="cta-button" />
             <ui:VisualElement class="tile-row">
                 <ui:Button name="mode-2p" class="tile tile-pink">

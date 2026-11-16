@@ -16,10 +16,13 @@ namespace EraserWars.Gameplay
 
         readonly List<EraserBody> erasers = new();
         readonly Dictionary<int, EraserBody> byPlayer = new();
+        readonly Dictionary<int, Vector3> eraserBaseScale = new();
+        readonly Dictionary<int, float> eraserCueScale = new();
         HitstopController hitstop;
         EdgeSlowmoWatcher edgeSlowmo;
         MatchState state;
         int activeSeat;
+        const float ActiveEraserCueScale = 1.14f;
 
         // Broadcast-style debug chrome: top banner stays readable on stream, side panel keeps the desk clear.
         static readonly Rect SidePanelRect = new(12f, 96f, 288f, 318f);
@@ -118,10 +121,19 @@ namespace EraserWars.Gameplay
                     continue;
                 }
 
-                var want = eraser.PlayerIndex == cueSeat ? 1.14f : 1f;
-                var scale = eraser.transform.localScale;
-                var next = Mathf.Lerp(scale.x, want, 1f - Mathf.Exp(-12f * Time.unscaledDeltaTime));
-                eraser.transform.localScale = new Vector3(next, next, next);
+                var seat = eraser.PlayerIndex;
+                if (!eraserBaseScale.TryGetValue(seat, out var baseScale))
+                {
+                    baseScale = eraser.transform.localScale;
+                    eraserBaseScale[seat] = baseScale;
+                    eraserCueScale[seat] = 1f;
+                }
+
+                var want = seat == cueSeat ? ActiveEraserCueScale : 1f;
+                var current = eraserCueScale.TryGetValue(seat, out var cue) ? cue : 1f;
+                var next = Mathf.Lerp(current, want, 1f - Mathf.Exp(-12f * Time.unscaledDeltaTime));
+                eraserCueScale[seat] = next;
+                eraser.transform.localScale = baseScale * next;
             }
         }
 
@@ -186,6 +198,8 @@ namespace EraserWars.Gameplay
 
                 erasers.Add(eraser);
                 byPlayer[i] = eraser;
+                eraserBaseScale[i] = eraser.transform.localScale;
+                eraserCueScale[i] = 1f;
                 BindEraserHitstop(eraser);
             }
 
@@ -353,6 +367,8 @@ namespace EraserWars.Gameplay
 
             erasers.Clear();
             byPlayer.Clear();
+            eraserBaseScale.Clear();
+            eraserCueScale.Clear();
         }
 
         static readonly Color[] PlayerColors =

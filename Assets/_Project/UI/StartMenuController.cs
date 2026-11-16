@@ -27,6 +27,7 @@ namespace EraserWars.UI
         Button mode4P;
         int selectedPlayers = 2;
         bool matchRunning;
+        bool suspendedMatch;
 
         public bool IsMenuVisible =>
             isActiveAndEnabled
@@ -74,6 +75,7 @@ namespace EraserWars.UI
             mode4P = root.Q<Button>("mode-4p");
 
             root.Q<Button>("start-match")?.RegisterCallback<ClickEvent>(_ => StartMatch());
+            root.Q<Button>("resume-match")?.RegisterCallback<ClickEvent>(_ => ResumeMatch());
             mode2P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(2));
             mode4P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(4));
             root.Q<Button>("open-options")?.RegisterCallback<ClickEvent>(_ => ShowPanel(optionsPanel));
@@ -119,9 +121,15 @@ namespace EraserWars.UI
                     return;
                 }
 
+                if (IsMenuVisible && suspendedMatch)
+                {
+                    ResumeMatch();
+                    return;
+                }
+
                 if (matchRunning)
                 {
-                    ShowMenu();
+                    ShowMenu(suspendMatch: true);
                 }
             }
         }
@@ -155,6 +163,7 @@ namespace EraserWars.UI
             director.SetDebugChromeVisible(false);
             director.StartHotseat(playerCount);
             matchRunning = true;
+            suspendedMatch = false;
             HideMenu();
             HidePanels();
             // Play may be paused (agent flags); push HUD without waiting for Update.
@@ -163,7 +172,21 @@ namespace EraserWars.UI
             Debug.Log($"[EraserWars] StartMenu.BeginMatch({playerCount}) hid menu, phase={director.State?.Phase}");
         }
 
-        public void ShowMenu()
+        public void ResumeMatch()
+        {
+            if (director?.State == null)
+            {
+                return;
+            }
+
+            suspendedMatch = false;
+            matchRunning = true;
+            HideMenu();
+            HidePanels();
+            FindAnyObjectByType<MatchHudController>()?.RefreshFromState();
+        }
+
+        public void ShowMenu(bool suspendMatch = false)
         {
             if (!gameObject.activeSelf)
             {
@@ -182,17 +205,41 @@ namespace EraserWars.UI
 
             if (root == null && document != null)
             {
-                root = document.rootVisualElement;
+                BindDocument();
             }
 
             if (root != null)
             {
                 root.style.display = DisplayStyle.Flex;
+                root.visible = true;
             }
 
-            matchRunning = false;
+            if (document != null)
+            {
+                document.rootVisualElement.style.display = DisplayStyle.Flex;
+            }
+
+            suspendedMatch = suspendMatch && director?.State != null;
+            if (!suspendedMatch)
+            {
+                matchRunning = false;
+            }
+
             director?.SetDebugChromeVisible(false);
             director?.SetStartMenuOpen(true);
+            RefreshStartButtonLabel();
+        }
+
+        void RefreshStartButtonLabel()
+        {
+            var start = root?.Q<Button>("start-match");
+            var resume = root?.Q<Button>("resume-match");
+            if (start != null)
+            {
+                start.text = suspendedMatch ? "あたらしいマッチ" : "マッチ開始";
+            }
+
+            resume?.EnableInClassList("hidden", !suspendedMatch);
         }
 
         void HideMenu()
