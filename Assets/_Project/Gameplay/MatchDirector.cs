@@ -608,6 +608,7 @@ namespace EraserWars.Gameplay
         void ClearErasers()
         {
             settleWatcher?.Cancel();
+            pendingExtraFlick = false;
             foreach (var eraser in erasers)
             {
                 if (eraser != null)

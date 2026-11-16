@@ -64,13 +64,13 @@ namespace EraserWars.UI
             }
 
             SelectPlayers(selectedPlayers);
-            if (!matchRunning)
+            if (matchRunning && !suspendedMatch)
             {
-                ShowMenu();
+                HideMenu();
             }
             else
             {
-                HideMenu();
+                ShowMenu(suspendedMatch);
             }
         }
 
@@ -321,6 +321,13 @@ namespace EraserWars.UI
 
         public void ShowMenu(bool suspendMatch = false)
         {
+            // Settle match state before activating: OnEnable hides the menu while a match runs.
+            suspendedMatch = suspendMatch && director?.State != null;
+            if (!suspendedMatch)
+            {
+                matchRunning = false;
+            }
+
             if (!gameObject.activeSelf)
             {
                 gameObject.SetActive(true);
@@ -350,12 +357,6 @@ namespace EraserWars.UI
             if (document != null)
             {
                 document.rootVisualElement.style.display = DisplayStyle.Flex;
-            }
-
-            suspendedMatch = suspendMatch && director?.State != null;
-            if (!suspendedMatch)
-            {
-                matchRunning = false;
             }
 
             director?.SetDebugChromeVisible(false);

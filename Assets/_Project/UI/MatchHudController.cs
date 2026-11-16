@@ -12,7 +12,12 @@ namespace EraserWars.UI
         const string PillActiveClass = "pill-active";
         const string PillOutClass = "pill-out";
         const string HeartLostClass = "heart-lost";
+        const string HiddenClass = "hidden";
+        const string TimerUrgentClass = "timer-urgent";
+        const string TimerIdleClass = "timer-idle";
+        const string TurnOverClass = "turn-over";
         const int SeatClassCount = 4;
+        const float TimerUrgentSeconds = 5f;
 
         [SerializeField] MatchDirector director;
         [SerializeField] UIDocument document;
@@ -24,10 +29,14 @@ namespace EraserWars.UI
 
         VisualElement root;
         VisualElement playersRow;
+        VisualElement handDock;
         VisualElement handRow;
+        Label handTitle;
         Label phaseLabel;
         Label timerLabel;
         Label turnLabel;
+        Button passButton;
+        Button rematchButton;
         VisualElement resultBanner;
         Label resultText;
         string handFingerprint = string.Empty;
@@ -55,7 +64,11 @@ namespace EraserWars.UI
 
             root = document.rootVisualElement.Q("root") ?? document.rootVisualElement;
             playersRow = root.Q("players");
+            handDock = root.Q("hand-dock");
             handRow = root.Q("hand");
+            handTitle = root.Q<Label>("hand-title");
+            passButton = root.Q<Button>("pass");
+            rematchButton = root.Q<Button>("rematch");
             phaseLabel = root.Q<Label>("phase");
             timerLabel = root.Q<Label>("timer");
             turnLabel = root.Q<Label>("turn");
@@ -67,8 +80,8 @@ namespace EraserWars.UI
             handFingerprint = string.Empty;
 
             ApplyIcon(root.Q("pass-icon"), iconPass);
-            root.Q<Button>("pass")?.RegisterCallback<ClickEvent>(_ => director?.Pass());
-            root.Q<Button>("rematch")?.RegisterCallback<ClickEvent>(_ => director?.Rematch());
+            passButton?.RegisterCallback<ClickEvent>(_ => director?.Pass());
+            rematchButton?.RegisterCallback<ClickEvent>(_ => director?.Rematch());
             root.Q<Button>("menu")?.RegisterCallback<ClickEvent>(_ => startMenu?.ShowMenu());
             SetVisible(false);
         }
@@ -112,35 +125,63 @@ namespace EraserWars.UI
                 phaseLabel.text = $"ROUND {state.Round}  {PhaseText(state.Phase)}";
             }
 
+            var ended = state.Phase == Phase.MatchEnd;
+            var seat = state.CurrentPlayerId.Value;
             if (turnLabel != null)
             {
-                turnLabel.text = state.Phase == Phase.MatchEnd
-                    ? "おわり"
-                    : $"ターン P{state.CurrentPlayerId.Value + 1}";
+                turnLabel.text = ended ? "おわり" : $"P{seat + 1} のばん";
+                SetSeatClass(turnLabel, ended ? -1 : seat);
+                turnLabel.EnableInClassList(TurnOverClass, ended);
             }
 
-            if (timerLabel != null)
-            {
-                timerLabel.text = $"のこり {Mathf.CeilToInt(Mathf.Max(0f, state.TurnTimeLeft))}秒";
-            }
-
+            RefreshTimer(state);
+            RefreshActions(state);
             RefreshPills(state);
             RefreshHand(state);
             RefreshResultBanner(state);
         }
 
+        void RefreshTimer(MatchState state)
+        {
+            if (timerLabel == null)
+            {
+                return;
+            }
+
+            var ticking = state.Phase is Phase.TurnStart or Phase.CardSelect or Phase.Aim
+                && state.Rules.TurnTimeSeconds > 0f;
+            var seconds = Mathf.CeilToInt(Mathf.Max(0f, state.TurnTimeLeft));
+            timerLabel.text = ticking ? $"のこり {seconds}秒" : "--";
+            timerLabel.EnableInClassList(TimerIdleClass, !ticking);
+            timerLabel.EnableInClassList(TimerUrgentClass, ticking && state.TurnTimeLeft <= TimerUrgentSeconds);
+        }
+
+        void RefreshActions(MatchState state)
+        {
+            var ended = state.Phase == Phase.MatchEnd;
+            passButton?.EnableInClassList(HiddenClass, ended);
+            passButton?.SetEnabled(state.Phase is Phase.CardSelect or Phase.Aim or Phase.TurnStart);
+            rematchButton?.EnableInClassList(HiddenClass, !ended);
+        }
+
         void RefreshHand(MatchState state)
         {
-            if (handRow == null)
+            if (handDock == null || handRow == null)
             {
                 return;
             }
 
             var canPlay = state.Phase is Phase.CardSelect or Phase.Aim;
-            handRow.EnableInClassList("hidden", !canPlay || state.Phase == Phase.MatchEnd);
+            handDock.EnableInClassList(HiddenClass, !canPlay);
             if (!canPlay)
             {
                 return;
+            }
+
+            SetSeatClass(handDock, state.CurrentPlayerId.Value);
+            if (handTitle != null)
+            {
+                handTitle.text = $"P{state.CurrentPlayerId.Value + 1} のカード";
             }
 
             var player = state.Players[state.CurrentPlayerId.Value];
@@ -162,11 +203,17 @@ namespace EraserWars.UI
                 var cardId = player.Hand[i].Value;
                 director.TryGetCard(cardId, out var definition);
                 var label = definition != null ? definition.DisplayName : $"#{cardId}";
-                var button = new Button { text = label };
+                var button = new Button();
                 button.AddToClassList("hand-card");
+                var nameLabel = new Label(label) { pickingMode = PickingMode.Ignore };
+                nameLabel.AddToClassList("hand-card-name");
+                button.Add(nameLabel);
                 if (definition != null && definition.IsSignature)
                 {
                     button.AddToClassList("signature");
+                    var tag = new Label("★ とくぎ") { pickingMode = PickingMode.Ignore };
+                    tag.AddToClassList("hand-card-tag");
+                    button.Add(tag);
                 }
 
                 var captured = cardId;
@@ -183,17 +230,14 @@ namespace EraserWars.UI
             }
 
             var ended = state.Phase == Phase.MatchEnd;
-            resultBanner.EnableInClassList("hidden", !ended);
+            resultBanner.EnableInClassList(HiddenClass, !ended);
             if (!ended)
             {
                 return;
             }
 
             var winner = state.Winner;
-            for (var i = 0; i < SeatClassCount; i++)
-            {
-                resultBanner.EnableInClassList($"seat-{i}", winner is PlayerId id && id.Value % SeatClassCount == i);
-            }
+            SetSeatClass(resultBanner, winner is PlayerId id ? id.Value : -1);
 
             if (resultText != null)
             {
@@ -210,7 +254,8 @@ namespace EraserWars.UI
                 return;
             }
 
-            if (pills.Count != state.Players.Length)
+            if (pills.Count != state.Players.Length
+                || (pills.Count > 0 && pills[0].Hearts.Count != state.Rules.StockCount))
             {
                 RebuildPills(state.Players.Length, state.Rules.StockCount);
             }
@@ -288,8 +333,16 @@ namespace EraserWars.UI
                 return;
             }
 
-            element.style.backgroundImage = new StyleBackground(icon);
+            UiImageUtil.ApplyFit(element, icon);
             element.AddToClassList("has-icon");
+        }
+
+        static void SetSeatClass(VisualElement element, int seat)
+        {
+            for (var i = 0; i < SeatClassCount; i++)
+            {
+                element.EnableInClassList($"seat-{i}", seat >= 0 && seat % SeatClassCount == i);
+            }
         }
 
         void SetVisible(bool visible)
@@ -299,7 +352,7 @@ namespace EraserWars.UI
                 return;
             }
 
-            root.EnableInClassList("hidden", !visible);
+            root.EnableInClassList(HiddenClass, !visible);
             root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }

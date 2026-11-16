@@ -1,0 +1,6 @@
+﻿ts	phase	decision	why	evidence	result
+2026-11-16T23:09:00+09:00	trace	hud code already cancels SettleWatcher in ClearErasers via Rematch	confirm premise before editing	MatchDirector.ClearErasers calls settleWatcher.Cancel; MatchEnd is reached only after SimulationSettled so watcher idle at banner	premise holds
+2026-11-16T23:09:30+09:00	trace	found pendingExtraFlick leaking across Rematch and rematch button always visible	stale flag would grant an extra aim in the next match	MatchDirector.cs OnSettled reads pendingExtraFlick; ClearErasers did not reset it	fixed
+2026-11-16T23:12:00+09:00	build	ScaleToFit for heart and pass icons via USS plus UiImageUtil.ApplyFit	icons are 64x64 square but flex shrink and mixed sizes squashed them	MatchHud.uss .heart.has-icon .action-icon; MatchHudController.ApplyIcon	applied
+2026-11-16T23:14:00+09:00	verify	live Game view frame captured in 2P CardSelect	shows hand dock with seat title, signature tag, pass chip with icon	.audit/matchhud-polish/01-cardselect-hand.webp	pass
+2026-11-16T23:19:00+09:00	verify	MatchEnd banner and Rematch not confirmed live	shared Unity editor was recompiling and reimporting for five agents so flag runs raced	Editor.log shows start-hotseat-2 consumed but no knock-out capture	inconclusive
