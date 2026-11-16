@@ -5,6 +5,7 @@ using EraserWars.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace EraserWars.Editor
 {
@@ -22,8 +23,12 @@ namespace EraserWars.Editor
         const string FlagStartHotseat2 = "Temp/start-hotseat-2.flag";
         const string FlagFlickCurrent = "Temp/flick-current.flag";
         const string FlagDumpUi = "Temp/dump-ui.flag";
+        const string FlagHeartbeat = "Temp/heartbeat.flag";
         const string FlagRebuildFishNet = "Temp/rebuild-fishnet-spike.flag";
         const string FlagRebuildClassroom = "Temp/rebuild-classroom.flag";
+
+        static int heartbeatLeft;
+        static int heartbeatLastFrame = -1;
 
         static OpenSceneFlagWatcher()
         {
@@ -41,6 +46,7 @@ namespace EraserWars.Editor
             TryStartHotseat2();
             TryFlickCurrent();
             TryDumpUi();
+            TickHeartbeat();
         }
 
         static void TryStopPlay()
@@ -76,6 +82,7 @@ namespace EraserWars.Editor
                 return;
             }
 
+            ConsoleWindowUtil.ClearErrorPause();
             if (!EditorApplication.isPlaying)
             {
                 EditorApplication.isPaused = false;
@@ -124,6 +131,7 @@ namespace EraserWars.Editor
                 return;
             }
 
+            ConsoleWindowUtil.ClearErrorPause();
             EditorApplication.isPaused = false;
             EditorApplication.QueuePlayerLoopUpdate();
         }
@@ -169,7 +177,8 @@ namespace EraserWars.Editor
                 0.2f);
             director.SubmitFlick(command);
             ForceUnpausedPlay();
-            Debug.Log($"[EraserWars] flick-current: P{director.State.CurrentPlayerId.Value + 1} phase={director.State.Phase} paused={EditorApplication.isPaused}");
+            Debug.Log(
+                $"[EraserWars] flick-current: P{director.State.CurrentPlayerId.Value + 1} phase={director.State.Phase} paused={EditorApplication.isPaused}");
         }
 
         static void TryDumpUi()
@@ -179,8 +188,9 @@ namespace EraserWars.Editor
                 return;
             }
 
-            var docs = Object.FindObjectsByType<UnityEngine.UIElements.UIDocument>(FindObjectsInactive.Include);
-            Debug.Log($"[EraserWars] dump-ui: {docs.Length} UIDocument(s) playing={EditorApplication.isPlaying} paused={EditorApplication.isPaused}");
+            var docs = Object.FindObjectsByType<UIDocument>(FindObjectsInactive.Include);
+            Debug.Log(
+                $"[EraserWars] dump-ui: {docs.Length} UIDocument(s) playing={EditorApplication.isPlaying} paused={EditorApplication.isPaused}");
             foreach (var doc in docs)
             {
                 var go = doc.gameObject;
@@ -193,7 +203,48 @@ namespace EraserWars.Editor
             }
 
             var director = Object.FindAnyObjectByType<MatchDirector>();
-            Debug.Log($"[EraserWars] dump-ui: match phase={director?.State?.Phase} players={director?.State?.Players.Length}");
+            var hud = Object.FindAnyObjectByType<MatchHudController>();
+            var hudBits = "(no-hud)";
+            if (hud != null)
+            {
+                var hudDoc = hud.GetComponent<UIDocument>();
+                var hudRoot = hudDoc?.rootVisualElement?.Q("root") ?? hudDoc?.rootVisualElement;
+                var phase = hudRoot?.Q<Label>("phase")?.text;
+                var timer = hudRoot?.Q<Label>("timer")?.text;
+                var hidden = hudRoot != null && hudRoot.ClassListContains("hidden");
+                hudBits =
+                    $"phaseLabel='{phase}' timer='{timer}' hiddenClass={hidden} display={hudRoot?.resolvedStyle.display}";
+            }
+
+            Debug.Log(
+                $"[EraserWars] dump-ui: match phase={director?.State?.Phase} players={director?.State?.Players.Length} turnLeft={director?.State?.TurnTimeLeft:0.0} frame={Time.frameCount} | {hudBits}");
+        }
+
+        static void TickHeartbeat()
+        {
+            if (ConsumeFlag(FlagHeartbeat))
+            {
+                heartbeatLeft = 90;
+                heartbeatLastFrame = -1;
+                ForceUnpausedPlay();
+                Debug.Log("[EraserWars] heartbeat: armed 90 editor updates");
+            }
+
+            if (heartbeatLeft <= 0 || !EditorApplication.isPlaying)
+            {
+                return;
+            }
+
+            heartbeatLeft--;
+            ForceUnpausedPlay();
+            var frame = Time.frameCount;
+            if (heartbeatLeft % 15 == 0 || frame != heartbeatLastFrame)
+            {
+                var director = Object.FindAnyObjectByType<MatchDirector>();
+                Debug.Log(
+                    $"[EraserWars] heartbeat: left={heartbeatLeft} frame={frame} deltaFrame={(heartbeatLastFrame < 0 ? 0 : frame - heartbeatLastFrame)} paused={EditorApplication.isPaused} turnLeft={director?.State?.TurnTimeLeft:0.00} phase={director?.State?.Phase}");
+                heartbeatLastFrame = frame;
+            }
         }
 
         static void TryRebuild()
@@ -266,9 +317,29 @@ namespace EraserWars.Editor
                 EditorApplication.isPlaying = false;
             }
 
-            // Agent flags must not block on "Save Untitled?" dialogs.
             EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
             Debug.Log($"[EraserWars] Opened {scenePath} via flag {flagRelative}");
+        }
+    }
+
+    static class ConsoleWindowUtil
+    {
+        public static void ClearErrorPause()
+        {
+            try
+            {
+                var type = System.Type.GetType("UnityEditor.ConsoleWindow,UnityEditor.dll");
+                var setErrorPause = type?.GetMethod(
+                    "SetConsoleErrorPause",
+                    System.Reflection.BindingFlags.Static
+                    | System.Reflection.BindingFlags.NonPublic
+                    | System.Reflection.BindingFlags.Public);
+                setErrorPause?.Invoke(null, new object[] { false });
+            }
+            catch
+            {
+                // Best-effort; agent can still ForceUnpausedPlay.
+            }
         }
     }
 }
