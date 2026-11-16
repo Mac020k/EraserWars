@@ -19,6 +19,18 @@ namespace EraserWars.Editor
             (5, "char_still_05_ohori.jpg"),
             (6, "char_still_06_kuroe.jpg"),
             (7, "char_still_07_mei.jpg"),
+            (8, "char_still_08_kageyama.jpg"),
+            (9, "char_still_09_ozora.jpg"),
+            (10, "char_still_10_hinata.jpg"),
+            (11, "char_still_11_gou.jpg"),
+            (12, "char_still_12_iroha.jpg"),
+            (13, "char_still_13_atom.jpg"),
+            (14, "char_still_14_meshiko.jpg"),
+            (15, "char_still_15_mike.jpg"),
+            (16, "char_still_16_pika.jpg"),
+            (17, "char_still_17_kiyora.jpg"),
+            (18, "char_still_18_sora.jpg"),
+            (19, "char_still_19_nyan.jpg"),
         };
 
         [MenuItem("EraserWars/Import Character Stills")]
