@@ -127,7 +127,7 @@ namespace EraserWars.Gameplay
 
         void TickTurnTimer(float deltaSeconds)
         {
-            if (state == null || deltaSeconds <= 0f)
+            if (state == null || deltaSeconds <= 0f || IsStartMenuOpen)
             {
                 return;
             }
