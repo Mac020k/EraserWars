@@ -1,15 +1,25 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <Style src="MatchHud.uss" />
     <ui:VisualElement name="root" class="hud-root hidden" picking-mode="Ignore">
-        <ui:VisualElement class="top-bar">
-            <ui:VisualElement name="brand-chip" class="brand-chip" />
-            <ui:Label name="title" text="ERASER WARS" class="hud-title" />
-            <ui:Label name="phase" text="—" class="hud-phase" />
-            <ui:Label name="turn" text="" class="hud-turn" />
-            <ui:Label name="timer" text="" class="hud-timer" />
-            <ui:Button name="menu" text="メニュー" class="hud-menu-button" />
+        <ui:VisualElement class="hud-stack" picking-mode="Ignore">
+            <ui:VisualElement class="top-bar">
+                <ui:VisualElement name="brand-chip" class="brand-chip" />
+                <ui:Label name="title" text="ERASER WARS" class="hud-title" />
+                <ui:Label name="phase" text="—" class="hud-phase" />
+                <ui:Button name="menu" text="メニュー" class="hud-menu-button" />
+            </ui:VisualElement>
+            <ui:VisualElement name="turn-callout" class="turn-callout" picking-mode="Ignore">
+                <ui:VisualElement class="turn-copy" picking-mode="Ignore">
+                    <ui:Label name="turn" text="" class="hud-turn" picking-mode="Ignore" />
+                    <ui:Label name="pass-hint" text="" class="pass-hint" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="timer-box" class="timer-box" picking-mode="Ignore">
+                    <ui:Label name="timer" text="--" class="hud-timer" picking-mode="Ignore" />
+                    <ui:Label name="timer-unit" text="秒" class="timer-unit" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="players" class="players-row" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement name="players" class="players-row" picking-mode="Ignore" />
         <ui:VisualElement name="result-banner" class="result-banner hidden" picking-mode="Ignore">
             <ui:Label name="result-text" text="" class="result-text" picking-mode="Ignore" />
             <ui:Label name="result-hint" text="「再戦」でもういちど!" class="result-hint" picking-mode="Ignore" />

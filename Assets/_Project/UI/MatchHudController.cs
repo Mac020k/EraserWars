@@ -15,9 +15,7 @@ namespace EraserWars.UI
         const string HiddenClass = "hidden";
         const string TimerUrgentClass = "timer-urgent";
         const string TimerIdleClass = "timer-idle";
-        const string TurnOverClass = "turn-over";
         const int SeatClassCount = 4;
-        const float TimerUrgentSeconds = 5f;
 
         [SerializeField] MatchDirector director;
         [SerializeField] UIDocument document;
@@ -34,7 +32,11 @@ namespace EraserWars.UI
         Label handTitle;
         Label phaseLabel;
         Label timerLabel;
+        Label timerUnit;
         Label turnLabel;
+        Label passHintLabel;
+        VisualElement turnCallout;
+        VisualElement timerBox;
         Button passButton;
         Button rematchButton;
         VisualElement resultBanner;
@@ -45,6 +47,7 @@ namespace EraserWars.UI
         {
             public VisualElement Root;
             public Label Points;
+            public Label Now;
             public readonly List<VisualElement> Hearts = new();
         }
 
@@ -71,7 +74,11 @@ namespace EraserWars.UI
             rematchButton = root.Q<Button>("rematch");
             phaseLabel = root.Q<Label>("phase");
             timerLabel = root.Q<Label>("timer");
+            timerUnit = root.Q<Label>("timer-unit");
             turnLabel = root.Q<Label>("turn");
+            passHintLabel = root.Q<Label>("pass-hint");
+            turnCallout = root.Q("turn-callout");
+            timerBox = root.Q("timer-box");
             resultBanner = root.Q("result-banner");
             resultText = root.Q<Label>("result-text");
             pills.Clear();
@@ -125,35 +132,41 @@ namespace EraserWars.UI
                 phaseLabel.text = $"ROUND {state.Round}  {PhaseText(state.Phase)}";
             }
 
-            var ended = state.Phase == Phase.MatchEnd;
-            var seat = state.CurrentPlayerId.Value;
-            if (turnLabel != null)
-            {
-                turnLabel.text = ended ? "おわり" : $"P{seat + 1} のばん";
-                SetSeatClass(turnLabel, ended ? -1 : seat);
-                turnLabel.EnableInClassList(TurnOverClass, ended);
-            }
-
-            RefreshTimer(state);
+            RefreshTurnChrome(state);
             RefreshActions(state);
             RefreshPills(state);
             RefreshHand(state);
             RefreshResultBanner(state);
         }
 
-        void RefreshTimer(MatchState state)
+        void RefreshTurnChrome(MatchState state)
         {
-            if (timerLabel == null)
+            var chrome = TurnChrome.From(state);
+            if (turnCallout != null)
             {
-                return;
+                turnCallout.EnableInClassList(HiddenClass, !chrome.ShowCallout);
+                SetSeatClass(turnCallout, chrome.Seat);
             }
 
-            var ticking = state.Phase is Phase.TurnStart or Phase.CardSelect or Phase.Aim
-                && state.Rules.TurnTimeSeconds > 0f;
-            var seconds = Mathf.CeilToInt(Mathf.Max(0f, state.TurnTimeLeft));
-            timerLabel.text = ticking ? $"のこり {seconds}秒" : "--";
-            timerLabel.EnableInClassList(TimerIdleClass, !ticking);
-            timerLabel.EnableInClassList(TimerUrgentClass, ticking && state.TurnTimeLeft <= TimerUrgentSeconds);
+            if (turnLabel != null)
+            {
+                turnLabel.text = chrome.Headline;
+            }
+
+            if (passHintLabel != null)
+            {
+                passHintLabel.text = chrome.PassHint;
+                passHintLabel.EnableInClassList(HiddenClass, !chrome.ShowPassHint);
+            }
+
+            if (timerLabel != null)
+            {
+                timerLabel.text = chrome.TimerDigits;
+            }
+
+            timerUnit?.EnableInClassList(HiddenClass, !chrome.TimerTicking);
+            timerBox?.EnableInClassList(TimerIdleClass, !chrome.TimerTicking);
+            timerBox?.EnableInClassList(TimerUrgentClass, chrome.TimerUrgent);
         }
 
         void RefreshActions(MatchState state)
@@ -265,7 +278,9 @@ namespace EraserWars.UI
             {
                 var player = state.Players[i];
                 var pill = pills[i];
-                pill.Root.EnableInClassList(PillActiveClass, player.Id.Value == activeSeat);
+                var active = player.Id.Value == activeSeat;
+                pill.Root.EnableInClassList(PillActiveClass, active);
+                pill.Now?.EnableInClassList(HiddenClass, !active);
                 pill.Root.EnableInClassList(PillOutClass, !player.IsAlive);
                 pill.Points.text = $"{player.Points}点";
                 for (var h = 0; h < pill.Hearts.Count; h++)
@@ -284,6 +299,11 @@ namespace EraserWars.UI
                 var pill = new PlayerPill { Root = new VisualElement() };
                 pill.Root.AddToClassList("player-pill");
                 pill.Root.AddToClassList($"seat-{i % SeatClassCount}");
+
+                pill.Now = new Label("いま");
+                pill.Now.AddToClassList("pill-now");
+                pill.Now.AddToClassList(HiddenClass);
+                pill.Root.Add(pill.Now);
 
                 var nameLabel = new Label($"P{i + 1}");
                 nameLabel.AddToClassList("pill-name");
