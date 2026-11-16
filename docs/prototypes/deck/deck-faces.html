@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>Deck faces prototype</title>
+  <style>
+    body { margin: 0; background: #111; font-family: "Segoe UI", sans-serif; }
+    .page { display: flex; flex-direction: column; gap: 16px; padding: 16px; width: 760px; }
+    .panel {
+      width: 760px; box-sizing: border-box;
+      background: rgb(18, 22, 40); border: 8px solid rgb(196, 150, 88);
+      border-radius: 6px; padding: 20px 24px; color: white;
+      display: flex; flex-direction: column;
+    }
+    .chrome { display: flex; align-items: center; margin-bottom: 10px; }
+    .back {
+      width: 110px; height: 36px; margin-right: 12px; font-weight: 700; font-size: 14px;
+      background: rgb(255, 252, 244); color: rgb(40, 36, 48); border-radius: 8px; border: 0;
+    }
+    h1 { font-size: 28px; margin: 0; }
+    .seats { display: flex; gap: 6px; margin-bottom: 6px; }
+    .seat {
+      height: 32px; padding: 0 14px; border-radius: 8px; border: 0;
+      background: rgb(60, 66, 84); color: white; font-weight: 700;
+    }
+    .seat.on { background: rgb(255, 220, 120); color: rgb(32, 28, 20); }
+    .budget {
+      margin-bottom: 8px; padding: 10px 12px; background: rgba(8, 10, 18, 0.55);
+      border-radius: 10px; border: 1px solid rgba(255, 220, 120, 0.45); flex-shrink: 0;
+    }
+    .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .label { font-size: 22px; font-weight: 700; color: rgb(255, 248, 230); }
+    .remain { font-size: 16px; font-weight: 700; color: rgb(255, 220, 120); }
+    .remain.over { color: rgb(255, 186, 170); }
+    .track { height: 12px; background: rgba(255,255,255,0.14); border-radius: 6px; overflow: hidden; }
+    .fill { height: 100%; background: rgb(255, 210, 80); }
+    .fill.over { background: rgb(214, 84, 68); }
+    .warn { margin-top: 8px; font-size: 15px; font-weight: 700; color: rgb(255, 214, 196); }
+    .meta { color: rgb(190, 190, 210); font-size: 13px; margin: 4px 0; }
+    .cols { display: flex; gap: 8px; min-height: 0; flex: 1; }
+    .col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .col h2 { margin: 0 0 4px; font-size: 13px; color: rgb(255, 220, 120); }
+    .list { background: rgba(10, 12, 20, 0.35); border-radius: 8px; padding: 4px; }
+    .item {
+      min-height: 44px; margin: 0 0 4px; border-radius: 6px; border: 1px solid rgb(200, 190, 170);
+      background: rgb(255, 252, 244); color: rgb(32, 30, 40); display: flex; align-items: center;
+      padding: 0 8px; font-size: 14px; box-sizing: border-box;
+    }
+    .item.on { background: rgb(255, 230, 140); border-color: rgb(40, 40, 48); }
+    .row {
+      display: flex; align-items: center; margin: 0 0 8px; padding: 6px;
+      background: rgb(255, 252, 244); border: 1px solid rgb(200, 190, 170); border-radius: 12px;
+    }
+    .row.in { background: rgb(255, 236, 170); border-color: rgb(40, 40, 48); }
+    .face {
+      position: relative; width: 120px; height: 168px; flex-shrink: 0; margin-right: 8px;
+      border: 3px solid; border-radius: 14px; overflow: hidden; box-sizing: border-box;
+    }
+    .pat { position: absolute; inset: 0; }
+    .mat {
+      position: absolute; left: 5px; right: 5px; top: 5px; bottom: 5px;
+      border: 1px solid rgba(36, 24, 15, 0.28); border-radius: 10px;
+    }
+    .gem {
+      position: absolute; top: 8px; left: 8px; width: 32px; height: 32px; border-radius: 16px;
+      border: 2px solid rgb(255, 248, 236); background: rgb(22, 18, 16);
+      color: rgb(255, 248, 236); font-weight: 700; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon {
+      position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; border-radius: 12px;
+      border: 2px solid rgb(36, 24, 15); background: rgb(255, 252, 246); box-sizing: border-box;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon img { width: 32px; height: 32px; }
+    .body {
+      position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 8px 10px;
+      text-align: center; font-weight: 700;
+    }
+    .family { font-size: 12px; }
+    .name { font-size: 14px; }
+    .kiai { background: rgb(255, 214, 196); border-color: rgb(176, 64, 44); color: rgb(62, 24, 16); }
+    .kiai .pat {
+      background: repeating-linear-gradient(135deg, transparent 0 6px, rgba(36, 24, 15, 0.27) 6px 8px);
+    }
+    .homework { background: rgb(255, 248, 230); border-color: rgb(46, 96, 168); color: rgb(36, 32, 24); }
+    .homework .pat {
+      background: repeating-linear-gradient(to bottom, rgba(36, 24, 15, 0.27) 0 1px, transparent 1px 8px);
+    }
+    .seat { background: rgb(214, 236, 214); border-color: rgb(36, 112, 72); color: rgb(16, 48, 32); }
+    .seat .pat {
+      background-image:
+        linear-gradient(rgba(36, 24, 15, 0.27) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(36, 24, 15, 0.27) 1px, transparent 1px);
+      background-size: 10px 10px;
+    }
+    .stationery { background: rgb(255, 236, 176); border-color: rgb(92, 64, 20); color: rgb(42, 32, 8); }
+    .stationery .pat {
+      background: repeating-linear-gradient(45deg, transparent 0 6px, rgba(36, 24, 15, 0.27) 6px 8px);
+    }
+    .cover { background: rgb(255, 214, 224); border-color: rgb(176, 72, 104); color: rgb(62, 20, 36); }
+    .cover .pat {
+      background-image: radial-gradient(circle, rgba(36, 24, 15, 0.35) 1.2px, transparent 1.4px);
+      background-size: 10px 10px;
+    }
+    .actions { margin-left: auto; display: flex; align-items: center; flex-shrink: 0; }
+    .count { font-size: 15px; font-weight: 700; color: rgb(60, 48, 36); margin-right: 2px; }
+    button.act {
+      width: 72px; height: 44px; margin-left: 6px; font-size: 15px; font-weight: 700;
+      border-radius: 8px; border-width: 2px; border-style: solid;
+    }
+    button.add { background: rgb(255, 210, 80); color: rgb(32, 28, 20); border-color: rgb(120, 84, 20); }
+    button.remove { background: rgb(255, 252, 244); color: rgb(90, 32, 28); border-color: rgb(180, 90, 80); }
+    .caption { color: #aaa; font-size: 12px; padding: 0 16px 12px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="panel">
+      <div class="chrome"><button class="back">← もどる</button><h1>デッキ</h1></div>
+      <div class="seats"><button class="seat on">P1</button><button class="seat">P2</button></div>
+      <div class="budget">
+        <div class="head"><div class="label">デッキコスト 3/8</div><div class="remain">残り 5</div></div>
+        <div class="track"><div class="fill" style="width:37.5%"></div></div>
+      </div>
+      <div class="meta">P1: 広い / コモン 2/6</div>
+      <div class="meta">固有: なし / なし<br>型: 全力アタック型</div>
+      <div class="cols">
+        <div class="col">
+          <h2>キャラ</h2>
+          <div class="list">
+            <div class="item on">広い (全力アタック型)</div>
+            <div class="item">狭い (席取り上手型)</div>
+          </div>
+        </div>
+        <div class="col">
+          <h2>コモンカード</h2>
+          <div class="list" id="legal"></div>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="chrome"><button class="back">← もどる</button><h1>デッキ</h1></div>
+      <div class="seats"><button class="seat on">P1</button><button class="seat">P2</button></div>
+      <div class="budget">
+        <div class="head"><div class="label">デッキコスト 3/2</div><div class="remain over">上限オーバー</div></div>
+        <div class="track"><div class="fill over" style="width:100%"></div></div>
+        <div class="warn">上限を超えています。カードを外してください。</div>
+      </div>
+      <div class="meta">P1: 狭い / コモン 2/6</div>
+      <div class="cols">
+        <div class="col">
+          <h2>キャラ</h2>
+          <div class="list">
+            <div class="item">広い (全力アタック型)</div>
+            <div class="item on">狭い (席取り上手型)</div>
+          </div>
+        </div>
+        <div class="col">
+          <h2>コモンカード</h2>
+          <div class="list" id="over"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <p class="caption">Layout prototype for deck rows that call CardFaceBuilder.Paint with the collection surface. Not a Play Mode capture. The worktree has no Library, so Unity did not render this still.</p>
+  <script>
+    const icon = (file) => "../../../Assets/_Project/UI/CardIcons/" + file;
+    const cards = [
+      { name: "重い消しゴム", family: "気合", fam: "kiai", cost: 1, glyph: "weight.svg", count: 1 },
+      { name: "のり付け", family: "カバー", fam: "cover", cost: 2, glyph: "grip.svg", count: 1 },
+      { name: "定規ビーム", family: "文房具", fam: "stationery", cost: 2, glyph: "desk.svg", count: 0 },
+      { name: "集中", family: "宿題", fam: "homework", cost: 1, glyph: "flick.svg", count: 0 },
+      { name: "席替え", family: "席替え", fam: "seat", cost: 2, glyph: "swap.svg", count: 0 }
+    ];
+    function row(card) {
+      const inn = card.count > 0 ? " in" : "";
+      const count = card.count > 0 ? `<span class="count">${card.count}枚</span>` : "";
+      const remove = card.count > 0 ? `<button class="act remove">外す</button>` : "";
+      return `<div class="row${inn}">
+        <div class="face ${card.fam}">
+          <div class="pat"></div><div class="mat"></div>
+          <div class="gem">${card.cost}</div>
+          <div class="icon"><img src="${icon(card.glyph)}" alt=""></div>
+          <div class="body"><div class="family">${card.family}</div><div class="name">${card.name}</div></div>
+        </div>
+        <div class="actions">${count}${remove}<button class="act add">追加</button></div>
+      </div>`;
+    }
+    const html = cards.map(row).join("");
+    document.getElementById("legal").innerHTML = html;
+    document.getElementById("over").innerHTML = cards.filter((card) => card.count > 0).map(row).join("");
+  </script>
+</body>
+</html>

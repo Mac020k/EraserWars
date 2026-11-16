@@ -179,10 +179,9 @@ namespace EraserWars.UI
             row.AddToClassList("deck-row");
             row.EnableInClassList("deck-row-in", count > 0);
 
-            var name = new Label(card.DisplayName);
-            name.AddToClassList("deck-row-name");
-            var cost = new Label($"コスト {card.BuildCost}");
-            cost.AddToClassList("deck-row-cost");
+            var face = new VisualElement();
+            CardFaceBuilder.Paint(face, card, CardSurface.Collection);
+
             var copies = new Label(count > 0 ? $"{count}枚" : "");
             copies.AddToClassList("deck-row-count");
             copies.EnableInClassList("hidden", count <= 0);
@@ -199,11 +198,14 @@ namespace EraserWars.UI
             remove.clicked += () => RemoveOne(captured);
             add.clicked += () => AddOne(captured);
 
-            row.Add(name);
-            row.Add(cost);
-            row.Add(copies);
-            row.Add(remove);
-            row.Add(add);
+            var actions = new VisualElement();
+            actions.AddToClassList("deck-row-actions");
+            actions.Add(copies);
+            actions.Add(remove);
+            actions.Add(add);
+
+            row.Add(face);
+            row.Add(actions);
             return row;
         }
 

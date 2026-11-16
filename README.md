@@ -97,6 +97,8 @@ After the last seat, one remaining survivor ends the match. Otherwise the next r
 
 `CardGlance` maps the first effect on a card to a `CardSymbol`.
 `CardFaceBuilder.Paint` draws that symbol on a collection tile and on a match hand card.
+Each common-card row in the deck builder uses the collection face, so the cost gem, family color, and effect icon match the collection.
+The deck cost meter above the lists is unchanged.
 Family color, the inner frame, the cost gem, and the effect badge live in `Assets/UI/CardFace.uss`.
 Glyph vectors live in `Assets/_Project/UI/CardIcons/`.
 `tools/generate_card_icons.py` writes those files and `CardIconSvg.cs`.

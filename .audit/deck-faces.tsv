@@ -1,0 +1,8 @@
+ts	phase	decision	why	evidence	result
+2026-11-17T06:58:29+09:00	frame	deck rows should show the collection card face	the list was a name and a cost sentence while collection and the hand already paint a face	BuildCardRow before the change	open
+2026-11-17T06:58:29+09:00	design	paint a child element with CardSurface.Collection	Paint clears its host, so the row keeps the copy count and the add and remove buttons	CardFaceBuilder.Prepare	chosen
+2026-11-17T06:58:29+09:00	design	do not add a deck surface	the painter already draws the gem, family color, and icon for collection	CardFaceBuilder.Paint	chosen
+2026-11-17T06:58:29+09:00	design	drop the per-row cost sentence	the gem is that card's cost and the meter above the lists stays the deck total	PaintBudget unchanged	chosen
+2026-11-17T06:58:29+09:00	verify	prototype row DOM	legal list has five faces with gems 1, 2, 2, 1, 2. In-deck rows have 外す and 追加. Other rows have 追加 only	browser Runtime.evaluate on deck-faces.html	measured
+2026-11-17T06:58:29+09:00	verify	layout still	meter reads デッキコスト 3/8 with 残り 5, and the over state reads 3/2 with a red fill	docs/prototypes/deck/deck-faces.png	prototype
+2026-11-17T06:58:29+09:00	verify	Play Mode capture	this worktree has no Library and Unity was not running, so menu-shot was not run	tools/menu-shots.ps1	not run
