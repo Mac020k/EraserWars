@@ -11,3 +11,4 @@ ts	phase	decision	why	evidence	result
 2026-11-16T09:58:44Z	hud	MatchHud shows ROUND1 ÇÀÇÁÇ¶! / ÇÃÇ±ÇË20ïb with StartMenu inactive	measured dump-ui; screenshot vision unreliable	dump-ui log	HUD+flick verified; timer frame advance next
 2026-11-16T10:04:06Z	timer	turnLeft fell 20Å®19 under advancing frames after domain-reload Play	heartbeat frame 80..91; Step used when wedged	b576df8	measured
 2026-11-16T10:13:08Z	end	MatchEnd winner=P0 then RematchÅ®CardSelect turnLeft=20	knock-out + rematch flags; HUD MatchEnd dump	60aa6ac	exit predicate core path VERIFIED
+2026-11-16T10:20:13Z	menu-gate	IsStartMenuOpen blocks HotseatFlickInput.CanTrack	inventory P0-3 from gap agent; winner+timer already shipped	HotseatFlickInput MatchDirector StartMenuController	committed
