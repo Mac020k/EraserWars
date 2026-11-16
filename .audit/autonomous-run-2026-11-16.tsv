@@ -22,3 +22,4 @@
 2026-11-16T23:50:00+09:00	spawn	six grok workstreams + continue e2e	game completion parallel fan-out	worktrees options/card/matchend/deck/turn/audio	started
 2026-11-16T23:52:00+09:00	autonomy	operator granted 6h unattended command approval	continue absorb/merge/verify without pausing for permission	until ~2026-11-17T05:52+09:00	granted
 2026-11-16T23:54:00+09:00	loop	armed 10m absorb heartbeat for 6h	operator unattended grant; wake on AGENT_LOOP_TICK_eraserwars_absorb	pid 85864 until ~05:52	armed
+2026-11-16T23:55:00+09:00	e2e	flag hotseat reached MatchEnd then rematch CardSelect	captures flaky; logs prove MatchEnd+rematch; 02-in-match.png kept	Logs/Editor.log dump-ui MatchEnd; rematch phase=CardSelect	PARTIAL
