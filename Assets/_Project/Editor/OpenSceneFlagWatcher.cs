@@ -102,16 +102,28 @@ namespace EraserWars.Editor
                 return;
             }
 
-            EditorApplication.isPaused = false;
-            var menu = Object.FindFirstObjectByType<StartMenuController>();
+            ForceUnpausedPlay();
+            var menu = Object.FindAnyObjectByType<StartMenuController>();
             if (menu != null)
             {
                 menu.BeginMatch(2);
-                Debug.Log("[EraserWars] start-hotseat-2: StartMenuController.BeginMatch(2)");
+                ForceUnpausedPlay();
+                Debug.Log($"[EraserWars] start-hotseat-2: BeginMatch(2) paused={EditorApplication.isPaused}");
                 return;
             }
 
             Debug.LogWarning("[EraserWars] start-hotseat-2: StartMenuController missing");
+        }
+
+        static void ForceUnpausedPlay()
+        {
+            if (!EditorApplication.isPlaying)
+            {
+                return;
+            }
+
+            EditorApplication.isPaused = false;
+            EditorApplication.QueuePlayerLoopUpdate();
         }
 
         static void TryFlickCurrent()
@@ -131,7 +143,7 @@ namespace EraserWars.Editor
                 return;
             }
 
-            EditorApplication.isPaused = false;
+            ForceUnpausedPlay();
             var director = Object.FindAnyObjectByType<MatchDirector>();
             if (director == null || director.State == null)
             {
@@ -154,7 +166,8 @@ namespace EraserWars.Editor
                 0f,
                 0.2f);
             director.SubmitFlick(command);
-            Debug.Log($"[EraserWars] flick-current: P{director.State.CurrentPlayerId.Value + 1} phase={director.State.Phase}");
+            ForceUnpausedPlay();
+            Debug.Log($"[EraserWars] flick-current: P{director.State.CurrentPlayerId.Value + 1} phase={director.State.Phase} paused={EditorApplication.isPaused}");
         }
 
         static void TryRebuild()

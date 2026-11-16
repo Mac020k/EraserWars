@@ -7,3 +7,4 @@ ts	phase	decision	why	evidence	result
 2026-11-15T14:24:07Z	winner	MatchState.Winner + result banner + enter/unpause/start-hotseat flags	Play Mode click path kept failing on Pause; flags are the verification lever	commit HEAD	commit done, play verify next
 2026-11-15T14:26:43Z	play	BeginMatch(2) via flag succeeded after settle Cancel fix	log shows StartMenuController.BeginMatch(2); verifying HUD visually next	Editor.log	measured
 2026-11-16T09:32:57Z	menu	SetActive(false) on StartMenu after BeginMatch; IsMenuVisible checks active+enabled	log CardSelect; visual verify next	e611965	measured
+2026-11-16T09:38:57Z	flick	flag flick-current reached Simulating; HideMenu activeSelf=False	vision still reports Start Menu overlay despite inactive GO; treat as vision/cache risk, trust log	Editor.log 87500-87542	measured flick; HUD visual inconclusive
