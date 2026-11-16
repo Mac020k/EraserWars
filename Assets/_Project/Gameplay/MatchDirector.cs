@@ -287,6 +287,13 @@ namespace EraserWars.Gameplay
         void SyncActiveSeat()
         {
             activeSeat = state.CurrentPlayerId.Value;
+            if ((state.Phase is Phase.Aim or Phase.CardSelect or Phase.TurnStart)
+                && TryGetCurrentEraser(out var eraser)
+                && eraser != null)
+            {
+                // Soft focus for the next seat without resetting overview framing.
+                EnsureOrbitCamera()?.SetChaseTarget(eraser.transform);
+            }
         }
 
         void RespawnIfNeeded()
