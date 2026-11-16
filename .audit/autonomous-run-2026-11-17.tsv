@@ -32,3 +32,5 @@
 2026-11-17T08:35:10+09:00	merge	merged agent/settle-timeout-fx@923dd11	wave4 4/6	main@1b79ee6	merged
 2026-11-17T08:37:48+09:00	merge	merged agent/stage-props-polish@36ca319	wave4 5/6	main@df55d8f	merged
 2026-11-17T08:38:21+09:00	merge	merged agent/stage-props-polish@36ca319	wave4 5/6	main@c372812	merged
+2026-11-17T08:38:44+09:00	absorb-tick11	wave4 5/6; stage already merged; loc still building	main@72acad2	ok
+2026-11-17T08:42:32+09:00	merge	merged agent/localization-scaffold@4ffb3d9	wave4 6/6 complete	main@6529307	merged
