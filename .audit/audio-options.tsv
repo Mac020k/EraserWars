@@ -1,0 +1,5 @@
+ts	phase	decision	why	evidence	result
+2026-11-16T23:55:00+09:00	frame	one AudioBus, prefs stored as percent 0 to 100	options worktree had no volume keys, and the options layout stays with that agent	grep of wt-options found no GameSettings or opt-bgm writers	locked
+2026-11-16T23:58:00+09:00	shape	rejected a source owned by the start menu	the start menu document hides during a match, which would stop the loop	README classroom step 2	rejected
+2026-11-17T00:18:56+09:00	verify	EditMode AudioBusTests	slider writes, button clicks, gains, and a non-silent loop have to be observable	TestResults/EditMode-AudioBus-results.xml total=8 passed=8 failed=0	verified
+2026-11-17T00:19:48+09:00	verify	PlayMode BGM source is playing at the default gain	EditMode does not enter play mode, so isPlaying was unchecked	TestResults/PlayMode-AudioBus-results.xml total=1 passed=1 failed=0	verified
