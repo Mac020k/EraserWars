@@ -21,6 +21,13 @@
                         <ui:Button name="mode-stock" text="ストック戦" class="mode-chip selected" />
                         <ui:Button name="mode-points" text="ポイント戦" class="mode-chip" />
                     </ui:VisualElement>
+                    <ui:VisualElement name="seat-strip" class="seat-strip" />
+                    <ui:VisualElement name="seat-picker" class="seat-picker hidden">
+                        <ui:Label name="seat-picker-caption" text="" class="seat-picker-caption" />
+                        <ui:ScrollView name="seat-picker-scroll" class="seat-picker-scroll" mode="Horizontal" horizontal-scroller-visibility="Auto" vertical-scroller-visibility="Hidden">
+                            <ui:VisualElement name="seat-picker-row" class="seat-picker-row" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
                     <ui:Button name="resume-match" text="つづける" class="cta-button cta-resume hidden" />
                     <ui:Button name="start-match" text="マッチ開始" class="cta-button" />
                 </ui:VisualElement>
