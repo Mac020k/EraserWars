@@ -1,8 +1,6 @@
-using System.Collections;
 using EraserWars.CameraRig;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace EraserWars.Tests.EditMode
 {
@@ -77,35 +75,40 @@ namespace EraserWars.Tests.EditMode
             }
         }
 
-        [UnityTest]
-        public IEnumerator GlanceTracksTheExitOnWallClockWhileSlowed()
+        [Test]
+        public void GlanceTracksTheExitOnWallClockWhileSlowed()
         {
             var go = new GameObject("fall-leave-cam");
-            var camera = go.AddComponent<OrbitCamera>();
-            yield return null;
-            var previousScale = Time.timeScale;
-            Time.timeScale = 0.2f;
             try
             {
+                var camera = go.AddComponent<OrbitCamera>();
+                camera.Snap();
                 var exit = new Vector3(1.4f, 0.2f, 1.1f);
                 var beforeAim = Vector3.Angle(go.transform.forward, exit - go.transform.position);
-                var started = Time.realtimeSinceStartup;
-                camera.PlayFallLeave(exit, Time.unscaledTime, FallLeave.DefaultSeconds);
-                yield return new WaitForSecondsRealtime(0.3f);
+                const float wallStep = 0.05f;
+                const float slowedScale = 0.2f;
+                camera.PlayFallLeave(exit, nowUnscaled: 0f, FallLeave.DefaultSeconds);
+                var now = 0f;
+                while (now < 0.3f)
+                {
+                    now += wallStep;
+                    camera.Tick(now, wallStep, wallStep * slowedScale);
+                }
+
                 var afterAim = Vector3.Angle(go.transform.forward, exit - go.transform.position);
                 Assert.Less(afterAim, beforeAim);
                 Assert.Less(afterAim, 15f);
-                while (camera.FallLeaveActiveAt(Time.unscaledTime))
+                while (camera.FallLeaveActiveAt(now))
                 {
-                    Assert.Less(Time.realtimeSinceStartup - started, 0.8f);
-                    yield return null;
+                    Assert.Less(now, 0.8f);
+                    now += wallStep;
+                    camera.Tick(now, wallStep, wallStep * slowedScale);
                 }
 
-                Assert.Less(Time.realtimeSinceStartup - started, 0.8f);
+                Assert.Less(now, 0.8f);
             }
             finally
             {
-                Time.timeScale = previousScale;
                 Object.DestroyImmediate(go);
             }
         }
