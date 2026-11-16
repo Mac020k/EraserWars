@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using EraserWars.CameraRig;
+using EraserWars.Cards;
 using EraserWars.Gameplay;
 using EraserWars.UI;
 using UnityEditor;
@@ -339,6 +340,8 @@ namespace EraserWars.Editor
             var startSo = new SerializedObject(start);
             startSo.FindProperty("director").objectReferenceValue = director;
             startSo.FindProperty("document").objectReferenceValue = startDoc;
+            startSo.FindProperty("contentCatalog").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<ContentCatalog>(ContentCatalogBuilder.CatalogPath);
             startSo.FindProperty("brandIcon").objectReferenceValue = UiIconBuilder.BrandIcon;
             startSo.FindProperty("icon2P").objectReferenceValue = UiIconBuilder.Icon2P;
             startSo.FindProperty("icon4P").objectReferenceValue = UiIconBuilder.Icon4P;

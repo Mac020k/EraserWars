@@ -46,10 +46,24 @@
             <ui:Label text="デッキ編成は後続。枠だけ先行。" class="panel-body" />
             <ui:Button name="close-deck" text="閉じる" class="panel-close" />
         </ui:VisualElement>
-        <ui:VisualElement name="collection-panel" class="side-panel hidden">
-            <ui:Label text="コレクション" class="panel-title" />
-            <ui:Label text="消しゴム図鑑は P4 以降。枠だけ先行。" class="panel-body" />
-            <ui:Button name="close-collection" text="閉じる" class="panel-close" />
+        <ui:VisualElement name="collection-panel" class="side-panel collection-panel hidden">
+            <ui:VisualElement class="collection-header">
+                <ui:Label text="コレクション" class="panel-title" />
+                <ui:Button name="close-collection" text="閉じる" class="panel-close collection-close" />
+            </ui:VisualElement>
+            <ui:VisualElement class="collection-tabs">
+                <ui:Button name="collection-tab-characters" text="キャラ" class="collection-tab selected" />
+                <ui:Button name="collection-tab-cards" text="カード" class="collection-tab" />
+            </ui:VisualElement>
+            <ui:VisualElement name="collection-filters" class="collection-filters" />
+            <ui:VisualElement class="collection-body">
+                <ui:ScrollView name="collection-list" class="collection-list" />
+                <ui:VisualElement class="collection-detail">
+                    <ui:Label name="collection-detail-title" text="キャラを選んでください" class="collection-detail-title" />
+                    <ui:Label name="collection-detail-meta" text="" class="collection-detail-meta" />
+                    <ui:Label name="collection-detail-body" text="" class="collection-detail-body" />
+                </ui:VisualElement>
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -1,4 +1,5 @@
 using System.IO;
+using EraserWars.Cards;
 using EraserWars.Core;
 using EraserWars.Gameplay;
 using EraserWars.UI;
@@ -28,6 +29,8 @@ namespace EraserWars.Editor
         const string FlagRematch = "Temp/rematch.flag";
         const string FlagRebuildFishNet = "Temp/rebuild-fishnet-spike.flag";
         const string FlagRebuildClassroom = "Temp/rebuild-classroom.flag";
+        const string FlagImportContent = "Temp/import-content.flag";
+        const string FlagOpenCollection = "Temp/open-collection.flag";
 
         static int heartbeatLeft;
         static int heartbeatLastFrame = -1;
@@ -42,6 +45,7 @@ namespace EraserWars.Editor
             TryStopPlay();
             TryUnpause();
             TryRebuild();
+            TryImportContent();
             TryOpen(FlagFishNet, "Assets/Scenes/FishNet_Spike.unity");
             TryOpen(FlagClassroom, "Assets/Scenes/Classroom_Casual.unity");
             TryEnterPlay();
@@ -49,6 +53,7 @@ namespace EraserWars.Editor
             TryFlickCurrent();
             TryKnockOut();
             TryRematch();
+            TryOpenCollection();
             TryDumpUi();
             TickHeartbeat();
         }
@@ -376,6 +381,77 @@ namespace EraserWars.Editor
                     ClassroomSceneBuilder.Build();
                 }
             }
+        }
+
+        static void TryImportContent()
+        {
+            if (!PeekFlag(FlagImportContent))
+            {
+                return;
+            }
+
+            if (EditorApplication.isPlaying)
+            {
+                EditorApplication.isPlaying = false;
+                return;
+            }
+
+            if (EditorApplication.isCompiling)
+            {
+                return;
+            }
+
+            if (!ConsumeFlag(FlagImportContent))
+            {
+                return;
+            }
+
+            RosterCsvImporter.ImportAll();
+            var catalog = AssetDatabase.LoadAssetAtPath<ContentCatalog>(ContentCatalogBuilder.CatalogPath);
+            Debug.Log(
+                $"[EraserWars] import-content: cards={catalog?.Cards?.Count ?? 0} characters={catalog?.Characters?.Count ?? 0} erasers={catalog?.Erasers?.Count ?? 0}");
+        }
+
+        static void TryOpenCollection()
+        {
+            if (!PeekFlag(FlagOpenCollection))
+            {
+                return;
+            }
+
+            if (!EditorApplication.isPlaying || EditorApplication.isCompiling)
+            {
+                return;
+            }
+
+            if (!ConsumeFlag(FlagOpenCollection))
+            {
+                return;
+            }
+
+            ForceUnpausedPlay();
+            var menu = Object.FindAnyObjectByType<StartMenuController>(FindObjectsInactive.Include);
+            if (menu == null)
+            {
+                Debug.LogWarning("[EraserWars] open-collection: StartMenuController missing");
+                return;
+            }
+
+            if (!menu.gameObject.activeSelf)
+            {
+                menu.ShowMenu(suspendMatch: menu.GetComponentInParent<Transform>() != null);
+            }
+
+            menu.gameObject.SetActive(true);
+            menu.ShowMenu(suspendMatch: false);
+            menu.OpenCollection();
+
+            var catalog = Resources.Load<ContentCatalog>("EraserWars/ContentCatalog");
+            var panel = menu.GetComponent<UIDocument>()?.rootVisualElement?.Q("collection-panel");
+            var hidden = panel == null || panel.ClassListContains("hidden");
+            var listCount = panel?.Q<ScrollView>("collection-list")?.childCount ?? -1;
+            Debug.Log(
+                $"[EraserWars] open-collection: catalogCards={catalog?.Cards?.Count ?? 0} catalogChars={catalog?.Characters?.Count ?? 0} panelHidden={hidden} listChildren={listCount}");
         }
 
         static bool PeekFlag(string flagRelative)

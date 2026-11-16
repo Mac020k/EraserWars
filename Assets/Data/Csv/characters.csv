@@ -1,0 +1,21 @@
+id,name_key,display_name_ja,archetype,unlocked,eraser_id,signature_a,signature_b
+0,char.akaboshi,赤星 熱,all_out,1,0,35,36
+1,char.todoroki,轟 豪,all_out,1,1,37,38
+2,char.minazuki,水無月 玲,seat_take,1,2,39,40
+3,char.hanasaki,花咲 まどか,desk_king,1,3,41,42
+4,char.alex,Alex Rivera,seat_take,0,4,43,44
+5,char.ohori,鳳 キャプテン,seat_take,0,5,45,46
+6,char.kuroe,発明 くろえ,afterschool,0,6,47,48
+7,char.mei,Mei Chen,teacher,0,7,49,50
+8,char.kageyama,影山 しの,all_out,0,8,,
+9,char.ozora,大空 スカイ,all_out,0,9,,
+10,char.tosho,図書 ひなた,seat_take,0,10,,
+11,char.taiku,体育 ゴウ,desk_king,0,11,,
+12,char.bijutsu,美術 いろは,desk_king,0,12,,
+13,char.kagaku,科学 アトム,afterschool,0,13,,
+14,char.kyushoku,給食 めしこ,desk_king,0,14,,
+15,char.hoso,放送 マイク,teacher,0,15,,
+16,char.soji,掃除 ピカ,teacher,0,16,,
+17,char.seitokai,生徒会 きよら,teacher,0,17,,
+18,char.yancha,やんちゃ ソラ,all_out,0,18,,
+19,char.neko,猫好き にゃん,afterschool,0,19,,

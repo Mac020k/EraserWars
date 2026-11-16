@@ -3,6 +3,7 @@
     "rootNamespace": "EraserWars.Tests.EditMode",
     "references": [
         "EraserWars.Core",
+        "EraserWars.Cards",
         "EraserWars.Net",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"

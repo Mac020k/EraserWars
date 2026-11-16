@@ -1,96 +1,81 @@
-# 07 カードとデッキ
+# カード一覧 (50枚)
 
-## 方針
+家族 (カテゴリ) は小学校モチーフ。
 
-- デッキは試合前に組む。ローグライク型の構築はアドベンチャーモードで後から足す (Q52)。
-- 試合中のマナはない (Q54)。
-- 基本は1ターン1枚、各カードは1試合1回まで。2回以上使えるカードにはクールダウンを付ける (Q54)。
-- 出すのは自分の手番で、弾く前だけ (Q55)。
-- ルール改変とワープを認める (Q56、Q57)。
-- 永続バフは置かない。効果は長くて2〜3ターン (Q58)。
-- 手札は全員に公開する (Q59)。
-- 禁止カードはシーズンごとに変える (Q60)。
-- 共通カードを多くする (Q62)。
-- カードは弾く前の条件だけを変え、飛んでいる最中の軌道は変えない ([sakurai.md](../research/sakurai.md))。
-
-## デッキのルール
-
-- 固有カード2枚は常に入る。構築コストに数えない (Q53)。
-- 共通カードは6枚。合計コストは消しゴムのデッキコスト上限以内。
-- 一部のカードに同名の枚数制限がある。
-- 試合開始時に手札上限まで引く。手札上限は消しゴムごとで、平均3枚。
-- 自分の手番の始めに1枚引く。
-- 同名上限とコスト超過のデッキは保存できない。
-
-## カードの定義
-
-`CardDefinition` が持つ。
-
-| 項目 | 意味 |
-| --- | --- |
-| コスト | 構築コスト |
-| 固有か | 固有カードはコストに数えない |
-| 同名上限 | デッキに入れられる枚数 |
-| 使用回数 | 1試合に使える回数 |
-| クールダウン | 2回以上使えるカードの待ちターン |
-| 持続ターン | 効果が続くターン数 |
-| 対象 | 自分、相手1人、机 |
-| 効果 | `EffectSpec` のリスト |
-
-## 効果の種類
-
-`EffectSpec` は次の10種類。
-
-| 種類 | 例 |
-| --- | --- |
-| `ModifyStat` | 質量、摩擦を一時的に変える |
-| `ModifyFlick` | パワー、ブレを変える |
-| `ModifyRule` | 制限時間などを変える |
-| `ExtraFlick` | 追加の弾き |
-| `SwapPositions` | 位置を入れ替える |
-| `Teleport` | ワープ |
-| `PlaceDeskObject` | 机に物を置く |
-| `GrantShield` | シールド。壊れる |
-| `GrantWeapon` | 武器。壊れる |
-| `RevealTrajectory` | 予測線を延ばす |
-
-`EffectSpec` の分岐は1つの switch 式に集める。
-既定の腕は `_ => throw new UnreachableException()` にし、扱っていない種類を実行時に落とす。
-C# には TypeScript の `never` に当たる網羅チェックがないので、これを代わりにする。
-
-## 共通カード12枚 (初期案)
-
-名前と数値は P4 で調整する。数値の正本は `Assets/Data/Csv/cards.csv`。
-
-| カード | 効果 | 持続 |
+| 家族 | キー | 意味 |
 | --- | --- | --- |
-| 重り (ホチキス芯) | 自分の質量+50% | 1ターン |
-| のり | 自分の摩擦×2 | 2ターン |
-| ろう引き | 相手1人の摩擦×0.5 | 1ターン |
-| 定規ガード | 机の縁の1辺に壁 | 2ターン |
-| 集中 | このターンのブレを0にする | 1ターン |
-| 全力デコピン | パワー+40%、ブレの周期×2 | 1ターン |
-| 先生の見回り | 次の相手の制限時間を半分にする | 1ターン |
-| 席替え | 自分と相手1人の位置を入れ替える | 即時 |
-| 修正液シールド | 次に受ける力積を半減。1回で壊れる | 1回 |
-| 鉛筆の芯 | 次の衝突で追加の力積。1回で壊れる | 1回 |
-| 消しカス | 机の一部の摩擦を下げる | 2ターン |
-| 予言ノート | 予測線を2衝突先まで出す | 1ターン |
+| 気合 | kiai | パワー・質量・もう一回 |
+| 宿題 | homework | 予測・集中・読み |
+| 席替え | seat | 位置入れ替え・ワープ |
+| 文房具 | stationery | 定規・鉛・ホッチキス等の武器 |
+| カバー | cover | のり・ワックス・盾・カス |
+| 必殺 | signature | キャラ固有 |
 
-発売時は共通40枚、固有16枚 (8体×2枚) にする。
+`build_cost` はデッキ構築コスト。`uses_per_match` / `cooldown` / `duration` は試合内制約。
 
-## ネットでの扱い
+## コモン (1〜34)
 
-- カードの効果はホストが解決し、ホストのシミュレーションの中でかける ([10_online.md](10_online.md))。
-- カードの解決は `EraserWars.Cards` にあり、ネットなしで EditMode テストできる。
+| ID | 表示名 | 家族 | cost | effects |
+| --- | --- | --- | --- | --- |
+| 1 | 重い消しゴム | 気合 | 1 | ModifyStat:Mass:1.5:1 |
+| 2 | のり付け | カバー | 2 | ModifyStat:Friction:2:2 |
+| 3 | ワックス | カバー | 1 | ModifyStat:Friction:0.5:1 |
+| 4 | 定規ビーム | 文房具 | 2 | PlaceDeskObject:RulerWall:2 |
+| 5 | 集中 | 宿題 | 1 | ModifyFlick:1:0:1 |
+| 6 | 全力 | 気合 | 2 | ModifyFlick:1.4:1:2 |
+| 7 | 先生の目 | 宿題 | 2 | ModifyRule:OpponentTurnTime:0.5:1 |
+| 8 | 席替え | 席替え | 2 | SwapPositions |
+| 9 | シールド | カバー | 2 | GrantShield:0.5:1 |
+| 10 | 芯の鉛 | 文房具 | 1 | GrantWeapon:0.15:1 |
+| 11 | 消しカス | カバー | 1 | PlaceDeskObject:DustPatch:2 |
+| 12 | 予言 | 宿題 | 1 | RevealTrajectory:2 |
+| 13 | 気合入れ | 気合 | 1 | ModifyStat:Power:1.25:1 |
+| 14 | もう一回 | 気合 | 3 | ExtraFlick |
+| 15 | 体重乗せ | 気合 | 2 | ModifyStat:Mass:1.8:1 |
+| 16 | 走り込み | 気合 | 1 | ModifyStat:Speed:1.3:1 |
+| 17 | 宿題忘れ | 宿題 | 2 | ModifyRule:OpponentTurnTime:0.8:1 |
+| 18 | 見直し | 宿題 | 1 | ModifyFlick:1:0.5:1 |
+| 19 | カンニング防止 | 宿題 | 2 | ModifyRule:HideTrajectory:1:1 |
+| 20 | 席取り | 席替え | 2 | Teleport:0.5:0.5 |
+| 21 | 端っこへどうぞ | 席替え | 2 | ModifyRule:PushEdge:0.4:1 |
+| 22 | 真ん中キープ | 席替え | 1 | ModifyRule:CenterBias:0.3:1 |
+| 23 | 鉛筆の芯 | 文房具 | 1 | GrantWeapon:0.1:1 |
+| 24 | 分度器 | 文房具 | 2 | GrantWeapon:0.18:1 |
+| 25 | ホッチキス | 文房具 | 2 | GrantWeapon:0.2:1 |
+| 26 | クリップ爆弾 | 文房具 | 2 | GrantWeapon:0.25:1 |
+| 27 | カバー装着 | カバー | 1 | ModifyStat:Bounciness:1.4:1 |
+| 28 | テープ止め | カバー | 2 | ModifyStat:Friction:2.5:1 |
+| 29 | カスの山 | カバー | 2 | PlaceDeskObject:DustPile:2 |
+| 30 | 安全第一 | カバー | 2 | GrantShield:1:2 |
+| 31 | 休憩時間 | 気合 | 1 | ModifyRule:CooldownCut:0.5:1 |
+| 32 | チャイム前 | 宿題 | 2 | ModifyRule:SelfTurnTime:1.2:1 |
+| 33 | 掃除当番 | カバー | 1 | PlaceDeskObject:ClearDust:1 |
+| 34 | 班長の合図 | 席替え | 2 | ModifyStat:Power:1.15:1 |
 
-## バランス調整
+## 必殺 (35〜50) — キャラ0〜7 × 2
 
-- 頻繁なパッチの予定はない。回せるようにはしておく (Q64)。
-- シーズンごとの調整は `cards.csv` の差分で回し、Editor の `EraserWars > Import Cards CSV` で取り込む。
-- Slay the Spire の Madness の例のように、勝率の数字だけで強さを判断しない ([sakurai.md](../research/sakurai.md))。
+| ID | 表示名 | キャラ | cost | effects |
+| --- | --- | --- | --- | --- |
+| 35 | もう一押し | 赤星 | 3 | ExtraFlick |
+| 36 | 燃える白 | 赤星 | 2 | ModifyStat:Power:1.8:1 |
+| 37 | どすこい | 轟 | 3 | ModifyStat:Mass:2.2:1 |
+| 38 | 押し出し | 轟 | 2 | ModifyRule:PushEdge:0.7:1 |
+| 39 | 検算 | 水無月 | 2 | ModifyFlick:1:0:0.5 |
+| 40 | 定規レーザー | 水無月 | 3 | PlaceDeskObject:RulerWall:2 |
+| 41 | くっつきシール | 花咲 | 2 | ModifyStat:Friction:3:1 |
+| 42 | 安全コーン | 花咲 | 2 | PlaceDeskObject:Cone:2 |
+| 43 | ニューカマー | Alex | 2 | ModifyStat:Speed:1.5:1 |
+| 44 | 席替えマスター | Alex | 3 | SwapPositions |
+| 45 | 声かけ | 鳳 | 2 | ModifyStat:Power:1.35:1 |
+| 46 | フォーメーション | 鳳 | 3 | GrantShield:0.5:1 |
+| 47 | 試作カバー | くろえ | 2 | ModifyStat:Bounciness:1.8:1 |
+| 48 | ホッチキス芯X | くろえ | 3 | GrantWeapon:0.3:1 |
+| 49 | のり爆弾 | Mei | 3 | GrantWeapon:0.28:1 |
+| 50 | ゆっくりでいい | Mei | 2 | ModifyRule:OpponentTurnTime:0.6:1 |
 
-## 確かめること
+## CSV / インポート
 
-- P4 の完了条件。EditMode テストで全カードの効果と持続ターン切れが通る。
-- 4人卓で、カードありの試合時間が P3 の目標内に収まる。
+- ソース: `Assets/Data/Csv/cards.csv`
+- メニュー: `EraserWars/Import Cards CSV` または `EraserWars/Import All Content CSV`
+- 出力: `Assets/Data/Cards/Card_<id>.asset`
+- カタログ: `Assets/Resources/EraserWars/ContentCatalog.asset`

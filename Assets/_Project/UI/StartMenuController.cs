@@ -1,3 +1,4 @@
+using EraserWars.Cards;
 using EraserWars.Gameplay;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,6 +13,7 @@ namespace EraserWars.UI
     {
         [SerializeField] MatchDirector director;
         [SerializeField] UIDocument document;
+        [SerializeField] ContentCatalog contentCatalog;
         [SerializeField] Texture2D brandIcon;
         [SerializeField] Texture2D icon2P;
         [SerializeField] Texture2D icon4P;
@@ -23,6 +25,7 @@ namespace EraserWars.UI
         VisualElement optionsPanel;
         VisualElement deckPanel;
         VisualElement collectionPanel;
+        CollectionPanelController collection;
         Button mode2P;
         Button mode4P;
         int selectedPlayers = 2;
@@ -80,7 +83,7 @@ namespace EraserWars.UI
             mode4P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(4));
             root.Q<Button>("open-options")?.RegisterCallback<ClickEvent>(_ => ShowPanel(optionsPanel));
             root.Q<Button>("open-deck")?.RegisterCallback<ClickEvent>(_ => ShowPanel(deckPanel));
-            root.Q<Button>("open-collection")?.RegisterCallback<ClickEvent>(_ => ShowPanel(collectionPanel));
+            root.Q<Button>("open-collection")?.RegisterCallback<ClickEvent>(_ => OpenCollection());
             root.Q<Button>("close-options")?.RegisterCallback<ClickEvent>(_ => HidePanels());
             root.Q<Button>("close-deck")?.RegisterCallback<ClickEvent>(_ => HidePanels());
             root.Q<Button>("close-collection")?.RegisterCallback<ClickEvent>(_ => HidePanels());
@@ -91,6 +94,26 @@ namespace EraserWars.UI
             ApplyIcon(root.Q("icon-deck"), iconDeck);
             ApplyIcon(root.Q("icon-collection"), iconCollection);
             ApplyIcon(root.Q("icon-options"), iconOptions);
+
+            EnsureCollectionBound();
+        }
+
+        void EnsureCollectionBound()
+        {
+            if (contentCatalog == null)
+            {
+                contentCatalog = Resources.Load<ContentCatalog>("EraserWars/ContentCatalog");
+            }
+
+            collection = new CollectionPanelController(contentCatalog);
+            collection.Bind(collectionPanel);
+        }
+
+        public void OpenCollection()
+        {
+            EnsureCollectionBound();
+            collection?.Refresh();
+            ShowPanel(collectionPanel);
         }
 
         void Update()

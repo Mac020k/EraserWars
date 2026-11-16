@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcd62e76af2e5ff42889872cfbab2856, type: 3}
+  m_Name: Card_18
+  m_EditorClassIdentifier: EraserWars.Cards::EraserWars.Cards.CardDefinition
+  IdValue: 18
+  NameKey: card.review
+  DisplayNameJa: "\u898B\u76F4\u3057"
+  FamilyKey: homework
+  BuildCost: 1
+  IsSignature: 0
+  MaxCopies: 2
+  UsesPerMatch: 1
+  CooldownTurns: 0
+  DurationTurns: 1
+  EffectKinds:
+  - ModifyFlick:1:0.5:1

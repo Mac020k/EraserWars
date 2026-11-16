@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3fb59ee5d01a56499908f6266df5368, type: 3}
+  m_Name: Character_3
+  m_EditorClassIdentifier: EraserWars.Cards::EraserWars.Cards.CharacterDefinition
+  IdValue: 3
+  NameKey: char.hanasaki
+  DisplayNameJa: "\u82B1\u54B2 \u307E\u3069\u304B"
+  ArchetypeKey: desk_king
+  Portrait: {fileID: 0}
+  Eraser: {fileID: 11400000, guid: f4338594d2e179841b3a3caee91b1953, type: 2}
+  SignatureA: {fileID: 11400000, guid: 659e2424e881b1f4dbfee24e87a9fc99, type: 2}
+  SignatureB: {fileID: 11400000, guid: cf7a2a8ff7a426049a6932463553fcee, type: 2}
+  UnlockedByDefault: 1

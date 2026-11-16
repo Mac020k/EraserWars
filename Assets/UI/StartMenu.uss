@@ -217,3 +217,139 @@
     font-size: 15px;
     -unity-font-style: bold;
 }
+
+.collection-panel {
+    left: 4%;
+    right: 4%;
+    top: 4%;
+    bottom: 4%;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    padding: 12px 14px;
+}
+
+.collection-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.collection-close {
+    width: 88px;
+    margin: 0;
+}
+
+.collection-tabs {
+    flex-direction: row;
+    margin-bottom: 6px;
+}
+
+.collection-tab {
+    flex-grow: 1;
+    height: 34px;
+    margin-right: 6px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    background-color: rgb(40, 46, 64);
+    color: rgb(230, 230, 240);
+    border-width: 1px;
+    border-color: rgb(80, 88, 110);
+    border-radius: 8px;
+}
+
+.collection-tab.selected {
+    background-color: rgb(255, 210, 80);
+    color: rgb(30, 28, 36);
+    border-color: rgb(40, 40, 48);
+}
+
+.collection-filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.collection-filter {
+    height: 28px;
+    margin: 0 4px 4px 0;
+    padding: 0 8px;
+    font-size: 12px;
+    background-color: rgb(48, 54, 72);
+    color: rgb(220, 220, 230);
+    border-width: 1px;
+    border-color: rgb(90, 96, 120);
+    border-radius: 6px;
+}
+
+.collection-filter.selected {
+    background-color: rgb(90, 160, 255);
+    color: rgb(255, 255, 255);
+    border-color: rgb(30, 60, 120);
+}
+
+.collection-body {
+    flex-grow: 1;
+    flex-direction: row;
+    min-height: 0;
+}
+
+.collection-list {
+    width: 42%;
+    margin-right: 10px;
+    background-color: rgba(10, 12, 20, 0.35);
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.collection-item {
+    height: 34px;
+    margin: 0 0 4px 0;
+    padding: 0 8px;
+    font-size: 13px;
+    -unity-text-align: middle-left;
+    background-color: rgb(255, 252, 244);
+    color: rgb(32, 30, 40);
+    border-width: 1px;
+    border-color: rgb(200, 190, 170);
+    border-radius: 6px;
+}
+
+.collection-item:hover {
+    background-color: rgb(255, 240, 180);
+}
+
+.collection-detail {
+    flex-grow: 1;
+    background-color: rgba(10, 12, 20, 0.35);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.collection-detail-title {
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    margin-bottom: 6px;
+    white-space: normal;
+}
+
+.collection-detail-meta {
+    font-size: 13px;
+    color: rgb(255, 220, 120);
+    white-space: normal;
+    margin-bottom: 10px;
+}
+
+.collection-detail-body {
+    font-size: 14px;
+    color: rgb(220, 220, 230);
+    white-space: normal;
+}
+
+.collection-empty {
+    color: rgb(180, 180, 190);
+    font-size: 13px;
+    margin: 8px;
+}

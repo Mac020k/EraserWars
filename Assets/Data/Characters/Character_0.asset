@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3fb59ee5d01a56499908f6266df5368, type: 3}
+  m_Name: Character_0
+  m_EditorClassIdentifier: EraserWars.Cards::EraserWars.Cards.CharacterDefinition
+  IdValue: 0
+  NameKey: char.akaboshi
+  DisplayNameJa: "\u8D64\u661F \u71B1"
+  ArchetypeKey: all_out
+  Portrait: {fileID: 0}
+  Eraser: {fileID: 11400000, guid: e5a702a8fff13c3419c67e69c82369e5, type: 2}
+  SignatureA: {fileID: 11400000, guid: 6b246379d62b09e4293af0d33bcda934, type: 2}
+  SignatureB: {fileID: 11400000, guid: a7e83255b7f9b6b4499174606710387e, type: 2}
+  UnlockedByDefault: 1

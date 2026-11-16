@@ -16,3 +16,4 @@ ts	phase	decision	why	evidence	result
 2026-11-16T11:23:47Z	resume	Esc suspend + ‚Â‚Ã‚¯‚é CTA; new match still available	inventory P1 menu resume	StartMenuController uxml uss	committed
 2026-11-16T11:26:32Z	scale-verify	dump-ui eraser localScale after cue fix	expect ~0.06/0.018/0.028 not ~1.0	dump-ui log	pending parse
 2026-11-16T11:27:50Z	cam-seat	SyncActiveSeat SetChaseTarget on aim/card/turn	P1 inventory turn camera	MatchDirector.cs	committed
+2026-11-16T12:15:28Z	collection	StartMenu collection lists 20 chars / catalog 50 cards	open-collection flag: panelHidden=False listChildren=20	import-content	measured

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3fb59ee5d01a56499908f6266df5368, type: 3}
+  m_Name: Character_7
+  m_EditorClassIdentifier: EraserWars.Cards::EraserWars.Cards.CharacterDefinition
+  IdValue: 7
+  NameKey: char.mei
+  DisplayNameJa: Mei Chen
+  ArchetypeKey: teacher
+  Portrait: {fileID: 0}
+  Eraser: {fileID: 11400000, guid: 15fa2d0d1f384734b86e1800545e4f05, type: 2}
+  SignatureA: {fileID: 11400000, guid: f817aa5232713ea43860cb466c08dd51, type: 2}
+  SignatureB: {fileID: 11400000, guid: 8aa7da84824f4b2499d572f4bbab9707, type: 2}
+  UnlockedByDefault: 0
