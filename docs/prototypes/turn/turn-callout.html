@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>Turn callout</title>
+  <style>
+    body {
+      margin: 0;
+      background: #8fb4c9;
+      font-family: "Yu Gothic UI", "Meiryo", "Segoe UI", sans-serif;
+    }
+    .frame {
+      width: 1280px;
+      margin: 16px;
+      background: linear-gradient(#d7eef6, #c5d8b8 70%);
+      border-radius: 8px;
+      overflow: hidden;
+      padding-bottom: 24px;
+    }
+    .stack { margin: 12px 16px 0; }
+    .top {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      background: rgba(255, 244, 248, 0.94);
+      border: 3px solid rgb(255, 120, 160);
+      border-radius: 16px;
+      box-sizing: border-box;
+    }
+    .brand {
+      width: 28px;
+      height: 28px;
+      margin-right: 10px;
+      background: rgb(255, 120, 160);
+      border-radius: 8px;
+      border-bottom: 8px solid rgb(70, 130, 240);
+      box-sizing: border-box;
+    }
+    .title { font-size: 18px; font-weight: 800; color: rgb(230, 70, 120); margin-right: 18px; }
+    .phase { flex: 1; font-size: 18px; font-weight: 800; color: rgb(70, 60, 80); }
+    .menu {
+      width: 100px;
+      height: 32px;
+      border-radius: 12px;
+      border: 2px solid #ccc;
+      background: #fff;
+      font-weight: 800;
+    }
+    .callout {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 96px;
+      margin-top: 8px;
+      padding: 10px 18px 10px 22px;
+      background: rgba(255, 252, 248, 0.96);
+      border-radius: 22px;
+      border: 6px solid #b4aab8;
+      box-sizing: border-box;
+    }
+    .headline { font-size: 52px; font-weight: 800; line-height: 1; white-space: nowrap; }
+    .hint { margin-top: 4px; font-size: 22px; font-weight: 800; }
+    .s0 { border-color: rgb(255, 120, 160); color: rgb(176, 32, 84); }
+    .s1 { border-color: rgb(70, 130, 240); color: rgb(28, 72, 176); }
+    .s2 { border-color: rgb(70, 190, 100); color: rgb(16, 118, 52); }
+    .s3 { border-color: rgb(255, 160, 50); color: rgb(176, 88, 8); }
+    .clock {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      min-width: 148px;
+      height: 84px;
+      margin-left: 16px;
+      padding: 0 12px 10px 16px;
+      background: #fff;
+      border-radius: 18px;
+      border: 4px solid rgb(40, 32, 48);
+      box-sizing: border-box;
+      color: rgb(28, 22, 36);
+    }
+    .digits { font-size: 64px; font-weight: 800; line-height: 0.85; }
+    .unit { font-size: 22px; font-weight: 800; margin-left: 2px; margin-bottom: 6px; }
+    .urgent { background: rgb(214, 32, 48); border-color: rgb(120, 12, 24); color: #fff; }
+    .idle { background: rgb(236, 232, 236); border-color: rgb(170, 160, 174); color: rgb(90, 82, 98); }
+    .pills { display: flex; justify-content: center; gap: 12px; margin-top: 8px; }
+    .pill {
+      min-width: 140px;
+      padding: 6px 12px 8px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 16px;
+      border: 3px solid #d2d2d2;
+      opacity: 0.82;
+    }
+    .pill.on { opacity: 1; border-width: 6px; background: rgb(255, 248, 214); transform: scale(1.08); }
+    .pill.s0 { border-color: rgb(255, 120, 160); }
+    .pill.s1 { border-color: rgb(70, 130, 240); }
+    .pill.s2 { border-color: rgb(70, 190, 100); }
+    .pill.s3 { border-color: rgb(255, 160, 50); }
+    .now {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 800;
+      color: rgb(40, 32, 48);
+      background: rgb(255, 214, 48);
+      border-radius: 8px;
+      padding: 1px 10px;
+      margin-bottom: 4px;
+    }
+    .name { display: inline-block; color: #fff; font-weight: 800; border-radius: 10px; padding: 1px 14px; }
+    .pill.s0 .name { background: rgb(255, 120, 160); }
+    .pill.s1 .name { background: rgb(70, 130, 240); }
+    .pill.s2 .name { background: rgb(70, 190, 100); }
+    .pill.s3 .name { background: rgb(255, 160, 50); }
+    .hearts { color: rgb(240, 70, 100); letter-spacing: 2px; font-size: 16px; }
+    .pts { font-weight: 800; color: rgb(70, 60, 80); }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="stack">
+      <div class="top">
+        <div class="brand"></div>
+        <div class="title">ERASER WARS</div>
+        <div class="phase">ROUND 1  カード / ねらえ!</div>
+        <button class="menu">メニュー</button>
+      </div>
+      <div class="callout s0">
+        <div>
+          <div class="headline">P1 のばん</div>
+          <div class="hint">このきを P1 にわたして</div>
+        </div>
+        <div class="clock"><span class="digits">13</span><span class="unit">秒</span></div>
+      </div>
+      <div class="pills">
+        <div class="pill s0 on"><div class="now">いま</div><div><span class="name">P1</span></div><div class="hearts">●●●</div><div class="pts">0点</div></div>
+        <div class="pill s1"><div><span class="name">P2</span></div><div class="hearts">●●●</div><div class="pts">0点</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="frame">
+    <div class="stack">
+      <div class="top">
+        <div class="brand"></div>
+        <div class="title">ERASER WARS</div>
+        <div class="phase">ROUND 2  ねらえ!</div>
+        <button class="menu">メニュー</button>
+      </div>
+      <div class="callout s3">
+        <div>
+          <div class="headline">P4 のばん</div>
+          <div class="hint">このきを P4 にわたして</div>
+        </div>
+        <div class="clock urgent"><span class="digits">5</span><span class="unit">秒</span></div>
+      </div>
+      <div class="pills">
+        <div class="pill s0"><div><span class="name">P1</span></div><div class="hearts">●●○</div><div class="pts">2点</div></div>
+        <div class="pill s1"><div><span class="name">P2</span></div><div class="hearts">●●●</div><div class="pts">1点</div></div>
+        <div class="pill s2"><div><span class="name">P3</span></div><div class="hearts">●○○</div><div class="pts">0点</div></div>
+        <div class="pill s3 on"><div class="now">いま</div><div><span class="name">P4</span></div><div class="hearts">●●●</div><div class="pts">3点</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="frame">
+    <div class="stack">
+      <div class="top">
+        <div class="brand"></div>
+        <div class="title">ERASER WARS</div>
+        <div class="phase">ROUND 1  ころがり中...</div>
+        <button class="menu">メニュー</button>
+      </div>
+      <div class="callout s1">
+        <div>
+          <div class="headline">P2 のばん</div>
+        </div>
+        <div class="clock idle"><span class="digits">--</span></div>
+      </div>
+      <div class="pills">
+        <div class="pill s0"><div><span class="name">P1</span></div><div class="hearts">●●●</div><div class="pts">0点</div></div>
+        <div class="pill s1 on"><div class="now">いま</div><div><span class="name">P2</span></div><div class="hearts">●●●</div><div class="pts">0点</div></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
