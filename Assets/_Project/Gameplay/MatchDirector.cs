@@ -225,6 +225,26 @@ namespace EraserWars.Gameplay
             eraser.gameObject.SetActive(false);
         }
 
+        public void DebugKnockOut(int playerIndex)
+        {
+            if (!byPlayer.TryGetValue(playerIndex, out var eraser) || eraser == null)
+            {
+                return;
+            }
+
+            OnEraserFell(eraser);
+        }
+
+        public void DebugSettle()
+        {
+            if (state == null || state.Phase != Phase.Simulating)
+            {
+                return;
+            }
+
+            OnSettled();
+        }
+
         void OnSettled()
         {
             state = MatchReduce.Reduce(state, new SimulationSettled());

@@ -24,6 +24,8 @@ namespace EraserWars.Editor
         const string FlagFlickCurrent = "Temp/flick-current.flag";
         const string FlagDumpUi = "Temp/dump-ui.flag";
         const string FlagHeartbeat = "Temp/heartbeat.flag";
+        const string FlagKnockOut = "Temp/knock-out.flag";
+        const string FlagRematch = "Temp/rematch.flag";
         const string FlagRebuildFishNet = "Temp/rebuild-fishnet-spike.flag";
         const string FlagRebuildClassroom = "Temp/rebuild-classroom.flag";
 
@@ -45,6 +47,8 @@ namespace EraserWars.Editor
             TryEnterPlay();
             TryStartHotseat2();
             TryFlickCurrent();
+            TryKnockOut();
+            TryRematch();
             TryDumpUi();
             TickHeartbeat();
         }
@@ -179,6 +183,76 @@ namespace EraserWars.Editor
             ForceUnpausedPlay();
             Debug.Log(
                 $"[EraserWars] flick-current: P{director.State.CurrentPlayerId.Value + 1} phase={director.State.Phase} paused={EditorApplication.isPaused}");
+        }
+
+        static void TryKnockOut()
+        {
+            if (!PeekFlag(FlagKnockOut))
+            {
+                return;
+            }
+
+            if (!EditorApplication.isPlaying || EditorApplication.isCompiling)
+            {
+                return;
+            }
+
+            if (!ConsumeFlag(FlagKnockOut))
+            {
+                return;
+            }
+
+            ForceUnpausedPlay();
+            var director = Object.FindAnyObjectByType<MatchDirector>();
+            if (director?.State == null)
+            {
+                Debug.LogWarning("[EraserWars] knock-out: no match");
+                return;
+            }
+
+            // Knock out the non-active seat so the current player can win after settle.
+            var victim = director.State.CurrentPlayerId.Value == 0 ? 1 : 0;
+            if (director.State.Phase != Phase.Simulating)
+            {
+                director.SubmitFlick(new FlickCommand(
+                    director.State.CurrentPlayerId, 0f, 1f, 0.35f, 0f, 0f, 0.1f));
+            }
+
+            var stocks = director.State.GetPlayer(new PlayerId(victim)).Stocks;
+            for (var i = 0; i < Mathf.Max(1, stocks); i++)
+            {
+                director.DebugKnockOut(victim);
+            }
+
+            director.DebugSettle();
+            Object.FindAnyObjectByType<MatchHudController>()?.RefreshFromState();
+            Debug.Log(
+                $"[EraserWars] knock-out: victim=P{victim + 1} phase={director.State.Phase} winner={director.State.Winner}");
+        }
+
+        static void TryRematch()
+        {
+            if (!ConsumeFlag(FlagRematch))
+            {
+                return;
+            }
+
+            if (!EditorApplication.isPlaying)
+            {
+                return;
+            }
+
+            ForceUnpausedPlay();
+            var director = Object.FindAnyObjectByType<MatchDirector>();
+            if (director == null)
+            {
+                Debug.LogWarning("[EraserWars] rematch: MatchDirector missing");
+                return;
+            }
+
+            director.Rematch();
+            Object.FindAnyObjectByType<MatchHudController>()?.RefreshFromState();
+            Debug.Log($"[EraserWars] rematch: phase={director.State?.Phase} players={director.State?.Players.Length}");
         }
 
         static void TryDumpUi()
