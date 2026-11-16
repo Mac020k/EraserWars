@@ -353,3 +353,57 @@
     font-size: 13px;
     margin: 8px;
 }
+
+.deck-panel {
+    left: 4%;
+    right: 4%;
+    top: 4%;
+    bottom: 4%;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    padding: 12px 14px;
+}
+
+.deck-seats {
+    flex-direction: row;
+    margin-bottom: 6px;
+}
+
+.deck-column {
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-right: 8px;
+    min-width: 0;
+}
+
+.deck-column-title {
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(255, 220, 120);
+    margin-bottom: 4px;
+}
+
+.deck-list {
+    width: auto;
+    flex-grow: 1;
+    margin-right: 0;
+}
+
+.deck-item {
+    height: 32px;
+    margin: 0 0 4px 0;
+    padding: 0 8px;
+    font-size: 12px;
+    -unity-text-align: middle-left;
+    background-color: rgb(255, 252, 244);
+    color: rgb(32, 30, 40);
+    border-width: 1px;
+    border-color: rgb(200, 190, 170);
+    border-radius: 6px;
+}
+
+.deck-item.selected {
+    background-color: rgb(255, 230, 140);
+    border-color: rgb(40, 40, 48);
+}

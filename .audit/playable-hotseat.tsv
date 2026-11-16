@@ -17,3 +17,4 @@ ts	phase	decision	why	evidence	result
 2026-11-16T11:26:32Z	scale-verify	dump-ui eraser localScale after cue fix	expect ~0.06/0.018/0.028 not ~1.0	dump-ui log	pending parse
 2026-11-16T11:27:50Z	cam-seat	SyncActiveSeat SetChaseTarget on aim/card/turn	P1 inventory turn camera	MatchDirector.cs	committed
 2026-11-16T12:15:28Z	collection	StartMenu collection lists 20 chars / catalog 50 cards	open-collection flag: panelHidden=False listChildren=20	import-content	measured
+2026-11-16T12:29:59Z	roster	StartHotseat applies Character 0/1 eraser defs (mass 0.020/0.032)	dump-ui rosterBits	91eac68+	measured

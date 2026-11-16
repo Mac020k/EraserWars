@@ -31,6 +31,7 @@ namespace EraserWars.Editor
         const string FlagRebuildClassroom = "Temp/rebuild-classroom.flag";
         const string FlagImportContent = "Temp/import-content.flag";
         const string FlagOpenCollection = "Temp/open-collection.flag";
+        const string FlagRefreshAssets = "Temp/refresh-assets.flag";
 
         static int heartbeatLeft;
         static int heartbeatLastFrame = -1;
@@ -44,6 +45,7 @@ namespace EraserWars.Editor
         {
             TryStopPlay();
             TryUnpause();
+            TryRefreshAssets();
             TryRebuild();
             TryImportContent();
             TryOpen(FlagFishNet, "Assets/Scenes/FishNet_Spike.unity");
@@ -314,8 +316,27 @@ namespace EraserWars.Editor
                 scaleBits = string.Join(" ", parts);
             }
 
+            var rosterBits = "(no-defs)";
+            if (director != null && director.Erasers.Count > 0)
+            {
+                var names = new System.Collections.Generic.List<string>();
+                for (var i = 0; i < director.Erasers.Count; i++)
+                {
+                    var e = director.Erasers[i];
+                    if (e == null)
+                    {
+                        continue;
+                    }
+
+                    var def = e.Definition != null ? e.Definition.NameKey : "default";
+                    names.Add($"P{e.PlayerIndex + 1}:{def}:m={e.Body.mass:0.000}");
+                }
+
+                rosterBits = string.Join(" ", names);
+            }
+
             Debug.Log(
-                $"[EraserWars] dump-ui: match phase={director?.State?.Phase} players={director?.State?.Players.Length} turnLeft={director?.State?.TurnTimeLeft:0.0} frame={Time.frameCount} | {hudBits} | {scaleBits}");
+                $"[EraserWars] dump-ui: match phase={director?.State?.Phase} players={director?.State?.Players.Length} turnLeft={director?.State?.TurnTimeLeft:0.0} frame={Time.frameCount} | {hudBits} | {scaleBits} | {rosterBits}");
         }
 
         static void TickHeartbeat()
@@ -381,6 +402,17 @@ namespace EraserWars.Editor
                     ClassroomSceneBuilder.Build();
                 }
             }
+        }
+
+        static void TryRefreshAssets()
+        {
+            if (!ConsumeFlag(FlagRefreshAssets))
+            {
+                return;
+            }
+
+            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+            Debug.Log("[EraserWars] refresh-assets: AssetDatabase.Refresh done");
         }
 
         static void TryImportContent()

@@ -1,3 +1,4 @@
+using EraserWars.Cards;
 using UnityEngine;
 
 namespace EraserWars.Gameplay
@@ -5,6 +6,8 @@ namespace EraserWars.Gameplay
     [RequireComponent(typeof(Rigidbody))]
     public sealed class EraserBody : MonoBehaviour
     {
+        static readonly Vector3 ReferenceSizeMeters = new(0.043f, 0.011f, 0.017f);
+
         [SerializeField] Rigidbody body;
         [SerializeField] Transform visualRoot;
         [SerializeField] float mass = 0.02f;
@@ -14,6 +17,9 @@ namespace EraserWars.Gameplay
         [SerializeField] float sizeFactor = 1f;
         [SerializeField] bool enableMotionTrail = true;
 
+        Vector3 prefabLocalScale = Vector3.one;
+        bool prefabScaleCaptured;
+
         public Rigidbody Body => body;
         public Transform VisualRoot => visualRoot != null ? visualRoot : transform;
         public float Power => power;
@@ -21,6 +27,7 @@ namespace EraserWars.Gameplay
         public float MaxSpeed => maxSpeed;
         public Vector3 VelocityBeforePhysics { get; private set; }
         public int PlayerIndex { get; set; }
+        public EraserDefinition Definition { get; private set; }
 
         void Reset()
         {
@@ -34,12 +41,78 @@ namespace EraserWars.Gameplay
                 body = GetComponent<Rigidbody>();
             }
 
+            CapturePrefabScale();
+            ApplyPhysicsTuning();
+            EnsureMotionTrail();
+        }
+
+        public void ApplyDefinition(EraserDefinition definition)
+        {
+            Definition = definition;
+            CapturePrefabScale();
+            if (definition == null)
+            {
+                ApplyPhysicsTuning();
+                return;
+            }
+
+            mass = definition.Mass;
+            power = definition.Power;
+            speed = definition.Speed;
+            var size = definition.SizeMeters;
+            var ratio = new Vector3(
+                size.x / ReferenceSizeMeters.x,
+                size.y / ReferenceSizeMeters.y,
+                size.z / ReferenceSizeMeters.z);
+            transform.localScale = Vector3.Scale(prefabLocalScale, ratio);
+            sizeFactor = Mathf.Max(ratio.x, ratio.z);
+
+            ApplyPhysicsTuning();
+            ApplySurfaceMaterial(definition.Friction, definition.Bounciness);
+        }
+
+        void CapturePrefabScale()
+        {
+            if (prefabScaleCaptured)
+            {
+                return;
+            }
+
+            prefabLocalScale = transform.localScale;
+            prefabScaleCaptured = true;
+        }
+
+        void ApplyPhysicsTuning()
+        {
+            if (body == null)
+            {
+                return;
+            }
+
             body.mass = mass;
             body.linearDamping = Mathf.Max(0.05f, 1.5f / Mathf.Max(0.1f, speed));
             body.angularDamping = 1.2f;
             body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             body.interpolation = RigidbodyInterpolation.Interpolate;
-            EnsureMotionTrail();
+        }
+
+        void ApplySurfaceMaterial(float friction, float bounciness)
+        {
+            var collider = GetComponentInChildren<Collider>();
+            if (collider == null)
+            {
+                return;
+            }
+
+            var material = new PhysicsMaterial("EraserSurface")
+            {
+                dynamicFriction = Mathf.Clamp01(friction),
+                staticFriction = Mathf.Clamp01(friction),
+                bounciness = Mathf.Clamp01(bounciness),
+                frictionCombine = PhysicsMaterialCombine.Average,
+                bounceCombine = PhysicsMaterialCombine.Average,
+            };
+            collider.material = material;
         }
 
         void FixedUpdate()

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using EraserWars.CameraRig;
+using EraserWars.Cards;
 using EraserWars.Core;
 using UnityEngine;
 
@@ -176,6 +177,16 @@ namespace EraserWars.Gameplay
             }
         }
 
+        CharacterDefinition[] seatRoster = new CharacterDefinition[4];
+
+        public void SetSeatRoster(IReadOnlyList<CharacterDefinition> roster)
+        {
+            for (var i = 0; i < seatRoster.Length; i++)
+            {
+                seatRoster[i] = roster != null && i < roster.Count ? roster[i] : null;
+            }
+        }
+
         public void StartHotseat(int playerCount)
         {
             EnsureEdgeSlowmo();
@@ -188,7 +199,10 @@ namespace EraserWars.Gameplay
                 var eraser = Instantiate(eraserPrefab, spawn.position, spawn.rotation);
                 eraser.gameObject.SetActive(true);
                 eraser.PlayerIndex = i;
-                eraser.name = $"Eraser_P{i}";
+                var character = i < seatRoster.Length ? seatRoster[i] : null;
+                var label = character != null ? character.DisplayName : $"P{i}";
+                eraser.name = $"Eraser_P{i}_{label}";
+                eraser.ApplyDefinition(character?.Eraser);
                 ApplyPlayerLook(eraser, i);
                 var fallout = eraser.GetComponent<FalloutDetector>();
                 if (fallout != null)

@@ -41,10 +41,29 @@
             <ui:Label text="音量・言語は後続。Esc で閉じる。" class="panel-body" />
             <ui:Button name="close-options" text="閉じる" class="panel-close" />
         </ui:VisualElement>
-        <ui:VisualElement name="deck-panel" class="side-panel hidden">
-            <ui:Label text="デッキ" class="panel-title" />
-            <ui:Label text="デッキ編成は後続。枠だけ先行。" class="panel-body" />
-            <ui:Button name="close-deck" text="閉じる" class="panel-close" />
+        <ui:VisualElement name="deck-panel" class="side-panel deck-panel hidden">
+            <ui:VisualElement class="collection-header">
+                <ui:Label text="デッキ" class="panel-title" />
+                <ui:Button name="close-deck" text="閉じる" class="panel-close collection-close" />
+            </ui:VisualElement>
+            <ui:VisualElement class="deck-seats">
+                <ui:Button name="deck-seat-0" text="P1" class="collection-tab selected" />
+                <ui:Button name="deck-seat-1" text="P2" class="collection-tab" />
+                <ui:Button name="deck-seat-2" text="P3" class="collection-tab" />
+                <ui:Button name="deck-seat-3" text="P4" class="collection-tab" />
+            </ui:VisualElement>
+            <ui:Label name="deck-status" text="" class="collection-detail-meta" />
+            <ui:Label name="deck-detail" text="" class="collection-detail-body" />
+            <ui:VisualElement class="collection-body">
+                <ui:VisualElement class="deck-column">
+                    <ui:Label text="キャラ" class="deck-column-title" />
+                    <ui:ScrollView name="deck-character-list" class="collection-list deck-list" />
+                </ui:VisualElement>
+                <ui:VisualElement class="deck-column">
+                    <ui:Label text="コモンカード" class="deck-column-title" />
+                    <ui:ScrollView name="deck-card-list" class="collection-list deck-list" />
+                </ui:VisualElement>
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="collection-panel" class="side-panel collection-panel hidden">
             <ui:VisualElement class="collection-header">

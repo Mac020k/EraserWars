@@ -26,6 +26,8 @@ namespace EraserWars.UI
         VisualElement deckPanel;
         VisualElement collectionPanel;
         CollectionPanelController collection;
+        DeckPanelController deck;
+        readonly HotseatLoadout loadout = new();
         Button mode2P;
         Button mode4P;
         int selectedPlayers = 2;
@@ -82,7 +84,7 @@ namespace EraserWars.UI
             mode2P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(2));
             mode4P?.RegisterCallback<ClickEvent>(_ => SelectPlayers(4));
             root.Q<Button>("open-options")?.RegisterCallback<ClickEvent>(_ => ShowPanel(optionsPanel));
-            root.Q<Button>("open-deck")?.RegisterCallback<ClickEvent>(_ => ShowPanel(deckPanel));
+            root.Q<Button>("open-deck")?.RegisterCallback<ClickEvent>(_ => OpenDeck());
             root.Q<Button>("open-collection")?.RegisterCallback<ClickEvent>(_ => OpenCollection());
             root.Q<Button>("close-options")?.RegisterCallback<ClickEvent>(_ => HidePanels());
             root.Q<Button>("close-deck")?.RegisterCallback<ClickEvent>(_ => HidePanels());
@@ -95,18 +97,33 @@ namespace EraserWars.UI
             ApplyIcon(root.Q("icon-collection"), iconCollection);
             ApplyIcon(root.Q("icon-options"), iconOptions);
 
+            EnsureCatalog();
             EnsureCollectionBound();
+            EnsureDeckBound();
         }
 
-        void EnsureCollectionBound()
+        void EnsureCatalog()
         {
             if (contentCatalog == null)
             {
                 contentCatalog = Resources.Load<ContentCatalog>("EraserWars/ContentCatalog");
             }
 
+            loadout.EnsureDefaults(contentCatalog);
+        }
+
+        void EnsureCollectionBound()
+        {
+            EnsureCatalog();
             collection = new CollectionPanelController(contentCatalog);
             collection.Bind(collectionPanel);
+        }
+
+        void EnsureDeckBound()
+        {
+            EnsureCatalog();
+            deck = new DeckPanelController(contentCatalog, loadout);
+            deck.Bind(deckPanel);
         }
 
         public void OpenCollection()
@@ -114,6 +131,13 @@ namespace EraserWars.UI
             EnsureCollectionBound();
             collection?.Refresh();
             ShowPanel(collectionPanel);
+        }
+
+        public void OpenDeck()
+        {
+            EnsureDeckBound();
+            deck?.Refresh(selectedPlayers);
+            ShowPanel(deckPanel);
         }
 
         void Update()
@@ -183,6 +207,8 @@ namespace EraserWars.UI
             }
 
             selectedPlayers = playerCount;
+            EnsureCatalog();
+            director.SetSeatRoster(loadout.Seats);
             director.SetDebugChromeVisible(false);
             director.StartHotseat(playerCount);
             matchRunning = true;
