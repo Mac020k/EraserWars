@@ -30,6 +30,8 @@ namespace EraserWars.Editor
             root.AddComponent<NetworkObject>();
             var session = root.AddComponent<FishNetSpikeSession>();
             var flickApplier = root.AddComponent<FlickApplier>();
+            flickApplier.Tuning = AssetDatabase.LoadAssetAtPath<FlickTuning>(
+                "Assets/_Project/Gameplay/FlickTuning.asset");
             var settleWatcher = root.AddComponent<SettleWatcher>();
             var hud = root.AddComponent<FishNetSpikeHud>();
 

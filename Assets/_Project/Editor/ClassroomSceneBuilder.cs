@@ -172,6 +172,8 @@ namespace EraserWars.Editor
             directorGo.transform.SetParent(root.transform);
             var director = directorGo.AddComponent<MatchDirector>();
             var flick = directorGo.AddComponent<FlickApplier>();
+            flick.Tuning = AssetDatabase.LoadAssetAtPath<FlickTuning>(
+                "Assets/_Project/Gameplay/FlickTuning.asset");
             var settle = directorGo.AddComponent<SettleWatcher>();
             directorGo.AddComponent<HitstopController>();
             var edgeSlowmo = directorGo.AddComponent<EdgeSlowmoWatcher>();

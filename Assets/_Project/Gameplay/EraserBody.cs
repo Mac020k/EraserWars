@@ -137,10 +137,15 @@ namespace EraserWars.Gameplay
             VelocityBeforePhysics = body.linearVelocity;
         }
 
-        public void ApplyFlick(Vector3 worldImpulse, Vector3 contactPoint)
+        public void ApplyFlick(Vector3 worldImpulse, Vector3 contactPoint, float extraYawImpulse = 0f)
         {
             body.WakeUp();
             body.AddForceAtPosition(worldImpulse, contactPoint, ForceMode.Impulse);
+            if (extraYawImpulse != 0f)
+            {
+                body.AddTorque(new Vector3(0f, extraYawImpulse, 0f), ForceMode.Impulse);
+            }
+
             ClampLinearSpeed();
         }
 
