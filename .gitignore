@@ -62,3 +62,6 @@ mono_crash.*
 
 # Local Steam app id override (keep template tracked separately if needed)
 # steam_appid.txt stays tracked with placeholder 480 until AppId is issued
+
+# Editor match logs. Player builds write under Application.persistentDataPath.
+/playtests/match-logs/
