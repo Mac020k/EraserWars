@@ -15,6 +15,7 @@ namespace EraserWars.UI
         const string PillOutClass = "pill-out";
         const string HeartLostClass = "heart-lost";
         const string HiddenClass = "hidden";
+        const string HandSelectedClass = "hand-card-selected";
         const string TimerUrgentClass = "timer-urgent";
         const string TimerIdleClass = "timer-idle";
         const int SeatClassCount = 4;
@@ -64,6 +65,7 @@ namespace EraserWars.UI
         int finishXpGained;
         int finishXpTotal;
         string handFingerprint = string.Empty;
+        int selectedHandIndex = -1;
         Button boundPass;
 
         sealed class PlayerPill
@@ -158,6 +160,7 @@ namespace EraserWars.UI
             playersRow?.Clear();
             handRow?.Clear();
             handFingerprint = string.Empty;
+            selectedHandIndex = -1;
             ApplyIcon(root.Q("pass-icon"), iconPass);
             EnsurePraiseView();
             HookPraise();
@@ -334,6 +337,12 @@ namespace EraserWars.UI
 
             var canPlay = state.Phase is Phase.CardSelect or Phase.Aim;
             var cutInUp = director != null && director.IsCardCutInShowing;
+            if (!canPlay || cutInUp)
+            {
+                selectedHandIndex = -1;
+                ApplyHandSelection();
+            }
+
             handDock.EnableInClassList(HiddenClass, !canPlay || cutInUp);
             if (!canPlay)
             {
@@ -355,10 +364,12 @@ namespace EraserWars.UI
 
             if (fingerprint == handFingerprint && handRow.childCount == player.Hand.Length)
             {
+                ApplyHandSelection();
                 return;
             }
 
             handFingerprint = fingerprint;
+            selectedHandIndex = -1;
             handRow.Clear();
             for (var i = 0; i < player.Hand.Length; i++)
             {
@@ -375,8 +386,55 @@ namespace EraserWars.UI
                 }
 
                 var captured = cardId;
+                var index = i;
                 button.clicked += () => director?.PlayCard(captured);
+                button.RegisterCallback<PointerEnterEvent>(_ => SelectHandCard(index));
+                button.RegisterCallback<PointerLeaveEvent>(_ => ClearHandCard(index));
+                button.RegisterCallback<FocusInEvent>(_ => SelectHandCard(index));
+                button.RegisterCallback<FocusOutEvent>(_ => ClearHandCard(index));
                 handRow.Add(button);
+            }
+
+            ApplyHandSelection();
+        }
+
+        void SelectHandCard(int index)
+        {
+            if (handRow == null || index < 0 || index >= handRow.childCount)
+            {
+                return;
+            }
+
+            selectedHandIndex = index;
+            ApplyHandSelection();
+        }
+
+        void ClearHandCard(int index)
+        {
+            if (selectedHandIndex != index)
+            {
+                return;
+            }
+
+            selectedHandIndex = -1;
+            ApplyHandSelection();
+        }
+
+        void ApplyHandSelection()
+        {
+            if (handRow == null)
+            {
+                return;
+            }
+
+            if (selectedHandIndex < 0 || selectedHandIndex >= handRow.childCount)
+            {
+                selectedHandIndex = -1;
+            }
+
+            for (var i = 0; i < handRow.childCount; i++)
+            {
+                handRow[i].EnableInClassList(HandSelectedClass, i == selectedHandIndex);
             }
         }
 

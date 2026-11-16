@@ -1,6 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <Style src="MatchHud.uss" />
     <ui:VisualElement name="root" class="hud-root hidden" picking-mode="Ignore">
+        <ui:VisualElement name="hand-dock" class="hand-dock hidden" picking-mode="Ignore">
+            <ui:Label name="hand-title" text="" class="hand-title" picking-mode="Ignore" />
+            <ui:VisualElement name="hand" class="hand-row" picking-mode="Ignore" />
+        </ui:VisualElement>
         <ui:VisualElement class="hud-stack" picking-mode="Ignore">
             <ui:VisualElement class="top-bar">
                 <ui:VisualElement name="brand-chip" class="brand-chip" />
@@ -34,10 +38,6 @@
                     <ui:Button name="match-end-menu" text="メニューへ" class="match-end-button match-end-secondary" />
                 </ui:VisualElement>
             </ui:VisualElement>
-        </ui:VisualElement>
-        <ui:VisualElement name="hand-dock" class="hand-dock hidden" picking-mode="Ignore">
-            <ui:Label name="hand-title" text="" class="hand-title" picking-mode="Ignore" />
-            <ui:VisualElement name="hand" class="hand-row" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement class="action-bar" picking-mode="Ignore">
             <ui:Button name="pass" class="action-chip action-pass">
