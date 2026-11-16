@@ -41,6 +41,18 @@ namespace EraserWars.Gameplay
 
         public MatchState State => state;
         public IReadOnlyList<EraserBody> Erasers => erasers;
+        public const string HotseatWinModeKey = "eraserwars.winMode";
+        public const string HotseatTurnSecondsKey = "eraserwars.turnSeconds";
+
+        public static RuleSet CreateHotseatRules(int winModePref, int turnSecondsPref)
+        {
+            var mode = RuleSet.WinModeFromPref(winModePref);
+            return RuleSet.ForHotseat(mode) with
+            {
+                TurnTimeSeconds = Mathf.Clamp(turnSecondsPref, 10, 60),
+            };
+        }
+
         public bool IsStartMenuOpen { get; private set; } = true;
 
         public void SetStartMenuOpen(bool open)
@@ -239,10 +251,9 @@ namespace EraserWars.Gameplay
                 BuildSeatCards(i, out hands[i], out decks[i]);
             }
 
-            var rules = RuleSet.CasualStock with
-            {
-                TurnTimeSeconds = Mathf.Clamp(PlayerPrefs.GetInt("eraserwars.turnSeconds", 20), 10, 60),
-            };
+            var rules = CreateHotseatRules(
+                PlayerPrefs.GetInt(HotseatWinModeKey, (int)WinMode.Stock),
+                PlayerPrefs.GetInt(HotseatTurnSecondsKey, 20));
             state = MatchFactory.CreateHotseat(playerCount, rules, hands, decks);
             for (var i = 0; i < playerCount; i++)
             {

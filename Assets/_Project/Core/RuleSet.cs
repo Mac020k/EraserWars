@@ -1,3 +1,5 @@
+using System;
+
 namespace EraserWars.Core
 {
     public enum WinMode
@@ -31,5 +33,15 @@ namespace EraserWars.Core
             TurnTimeSeconds: 20f,
             AimAssist: true,
             ChaosSimultaneous: false);
+
+        public static WinMode WinModeFromPref(int raw) =>
+            raw == (int)WinMode.Points ? WinMode.Points : WinMode.Stock;
+
+        public static RuleSet ForHotseat(WinMode mode) => mode switch
+        {
+            WinMode.Stock => CasualStock,
+            WinMode.Points => PointsTrial,
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unhandled win mode."),
+        };
     }
 }

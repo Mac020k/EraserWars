@@ -77,6 +77,9 @@ The round continues while more than one player still has stock, or a later seat 
 After the last seat, one remaining survivor ends the match. Otherwise the next round opens on the next player who can act.
 `TurnTimeSeconds` of 0 ignores `TimerExpired`. A disconnected player is skipped when their turn opens.
 `RuleSet.StockCount` is the starting stock. `MatchFactory.CreateHotseat` uses that count, empty hands, and turn order `0..n-1`.
+The start menu segment `mode-stock` / `mode-points` stores `eraserwars.winMode` in PlayerPrefs. `0` is stock and `1` is points.
+`MatchDirector.StartHotseat` reads that key for both 2-player and 4-player hotseat, then applies the saved turn time.
+Points loads `RuleSet.PointsTrial`, which ends after 8 rounds. Stock loads `RuleSet.CasualStock`. Rematch and the debug Hotseat buttons read the same key.
 
 ## Card effects
 
