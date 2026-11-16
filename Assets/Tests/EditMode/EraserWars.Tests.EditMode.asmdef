@@ -10,6 +10,7 @@
         "EraserWars.Audio",
         "EraserWars.Net",
         "EraserWars.Persistence",
+        "EraserWars.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
