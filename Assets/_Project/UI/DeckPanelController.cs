@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using EraserWars.Cards;
+using EraserWars.Core;
 using UnityEngine.UIElements;
 
 namespace EraserWars.UI
@@ -20,7 +21,14 @@ namespace EraserWars.UI
         VisualElement budgetFill;
         Label budgetWarning;
         Label emptyDeck;
+        Button saveButton;
         readonly Button[] seatTabs = new Button[4];
+        readonly CharacterDefinition[] draftSeats = new CharacterDefinition[4];
+        readonly List<CardDefinition>[] draftCommons =
+        {
+            new(), new(), new(), new(),
+        };
+        bool draftReady;
         int activeSeat;
         int playerCount = 2;
 
@@ -46,6 +54,11 @@ namespace EraserWars.UI
             budgetFill = deckPanel.Q("deck-budget-fill");
             budgetWarning = deckPanel.Q<Label>("deck-budget-warning");
             emptyDeck = deckPanel.Q<Label>("deck-empty");
+            saveButton = deckPanel.Q<Button>("deck-save");
+            if (saveButton != null)
+            {
+                saveButton.clicked += () => TrySave();
+            }
             for (var i = 0; i < seatTabs.Length; i++)
             {
                 var seat = i;
@@ -58,6 +71,7 @@ namespace EraserWars.UI
         {
             playerCount = matchPlayerCount < 2 ? 2 : matchPlayerCount;
             loadout.EnsureDefaults(catalog);
+            CaptureSaved();
             if (activeSeat >= playerCount)
             {
                 activeSeat = 0;
@@ -117,7 +131,7 @@ namespace EraserWars.UI
                 shown++;
                 var button = new Button();
                 button.AddToClassList("deck-item");
-                var selected = loadout.Seats[activeSeat] == character;
+                var selected = draftSeats[activeSeat] == character;
                 button.EnableInClassList("selected", selected);
                 var lockMark = character.UnlockedByDefault ? "" : "🔒 ";
                 button.text =
@@ -135,7 +149,8 @@ namespace EraserWars.UI
 
         void SelectCharacter(CharacterDefinition character)
         {
-            loadout.Seats[activeSeat] = character;
+            draftSeats[activeSeat] = character;
+            CommitIfLegal();
             RebuildCharacterList();
             RefreshStatus();
         }
@@ -154,7 +169,7 @@ namespace EraserWars.UI
                 return;
             }
 
-            var selected = loadout.Commons[activeSeat];
+            var selected = draftCommons[activeSeat];
             var shown = 0;
             foreach (var card in catalog.Cards)
             {
@@ -211,18 +226,19 @@ namespace EraserWars.UI
 
         void AddOne(CardDefinition card)
         {
-            var selected = loadout.Commons[activeSeat];
+            var selected = draftCommons[activeSeat];
             var budget = DeckBudget.From(selected, ActiveCap());
             var block = budget.BlockAdd(CountCopies(selected, card.IdValue), card.MaxCopies, card.BuildCost);
             switch (block)
             {
                 case AddBlock.None:
                     selected.Add(card);
+                    CommitIfLegal();
                     RebuildCardList();
                     RefreshStatus();
                     return;
                 case AddBlock.Slots:
-                    RefreshStatus("コモンは6枚までです。");
+                    RefreshStatus($"コモンは{DeckBudget.SlotCap}枚までです。");
                     return;
                 case AddBlock.Copies:
                     RefreshStatus($"{card.DisplayName} は{card.MaxCopies}枚までです。");
@@ -238,7 +254,7 @@ namespace EraserWars.UI
 
         void RemoveOne(CardDefinition card)
         {
-            var selected = loadout.Commons[activeSeat];
+            var selected = draftCommons[activeSeat];
             for (var i = selected.Count - 1; i >= 0; i--)
             {
                 if (selected[i] != null && selected[i].IdValue == card.IdValue)
@@ -248,14 +264,22 @@ namespace EraserWars.UI
                 }
             }
 
+            CommitIfLegal();
             RebuildCardList();
             RefreshStatus();
         }
 
+        public bool TrySave()
+        {
+            var saved = CommitIfLegal();
+            RefreshStatus();
+            return saved;
+        }
+
         void RefreshStatus(string reject = null)
         {
-            var character = loadout.Seats[activeSeat];
-            var selected = loadout.Commons[activeSeat];
+            var character = draftSeats[activeSeat];
+            var selected = draftCommons[activeSeat];
             var budget = DeckBudget.From(selected, ActiveCap());
             var name = character != null ? character.DisplayName : "未選択";
             var sigA = character?.SignatureA != null ? character.SignatureA.DisplayName : "なし";
@@ -299,24 +323,72 @@ namespace EraserWars.UI
                 budgetFill.EnableInClassList("full", budget.AtCap);
             }
 
-            var showWarning = budget.OverCap || !string.IsNullOrEmpty(reject);
+            var verdict = VerdictFor(activeSeat);
+            var illegal = verdict.Fault != DeckFault.None;
+            var showWarning = illegal || !string.IsNullOrEmpty(reject);
             if (budgetWarning != null)
             {
                 budgetWarning.EnableInClassList("hidden", !showWarning);
                 if (showWarning)
                 {
-                    budgetWarning.text = budget.OverCap
-                        ? "上限を超えています。カードを外してください。"
-                        : reject;
+                    budgetWarning.text = illegal ? verdict.Message : reject;
                 }
             }
 
+            saveButton?.SetEnabled(!illegal);
             emptyDeck?.EnableInClassList("hidden", budget.Count > 0);
+        }
+
+        void CaptureSaved()
+        {
+            if (draftReady)
+            {
+                return;
+            }
+
+            draftReady = true;
+            for (var i = 0; i < draftSeats.Length; i++)
+            {
+                draftSeats[i] = loadout.Seats[i];
+                draftCommons[i].Clear();
+                if (loadout.Commons[i] != null)
+                {
+                    draftCommons[i].AddRange(loadout.Commons[i]);
+                }
+
+                var fault = VerdictFor(i).Fault;
+                if (fault == DeckFault.SameName || fault == DeckFault.Slots || fault == DeckFault.OverCost)
+                {
+                    loadout.Commons[i].Clear();
+                }
+            }
+        }
+
+        bool CommitIfLegal()
+        {
+            if (!draftReady || VerdictFor(activeSeat).Fault != DeckFault.None)
+            {
+                return false;
+            }
+
+            loadout.Seats[activeSeat] = draftSeats[activeSeat];
+            var saved = loadout.Commons[activeSeat];
+            saved.Clear();
+            saved.AddRange(draftCommons[activeSeat]);
+            return true;
+        }
+
+        DeckVerdict VerdictFor(int seat)
+        {
+            var character = draftSeats[seat];
+            var eraser = character != null ? character.Eraser : null;
+            var cap = eraser != null ? eraser.DeckCostCap : DefaultCap;
+            return DeckRules.Evaluate(eraser != null, cap, DeckCardFacts.From(draftCommons[seat]));
         }
 
         int ActiveCap()
         {
-            var character = loadout.Seats[activeSeat];
+            var character = draftSeats[activeSeat];
             return character?.Eraser?.DeckCostCap ?? DefaultCap;
         }
 
@@ -356,7 +428,7 @@ namespace EraserWars.UI
 
         readonly struct DeckBudget
         {
-            public const int SlotCap = 6;
+            public const int SlotCap = DeckRules.SlotCap;
 
             public readonly int Used;
             public readonly int Cap;
