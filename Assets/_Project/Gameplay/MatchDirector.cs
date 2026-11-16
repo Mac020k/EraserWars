@@ -21,8 +21,7 @@ namespace EraserWars.Gameplay
 
         readonly List<EraserBody> erasers = new();
         readonly Dictionary<int, EraserBody> byPlayer = new();
-        readonly Dictionary<int, Vector3> eraserBaseScale = new();
-        readonly Dictionary<int, float> eraserCueScale = new();
+        readonly ActiveEraserCueView cueView = new();
         HitstopController hitstop;
         EdgeSlowmoWatcher edgeSlowmo;
         EffectPhysicsSync effectPhysics;
@@ -33,7 +32,6 @@ namespace EraserWars.Gameplay
         TurnYieldNotice turnYieldNotice;
         float turnYieldSecondsLeft;
         int activeSeat;
-        const float ActiveEraserCueScale = 1.14f;
 
         // Broadcast-style debug chrome: top banner stays readable on stream, side panel keeps the desk clear.
         static readonly Rect SidePanelRect = new(12f, 96f, 288f, 318f);
@@ -159,7 +157,7 @@ namespace EraserWars.Gameplay
         void Update()
         {
             AdvanceMatchClock(Time.unscaledDeltaTime);
-            RefreshActiveEraserCue();
+            PresentActiveEraserCue(Time.unscaledDeltaTime, Time.unscaledTime);
             effectPhysics.Sync(state, erasers);
             PersistMatchLog(retry: false);
         }
@@ -210,10 +208,10 @@ namespace EraserWars.Gameplay
             AudioBus.Ensure().Play(cue);
         }
 
-        void RefreshActiveEraserCue()
+        public void PresentActiveEraserCue(float deltaSeconds, float timeSeconds)
         {
             var cueSeat = -1;
-            if (state != null && state.Phase is Phase.Aim or Phase.CardSelect or Phase.TurnStart)
+            if (state != null && ActiveEraserCue.PhaseShowsCue(state.Phase))
             {
                 cueSeat = state.CurrentPlayerId.Value;
             }
@@ -227,18 +225,9 @@ namespace EraserWars.Gameplay
                 }
 
                 var seat = eraser.PlayerIndex;
-                if (!eraserBaseScale.TryGetValue(seat, out var baseScale))
-                {
-                    baseScale = eraser.transform.localScale;
-                    eraserBaseScale[seat] = baseScale;
-                    eraserCueScale[seat] = 1f;
-                }
-
-                var want = seat == cueSeat ? ActiveEraserCueScale : 1f;
-                var current = eraserCueScale.TryGetValue(seat, out var cue) ? cue : 1f;
-                var next = Mathf.Lerp(current, want, 1f - Mathf.Exp(-12f * Time.unscaledDeltaTime));
-                eraserCueScale[seat] = next;
-                eraser.transform.localScale = baseScale * next;
+                var color = PlayerColors[seat % PlayerColors.Length];
+                var sample = ActiveEraserCue.At(seat == cueSeat, color, timeSeconds);
+                cueView.Apply(eraser, sample, deltaSeconds);
             }
         }
 
@@ -403,8 +392,6 @@ namespace EraserWars.Gameplay
 
                 erasers.Add(eraser);
                 byPlayer[i] = eraser;
-                eraserBaseScale[i] = eraser.transform.localScale;
-                eraserCueScale[i] = 1f;
                 BindEraserHitstop(eraser);
             }
 
@@ -889,8 +876,7 @@ namespace EraserWars.Gameplay
 
             erasers.Clear();
             byPlayer.Clear();
-            eraserBaseScale.Clear();
-            eraserCueScale.Clear();
+            cueView.Clear();
         }
 
         static readonly Color[] PlayerColors =
