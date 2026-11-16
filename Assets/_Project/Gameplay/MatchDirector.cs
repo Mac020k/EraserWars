@@ -203,6 +203,9 @@ namespace EraserWars.Gameplay
             }
         }
 
+        public CharacterDefinition RosterAt(int seat) =>
+            (uint)seat < (uint)seatRoster.Length ? seatRoster[seat] : null;
+
         public void SetSeatCommons(int seat, IReadOnlyList<CardDefinition> commons)
         {
             if (seat < 0 || seat >= seatCommons.Length)

@@ -30,6 +30,7 @@ namespace EraserWars.UI
         VisualElement collectionPanel;
         CollectionPanelController collection;
         DeckPanelController deck;
+        SeatPickController seatPick;
         readonly HotseatLoadout loadout = new();
         Button mode2P;
         Button mode4P;
@@ -137,6 +138,7 @@ namespace EraserWars.UI
             EnsureCatalog();
             EnsureCollectionBound();
             EnsureDeckBound();
+            EnsureSeatPickBound();
             LoadOptions();
         }
 
@@ -437,6 +439,14 @@ namespace EraserWars.UI
             deck.Bind(deckPanel);
         }
 
+        void EnsureSeatPickBound()
+        {
+            EnsureCatalog();
+            seatPick ??= new SeatPickController(contentCatalog, loadout);
+            seatPick.Bind(homeStack ?? root);
+            seatPick.Refresh(selectedPlayers);
+        }
+
         public void OpenCollection()
         {
             BindDocument();
@@ -496,6 +506,11 @@ namespace EraserWars.UI
 
             if (keyboard.escapeKey.wasPressedThisFrame)
             {
+                if (seatPick != null && seatPick.ClosePicker())
+                {
+                    return;
+                }
+
                 if (currentScreen != MenuScreen.Home)
                 {
                     GoHome();
@@ -520,6 +535,7 @@ namespace EraserWars.UI
             selectedPlayers = count;
             mode2P?.EnableInClassList("selected", count == 2);
             mode4P?.EnableInClassList("selected", count == 4);
+            seatPick?.Refresh(count);
         }
 
         void StartMatch()
@@ -542,6 +558,7 @@ namespace EraserWars.UI
 
             selectedPlayers = playerCount;
             EnsureCatalog();
+            seatPick?.ClosePicker();
             director.SetSeatRoster(loadout.Seats);
             for (var i = 0; i < playerCount; i++)
             {
@@ -663,6 +680,11 @@ namespace EraserWars.UI
             }
 
             currentScreen = screen;
+            seatPick?.ClosePicker();
+            if (screen == MenuScreen.Home)
+            {
+                seatPick?.Refresh(selectedPlayers);
+            }
 
             HideDestinationPages();
 

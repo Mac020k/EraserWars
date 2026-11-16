@@ -11,6 +11,17 @@ namespace EraserWars.UI
             new(), new(), new(), new(),
         };
 
+        public bool TryAssignUnlocked(int seat, CharacterDefinition character)
+        {
+            if (seat < 0 || seat >= Seats.Length || character == null || !character.UnlockedByDefault)
+            {
+                return false;
+            }
+
+            Seats[seat] = character;
+            return true;
+        }
+
         public void EnsureDefaults(ContentCatalog catalog)
         {
             if (catalog?.Characters == null || catalog.Characters.Count == 0)
