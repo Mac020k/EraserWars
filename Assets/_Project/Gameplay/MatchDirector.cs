@@ -239,7 +239,11 @@ namespace EraserWars.Gameplay
                 BuildSeatCards(i, out hands[i], out decks[i]);
             }
 
-            state = MatchFactory.CreateHotseat(playerCount, RuleSet.CasualStock, hands, decks);
+            var rules = RuleSet.CasualStock with
+            {
+                TurnTimeSeconds = Mathf.Clamp(PlayerPrefs.GetInt("eraserwars.turnSeconds", 20), 10, 60),
+            };
+            state = MatchFactory.CreateHotseat(playerCount, rules, hands, decks);
             for (var i = 0; i < playerCount; i++)
             {
                 var spawn = spawnPoints[i % spawnPoints.Length];
@@ -448,9 +452,14 @@ namespace EraserWars.Gameplay
             Debug.Log($"[EraserWars] Flick P{command.Player.Value + 1} {modifiers} bodyMass={eraser.Body.mass:0.0000} damping={eraser.Body.linearDamping:0.00}");
 
             state = MatchReduce.Reduce(state, new Flicked(command));
-            hitstop?.BeginShot();
+            if (PlayerPrefs.GetInt("eraserwars.cameraShake", 1) != 0)
+            {
+                hitstop?.BeginShot();
+            }
+
             EnsureOrbitCamera()?.SetChaseTarget(eraser.transform);
-            flickApplier.Apply(eraser, command, modifiers.Power);
+            var flickScale = Mathf.Clamp(PlayerPrefs.GetFloat("eraserwars.flickScale", 1f), 0.5f, 1.5f);
+            flickApplier.Apply(eraser, command, modifiers.Power * flickScale);
             AudioBus.Ensure().Play(AudioCue.Flick);
             settleWatcher.Begin(erasers);
         }

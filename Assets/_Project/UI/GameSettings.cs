@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using AudioPrefs = EraserWars.Audio.GameSettings;
 
 namespace EraserWars.UI
 {
     /// <summary>
     /// Match feel in PlayerPrefs. EraserWars.UI references Gameplay, so MatchDirector cannot call this type.
-    /// Read Keys with PlayerPrefs. Volumes are 0..1. FlickScale is 0.5..1.5 and multiplies flick impulse.
-    /// TurnSeconds is 10..60 and replaces RuleSet.TurnTimeSeconds at match start. CameraShake is 0 or 1.
-    /// UiScale is 0.8, 1, or 1.2. ApplyVolume sets AudioListener.volume. ApplyUiScale clones PanelSettings.
-    /// No AudioMixer exists yet. The audio agent should multiply BGM sources by Bgm and SE sources by Se.
+    /// Read Keys with PlayerPrefs. Volumes are 0..1 gains. Bgm/Se also mirror Audio.GameSettings percent keys
+    /// so AudioBus and Options stay one contract. FlickScale is 0.5..1.5. TurnSeconds is 10..60.
+    /// CameraShake is 0 or 1. UiScale is 0.8, 1, or 1.2. ApplyVolume sets AudioListener.volume.
     /// </summary>
     public sealed record GameSettings(
         float Master,
@@ -53,8 +53,8 @@ namespace EraserWars.UI
         {
             var next = new GameSettings(
                 PlayerPrefs.GetFloat(Keys.Master, DefaultMaster),
-                PlayerPrefs.GetFloat(Keys.Bgm, DefaultBgm),
-                PlayerPrefs.GetFloat(Keys.Se, DefaultSe),
+                AudioPrefs.LoadBgmGain(),
+                AudioPrefs.LoadSeGain(),
                 PlayerPrefs.GetFloat(Keys.FlickScale, DefaultFlickScale),
                 PlayerPrefs.GetInt(Keys.TurnSeconds, DefaultTurnSeconds),
                 PlayerPrefs.GetInt(Keys.CameraShake, DefaultCameraShake ? 1 : 0) != 0,
@@ -69,6 +69,8 @@ namespace EraserWars.UI
             PlayerPrefs.SetFloat(Keys.Master, Current.Master);
             PlayerPrefs.SetFloat(Keys.Bgm, Current.Bgm);
             PlayerPrefs.SetFloat(Keys.Se, Current.Se);
+            AudioPrefs.SaveBgmPercent(Current.Bgm * 100f);
+            AudioPrefs.SaveSePercent(Current.Se * 100f);
             PlayerPrefs.SetFloat(Keys.FlickScale, Current.FlickScale);
             PlayerPrefs.SetInt(Keys.TurnSeconds, Current.TurnSeconds);
             PlayerPrefs.SetInt(Keys.CameraShake, Current.CameraShake ? 1 : 0);

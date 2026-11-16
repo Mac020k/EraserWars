@@ -6,6 +6,7 @@
         "EraserWars.Cards",
         "EraserWars.Gameplay",
         "EraserWars.View",
+        "EraserWars.Audio",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],
