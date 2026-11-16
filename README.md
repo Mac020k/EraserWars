@@ -94,7 +94,7 @@ Points loads `RuleSet.PointsTrial`, which ends after 8 rounds. Stock loads `Rule
 
 ## Audio
 
-`AudioBus` starts a generated BGM loop as soon as play mode begins. A UI button click plays `ui-click`. An accepted flick plays `flick`. Volumes are percents in `PlayerPrefs`, owned by `EraserWars.Audio.GameSettings`. The keys match the options sliders `opt-bgm` and `opt-se`. See [`Assets/_Project/Audio/README.md`](Assets/_Project/Audio/README.md).
+`AudioBus` starts a generated BGM loop as soon as play mode begins. A UI button click plays `ui-click`. An accepted flick plays `flick`. An accepted eraser hit plays `eraser-hit`. A floor contact plays `floor-hit`. Volumes are percents in `PlayerPrefs`, owned by `EraserWars.Audio.GameSettings`. The keys match the options sliders `opt-bgm` and `opt-se`. See [`Assets/_Project/Audio/README.md`](Assets/_Project/Audio/README.md).
 
 ## Card faces
 

@@ -8,6 +8,8 @@ namespace EraserWars.Audio
     {
         UiClick,
         Flick,
+        Collision,
+        Fall,
     }
 
     public sealed class AudioBus : MonoBehaviour
@@ -18,6 +20,8 @@ namespace EraserWars.Audio
         static AudioClip bgmClip;
         static AudioClip uiClickClip;
         static AudioClip flickClip;
+        static AudioClip collisionClip;
+        static AudioClip fallClip;
 
         AudioSource bgmSource;
         AudioSource seSource;
@@ -219,6 +223,10 @@ namespace EraserWars.Audio
                     return UiClickClip();
                 case AudioCue.Flick:
                     return FlickClip();
+                case AudioCue.Collision:
+                    return CollisionClip();
+                case AudioCue.Fall:
+                    return FallClip();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(cue), cue, null);
             }
@@ -252,6 +260,26 @@ namespace EraserWars.Audio
             }
 
             return flickClip;
+        }
+
+        static AudioClip CollisionClip()
+        {
+            if (collisionClip == null)
+            {
+                collisionClip = BuildCollision();
+            }
+
+            return collisionClip;
+        }
+
+        static AudioClip FallClip()
+        {
+            if (fallClip == null)
+            {
+                fallClip = BuildFall();
+            }
+
+            return fallClip;
         }
 
         static AudioClip BuildBgm()
@@ -303,6 +331,41 @@ namespace EraserWars.Audio
             data[0] = 0f;
             data[data.Length - 1] = 0f;
             return MakeClip("flick", data);
+        }
+
+        static AudioClip BuildCollision()
+        {
+            var data = new float[(int)(0.07 * SampleRate)];
+            var rng = new System.Random(20261117);
+            for (var i = 0; i < data.Length; i++)
+            {
+                var t = i / (double)SampleRate;
+                var env = (float)Math.Exp(-t * 48.0);
+                var noise = (float)(rng.NextDouble() * 2 - 1);
+                var thump = (float)Math.Sin(2 * Math.PI * 210.0 * t);
+                data[i] = env * (0.42f * noise + 0.5f * thump);
+            }
+
+            data[0] = 0f;
+            data[data.Length - 1] = 0f;
+            return MakeClip("eraser-hit", data);
+        }
+
+        static AudioClip BuildFall()
+        {
+            var data = new float[(int)(0.22 * SampleRate)];
+            for (var i = 0; i < data.Length; i++)
+            {
+                var t = i / (double)SampleRate;
+                var env = (float)Math.Exp(-t * 11.0);
+                var body = (float)Math.Sin(2 * Math.PI * 74.0 * t);
+                var knock = (float)Math.Sin(2 * Math.PI * 155.0 * t);
+                data[i] = env * (0.72f * body + 0.22f * knock);
+            }
+
+            data[0] = 0f;
+            data[data.Length - 1] = 0f;
+            return MakeClip("floor-hit", data);
         }
 
         static void AddNote(float[] data, double start, double duration, double hz, float amp)

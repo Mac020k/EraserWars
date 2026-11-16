@@ -1,4 +1,5 @@
 using System;
+using EraserWars.Audio;
 using EraserWars.Core;
 using UnityEngine;
 
@@ -70,6 +71,12 @@ namespace EraserWars.Gameplay
 
             nextPairTime = Time.time + Mathf.Max(0f, pairCooldownSeconds);
             hitstop?.NotifyEraserCollision();
+            PlayAcceptedPairCue();
+        }
+
+        public void PlayAcceptedPairCue()
+        {
+            AudioBus.Ensure().Play(AudioCue.Collision);
         }
 
         bool ApplyRestitutionImpulse(EraserBody other, Collision collision)

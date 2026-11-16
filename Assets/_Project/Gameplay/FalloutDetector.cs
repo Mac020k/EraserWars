@@ -1,4 +1,5 @@
 using System;
+using EraserWars.Audio;
 using UnityEngine;
 
 namespace EraserWars.Gameplay
@@ -13,6 +14,7 @@ namespace EraserWars.Gameplay
 
         EraserBody eraser;
         bool reported;
+        bool floorCuePlayed;
 
         void Awake()
         {
@@ -40,6 +42,36 @@ namespace EraserWars.Gameplay
         public void ResetReport()
         {
             reported = false;
+            floorCuePlayed = false;
+        }
+
+        void OnCollisionEnter(Collision collision)
+        {
+            TryPlayFloorHit(collision.collider);
+        }
+
+        public void TryPlayFloorHit(Collider other)
+        {
+            if (floorCuePlayed || other == null || !IsFloor(other.transform))
+            {
+                return;
+            }
+
+            floorCuePlayed = true;
+            AudioBus.Ensure().Play(AudioCue.Fall);
+        }
+
+        static bool IsFloor(Transform node)
+        {
+            for (var current = node; current != null; current = current.parent)
+            {
+                if (current.name.IndexOf("Floor", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         bool IsSupportedByDesk(Vector3 position)
