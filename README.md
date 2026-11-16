@@ -1,4 +1,4 @@
-# Eraser Wars (消しピンウォーズ)
+﻿# Eraser Wars (消しピンウォーズ)
 
 Eraser Wars is a 2 to 4 player party game for Steam (Windows).
 Each player owns an eraser tied to a character.
@@ -166,7 +166,7 @@ On a gamepad, the left stick aims on the camera's horizontal plane. Up flies awa
 4. Agent one-shot flags under `Temp/` (consumed by `OpenSceneFlagWatcher`) drive Play without fragile toolbar clicks: `enter-play.flag`, `start-hotseat-2.flag`, `flick-current.flag`, `knock-out.flag`, `rematch.flag`, `dump-ui.flag`, `heartbeat.flag`. Decision log: `.audit/playable-hotseat.tsv`.
 5. Right-drag orbits the camera. Tab shows the desks from above. C shows the active eraser up close. Press the same key to return to the orbit, or the other key to switch view. The wheel zooms the orbit only. Default framing fills the view with the play desks. Prefer Game view **Free Aspect** at Scale **1x** (`EraserWars > Use Game View Free Aspect`, auto-applied); fixed Full HD/4K entries crop the editor panel but built players scale correctly. Tone is **コロコロコミック** (magazine), not “ころころ” as onomatopoeia (Q8 clarification). After a flick settles, orbit framing from the previous turn is kept (chase focus only is cleared).
 6. When your eraser hits another during Simulating, physics freezes for 0.08 seconds. Desk and floor hits do not freeze. Another eraser hit inside 0.15 seconds is ignored. Close-range Stay contacts project the hit normal onto XZ so the hittee still launches on the desk (vertical PhysX normals would otherwise be wiped).
-7. During Simulating, an eraser within 0.05 m of the outer desk edge, or dropping through the 0.05 m slice under the desk marker, slows time to 0.4 for 0.22 seconds. An eraser-hit freeze cancels that slow, and the next one waits until every eraser has left the zone and 0.6 seconds from the start have passed.
+7. During Simulating, an eraser within 0.05 m of the outer desk edge, or dropping through the 0.05 m slice under the desk marker, slows time to 0.4 for 0.22 seconds. While that slow runs, MatchHud paints a dark rim vignette that clears when the slow ends (reduce-motion prefers a flat edge). An eraser-hit freeze cancels that slow, and the next one waits until every eraser has left the zone and 0.6 seconds from the start have passed.
 
 `EraserWars > Import All Content CSV` imports cards (`Assets/Data/Csv/cards.csv` → `Assets/Data/Cards/`), erasers / characters (`erasers.csv`, `characters.csv` → `Assets/Data/Erasers/`, `Assets/Data/Characters/`), and refreshes `Assets/Resources/EraserWars/ContentCatalog.asset`. The Start Menu **コレクション** panel browses that catalog (20 characters, 50 cards, school-motif filters).
 

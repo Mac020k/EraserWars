@@ -21,3 +21,6 @@
 2026-11-17T07:17:00+09:00	absorb-tick3	wave1 done; wave2 8 running; no merges yet this tick	waiting agent pushes	main	ok
 2026-11-17T07:17:30+09:00	absorb-tick3	wave2 0/8 remote tips; agents still building	no merge	main	ok
 2026-11-17T07:20:00+09:00	plan	extend campaign through wave5 with 6 agents each for W3-W5	W2 still 8 in flight; W3-W5 backlog written	main	planned
+2026-11-17T08:11:00+09:00	verify	wt-edge-slowmo EdgeSlowmo filter 5/5 after mask fix	pushed agent/edge-slowmo-fx@24da784	wt-edge-slowmo-fx	pass
+2026-11-17T08:12:00+09:00	merge	merged agent/rematch-xp agent/active-pulse agent/edge-slowmo-fx	wave3 6/6 complete	main@24da784	merged
+2026-11-17T08:12:30+09:00	wave4-spawn	6 worktrees from main@24da784	localization stage-props eraser-toon hand-dock settle-timeout points-hud	main	spawn
