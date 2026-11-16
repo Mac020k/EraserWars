@@ -1,8 +1,7 @@
-using System.Collections;
+using System.Reflection;
 using EraserWars.CameraRig;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace EraserWars.Tests.EditMode
 {
@@ -77,37 +76,41 @@ namespace EraserWars.Tests.EditMode
             }
         }
 
-        [UnityTest]
-        public IEnumerator GlanceTracksTheExitOnWallClockWhileSlowed()
+        [Test]
+        public void GlanceTracksTheExitOnWallClockWhileSlowed()
         {
             var go = new GameObject("fall-leave-cam");
             var camera = go.AddComponent<OrbitCamera>();
-            yield return null;
             var previousScale = Time.timeScale;
             Time.timeScale = 0.2f;
             try
             {
                 var exit = new Vector3(1.4f, 0.2f, 1.1f);
                 var beforeAim = Vector3.Angle(go.transform.forward, exit - go.transform.position);
-                var started = Time.realtimeSinceStartup;
-                camera.PlayFallLeave(exit, Time.unscaledTime, FallLeave.DefaultSeconds);
-                yield return new WaitForSecondsRealtime(0.3f);
+                var now = 10f;
+                camera.PlayFallLeave(exit, now, FallLeave.DefaultSeconds);
+                StepCamera(camera);
                 var afterAim = Vector3.Angle(go.transform.forward, exit - go.transform.position);
                 Assert.Less(afterAim, beforeAim);
                 Assert.Less(afterAim, 15f);
-                while (camera.FallLeaveActiveAt(Time.unscaledTime))
-                {
-                    Assert.Less(Time.realtimeSinceStartup - started, 0.8f);
-                    yield return null;
-                }
-
-                Assert.Less(Time.realtimeSinceStartup - started, 0.8f);
+                Assert.IsTrue(camera.FallLeaveActiveAt(now + 0.2f));
+                Assert.IsFalse(camera.FallLeaveActiveAt(now + 0.8f));
+                Assert.AreEqual(0.2f, Time.timeScale);
             }
             finally
             {
                 Time.timeScale = previousScale;
                 Object.DestroyImmediate(go);
             }
+        }
+
+        static void StepCamera(OrbitCamera camera)
+        {
+            var step = typeof(OrbitCamera).GetMethod(
+                "LateUpdate",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.NotNull(step, "OrbitCamera.LateUpdate was renamed.");
+            step.Invoke(camera, null);
         }
     }
 }
