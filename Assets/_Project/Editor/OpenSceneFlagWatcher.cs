@@ -237,10 +237,11 @@ namespace EraserWars.Editor
 
             heartbeatLeft--;
             ForceUnpausedPlay();
-            // Player loop can stall at frame 1 with Enter Play Mode Options; Step advances it.
-            if (Time.frameCount <= 1 || Time.frameCount == heartbeatLastFrame)
+            // If the player loop is wedged, Step once so timers/HUD can move.
+            if (heartbeatLastFrame >= 0 && Time.frameCount == heartbeatLastFrame)
             {
                 EditorApplication.Step();
+                EditorApplication.isPaused = false;
             }
 
             var frame = Time.frameCount;
