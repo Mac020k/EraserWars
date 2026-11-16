@@ -477,8 +477,22 @@ namespace EraserWars.Gameplay
                 return;
             }
 
+            var exit = eraser.Body != null ? eraser.Body.position : eraser.transform.position;
             state = MatchReduce.Reduce(state, new EraserFell(victim, state.CurrentPlayerId));
+            PresentFallLeave(eraser, exit);
             eraser.gameObject.SetActive(false);
+        }
+
+        void PresentFallLeave(EraserBody eraser, Vector3 exit)
+        {
+            var now = Time.unscaledTime;
+            var filter = eraser.GetComponentInChildren<MeshFilter>();
+            FallSilhouette.TryFlash(
+                filter != null ? filter.GetComponent<Renderer>() : null,
+                FallLeave.DefaultSeconds,
+                now,
+                out _);
+            EnsureOrbitCamera()?.PlayFallLeave(exit, now, FallLeave.DefaultSeconds);
         }
 
         public void DebugKnockOut(int playerIndex)
