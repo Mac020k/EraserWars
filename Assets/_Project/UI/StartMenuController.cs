@@ -139,6 +139,9 @@ namespace EraserWars.UI
             matchRunning = true;
             HideMenu();
             HidePanels();
+            // Play may be paused (agent flags); push HUD without waiting for Update.
+            var hud = FindAnyObjectByType<MatchHudController>();
+            hud?.RefreshFromState();
             Debug.Log($"[EraserWars] StartMenu.BeginMatch({playerCount}) hid menu, phase={director.State?.Phase}");
         }
 

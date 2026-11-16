@@ -67,14 +67,19 @@ namespace EraserWars.UI
 
         void Update()
         {
+            RefreshFromState();
+        }
+
+        public void RefreshFromState()
+        {
             if (director == null)
             {
-                director = FindFirstObjectByType<MatchDirector>();
+                director = FindAnyObjectByType<MatchDirector>();
             }
 
             if (startMenu == null)
             {
-                startMenu = FindFirstObjectByType<StartMenuController>(FindObjectsInactive.Include);
+                startMenu = FindAnyObjectByType<StartMenuController>(FindObjectsInactive.Include);
             }
 
             if (director?.State == null)
@@ -241,6 +246,7 @@ namespace EraserWars.UI
             }
 
             root.EnableInClassList("hidden", !visible);
+            root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }
 }
