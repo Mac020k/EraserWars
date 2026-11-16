@@ -15,10 +15,13 @@ namespace EraserWars.Gameplay
         [SerializeField] float speed = 0.65f;
         [SerializeField] float maxSpeed = 3.6f;
         [SerializeField] float sizeFactor = 1f;
+        [SerializeField] float friction = 0.4f;
+        [SerializeField] float bounciness = 0.05f;
         [SerializeField] bool enableMotionTrail = true;
 
         Vector3 prefabLocalScale = Vector3.one;
         bool prefabScaleCaptured;
+        PhysicsMaterial surface;
 
         public Rigidbody Body => body;
         public Transform VisualRoot => visualRoot != null ? visualRoot : transform;
@@ -59,6 +62,8 @@ namespace EraserWars.Gameplay
             mass = definition.Mass;
             power = definition.Power;
             speed = definition.Speed;
+            friction = definition.Friction;
+            bounciness = definition.Bounciness;
             var size = definition.SizeMeters;
             var ratio = new Vector3(
                 size.x / ReferenceSizeMeters.x,
@@ -68,7 +73,13 @@ namespace EraserWars.Gameplay
             sizeFactor = Mathf.Max(ratio.x, ratio.z);
 
             ApplyPhysicsTuning();
-            ApplySurfaceMaterial(definition.Friction, definition.Bounciness);
+            ApplySurfaceMaterial(friction, bounciness);
+        }
+
+        public void ApplyModifiers(EffectModifiers modifiers)
+        {
+            ApplyPhysicsTuning(modifiers.Mass, modifiers.Speed);
+            ApplySurfaceMaterial(friction * modifiers.Friction, bounciness * modifiers.Bounciness);
         }
 
         void CapturePrefabScale()
@@ -82,21 +93,22 @@ namespace EraserWars.Gameplay
             prefabScaleCaptured = true;
         }
 
-        void ApplyPhysicsTuning()
+        void ApplyPhysicsTuning(float massMultiplier = 1f, float speedMultiplier = 1f)
         {
             if (body == null)
             {
                 return;
             }
 
-            body.mass = mass;
-            body.linearDamping = Mathf.Max(0.05f, 1.5f / Mathf.Max(0.1f, speed));
+            body.mass = mass * Mathf.Max(0.05f, massMultiplier);
+            body.linearDamping = Mathf.Max(0.05f, 1.5f / Mathf.Max(0.1f, speed * speedMultiplier));
             body.angularDamping = 1.2f;
             body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             body.interpolation = RigidbodyInterpolation.Interpolate;
         }
 
-        void ApplySurfaceMaterial(float friction, float bounciness)
+        // Friction above 1 is legal in PhysX; glue cards need it to out-grip the desk.
+        void ApplySurfaceMaterial(float surfaceFriction, float surfaceBounciness)
         {
             var collider = GetComponentInChildren<Collider>();
             if (collider == null)
@@ -104,15 +116,19 @@ namespace EraserWars.Gameplay
                 return;
             }
 
-            var material = new PhysicsMaterial("EraserSurface")
+            if (surface == null)
             {
-                dynamicFriction = Mathf.Clamp01(friction),
-                staticFriction = Mathf.Clamp01(friction),
-                bounciness = Mathf.Clamp01(bounciness),
-                frictionCombine = PhysicsMaterialCombine.Average,
-                bounceCombine = PhysicsMaterialCombine.Average,
-            };
-            collider.material = material;
+                surface = new PhysicsMaterial("EraserSurface")
+                {
+                    frictionCombine = PhysicsMaterialCombine.Average,
+                    bounceCombine = PhysicsMaterialCombine.Average,
+                };
+            }
+
+            surface.dynamicFriction = Mathf.Clamp(surfaceFriction, 0f, 2f);
+            surface.staticFriction = Mathf.Clamp(surfaceFriction, 0f, 2f);
+            surface.bounciness = Mathf.Clamp01(surfaceBounciness);
+            collider.sharedMaterial = surface;
         }
 
         void FixedUpdate()
