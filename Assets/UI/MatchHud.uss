@@ -480,3 +480,10 @@
 .action-icon.has-icon {
     display: flex;
 }
+
+.praise-scrap {
+    border-radius: 2px;
+    border-bottom-right-radius: 8px;
+    border-top-width: 2px;
+    border-top-color: rgba(255, 255, 255, 0.92);
+}
