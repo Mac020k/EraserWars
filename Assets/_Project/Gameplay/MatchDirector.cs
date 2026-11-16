@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using EraserWars.CameraRig;
 using EraserWars.Cards;
 using EraserWars.Core;
@@ -178,6 +179,11 @@ namespace EraserWars.Gameplay
         }
 
         CharacterDefinition[] seatRoster = new CharacterDefinition[4];
+        readonly List<CardDefinition>[] seatCommons =
+        {
+            new(), new(), new(), new(),
+        };
+        readonly Dictionary<int, CardDefinition> cardById = new();
 
         public void SetSeatRoster(IReadOnlyList<CharacterDefinition> roster)
         {
@@ -187,12 +193,43 @@ namespace EraserWars.Gameplay
             }
         }
 
+        public void SetSeatCommons(int seat, IReadOnlyList<CardDefinition> commons)
+        {
+            if (seat < 0 || seat >= seatCommons.Length)
+            {
+                return;
+            }
+
+            seatCommons[seat].Clear();
+            if (commons == null)
+            {
+                return;
+            }
+
+            foreach (var card in commons)
+            {
+                if (card != null)
+                {
+                    seatCommons[seat].Add(card);
+                    cardById[card.IdValue] = card;
+                }
+            }
+        }
+
         public void StartHotseat(int playerCount)
         {
             EnsureEdgeSlowmo();
             edgeSlowmo.BeginMatch();
             ClearErasers();
-            state = MatchFactory.CreateHotseat(playerCount, RuleSet.CasualStock);
+            BuildCardIndex(playerCount);
+            var hands = new ImmutableArray<CardId>[playerCount];
+            var decks = new ImmutableArray<CardId>[playerCount];
+            for (var i = 0; i < playerCount; i++)
+            {
+                BuildSeatCards(i, out hands[i], out decks[i]);
+            }
+
+            state = MatchFactory.CreateHotseat(playerCount, RuleSet.CasualStock, hands, decks);
             for (var i = 0; i < playerCount; i++)
             {
                 var spawn = spawnPoints[i % spawnPoints.Length];
@@ -222,6 +259,74 @@ namespace EraserWars.Gameplay
             EnsureOrbitCamera()?.FrameDeskOverview();
         }
 
+        void BuildCardIndex(int playerCount)
+        {
+            cardById.Clear();
+            for (var i = 0; i < playerCount; i++)
+            {
+                var character = i < seatRoster.Length ? seatRoster[i] : null;
+                RememberCard(character?.SignatureA);
+                RememberCard(character?.SignatureB);
+                if (i < seatCommons.Length)
+                {
+                    foreach (var card in seatCommons[i])
+                    {
+                        RememberCard(card);
+                    }
+                }
+            }
+        }
+
+        void RememberCard(CardDefinition card)
+        {
+            if (card != null)
+            {
+                cardById[card.IdValue] = card;
+            }
+        }
+
+        void BuildSeatCards(int seat, out ImmutableArray<CardId> hand, out ImmutableArray<CardId> deck)
+        {
+            var pool = new List<CardDefinition>();
+            var character = seat < seatRoster.Length ? seatRoster[seat] : null;
+            if (character?.SignatureA != null)
+            {
+                pool.Add(character.SignatureA);
+            }
+
+            if (character?.SignatureB != null)
+            {
+                pool.Add(character.SignatureB);
+            }
+
+            if (seat < seatCommons.Length)
+            {
+                pool.AddRange(seatCommons[seat]);
+            }
+
+            var handLimit = character?.Eraser?.HandLimit ?? 3;
+            var handBuilder = ImmutableArray.CreateBuilder<CardId>();
+            var deckBuilder = ImmutableArray.CreateBuilder<CardId>();
+            for (var i = 0; i < pool.Count; i++)
+            {
+                var id = pool[i].Id;
+                if (handBuilder.Count < handLimit)
+                {
+                    handBuilder.Add(id);
+                }
+                else
+                {
+                    deckBuilder.Add(id);
+                }
+            }
+
+            hand = handBuilder.ToImmutable();
+            deck = deckBuilder.ToImmutable();
+        }
+
+        public bool TryGetCard(int cardId, out CardDefinition card) =>
+            cardById.TryGetValue(cardId, out card);
+
         public void Rematch()
         {
             StartHotseat(state.Players.Length);
@@ -236,6 +341,37 @@ namespace EraserWars.Gameplay
 
             state = MatchReduce.Reduce(state, new Passed(state.CurrentPlayerId));
             SyncActiveSeat();
+        }
+
+        public void PlayCard(int cardId)
+        {
+            if (state == null || IsStartMenuOpen)
+            {
+                return;
+            }
+
+            var player = state.CurrentPlayerId;
+            var beforeHand = state.Players[player.Value].Hand.Length;
+            var card = new CardId(cardId);
+            state = MatchReduce.Reduce(state, new CardPlayed(player, card));
+            if (state.Players[player.Value].Hand.Length >= beforeHand)
+            {
+                return;
+            }
+
+            if (!cardById.TryGetValue(cardId, out var definition))
+            {
+                Debug.Log($"[EraserWars] PlayCard id={cardId} phase={state.Phase} (no definition)");
+                return;
+            }
+
+            var effects = EffectSpecParser.ParseAll(definition.EffectKinds);
+            if (effects.Count > 0)
+            {
+                state = CardResolver.Apply(state, player, card, effects, target: null);
+            }
+
+            Debug.Log($"[EraserWars] PlayCard id={cardId} '{definition.DisplayName}' phase={state.Phase} effects={effects.Count}");
         }
 
         public void SubmitFlick(FlickCommand command)

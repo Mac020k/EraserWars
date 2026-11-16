@@ -32,6 +32,7 @@ namespace EraserWars.Editor
         const string FlagImportContent = "Temp/import-content.flag";
         const string FlagOpenCollection = "Temp/open-collection.flag";
         const string FlagRefreshAssets = "Temp/refresh-assets.flag";
+        const string FlagPlayFirstCard = "Temp/play-first-card.flag";
 
         static int heartbeatLeft;
         static int heartbeatLastFrame = -1;
@@ -56,6 +57,7 @@ namespace EraserWars.Editor
             TryKnockOut();
             TryRematch();
             TryOpenCollection();
+            TryPlayFirstCard();
             TryDumpUi();
             TickHeartbeat();
         }
@@ -413,6 +415,44 @@ namespace EraserWars.Editor
 
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
             Debug.Log("[EraserWars] refresh-assets: AssetDatabase.Refresh done");
+        }
+
+        static void TryPlayFirstCard()
+        {
+            if (!PeekFlag(FlagPlayFirstCard))
+            {
+                return;
+            }
+
+            if (!EditorApplication.isPlaying || EditorApplication.isCompiling)
+            {
+                return;
+            }
+
+            if (!ConsumeFlag(FlagPlayFirstCard))
+            {
+                return;
+            }
+
+            ForceUnpausedPlay();
+            var director = Object.FindAnyObjectByType<MatchDirector>();
+            if (director?.State == null || director.State.Players.Length == 0)
+            {
+                Debug.LogWarning("[EraserWars] play-first-card: no match");
+                return;
+            }
+
+            var hand = director.State.Players[director.State.CurrentPlayerId.Value].Hand;
+            if (hand.Length == 0)
+            {
+                Debug.LogWarning("[EraserWars] play-first-card: empty hand");
+                return;
+            }
+
+            var id = hand[0].Value;
+            director.PlayCard(id);
+            Debug.Log(
+                $"[EraserWars] play-first-card: played={id} phase={director.State.Phase} handLeft={director.State.Players[director.State.CurrentPlayerId.Value].Hand.Length} effects={director.State.Effects.Length}");
         }
 
         static void TryImportContent()

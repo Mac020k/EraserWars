@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using EraserWars.Cards;
 using EraserWars.Core;
 using EraserWars.Gameplay;
 using UnityEngine;
@@ -23,11 +24,13 @@ namespace EraserWars.UI
 
         VisualElement root;
         VisualElement playersRow;
+        VisualElement handRow;
         Label phaseLabel;
         Label timerLabel;
         Label turnLabel;
         VisualElement resultBanner;
         Label resultText;
+        string handFingerprint = string.Empty;
 
         sealed class PlayerPill
         {
@@ -50,6 +53,7 @@ namespace EraserWars.UI
 
             root = document.rootVisualElement.Q("root") ?? document.rootVisualElement;
             playersRow = root.Q("players");
+            handRow = root.Q("hand");
             phaseLabel = root.Q<Label>("phase");
             timerLabel = root.Q<Label>("timer");
             turnLabel = root.Q<Label>("turn");
@@ -57,6 +61,8 @@ namespace EraserWars.UI
             resultText = root.Q<Label>("result-text");
             pills.Clear();
             playersRow?.Clear();
+            handRow?.Clear();
+            handFingerprint = string.Empty;
 
             ApplyIcon(root.Q("pass-icon"), iconPass);
             root.Q<Button>("pass")?.RegisterCallback<ClickEvent>(_ => director?.Pass());
@@ -117,7 +123,54 @@ namespace EraserWars.UI
             }
 
             RefreshPills(state);
+            RefreshHand(state);
             RefreshResultBanner(state);
+        }
+
+        void RefreshHand(MatchState state)
+        {
+            if (handRow == null)
+            {
+                return;
+            }
+
+            var canPlay = state.Phase is Phase.CardSelect or Phase.Aim;
+            handRow.EnableInClassList("hidden", !canPlay || state.Phase == Phase.MatchEnd);
+            if (!canPlay)
+            {
+                return;
+            }
+
+            var player = state.Players[state.CurrentPlayerId.Value];
+            var fingerprint = $"{state.CurrentPlayerId.Value}:{state.Phase}:{player.Hand.Length}:";
+            for (var i = 0; i < player.Hand.Length; i++)
+            {
+                fingerprint += player.Hand[i].Value + ",";
+            }
+
+            if (fingerprint == handFingerprint && handRow.childCount == player.Hand.Length)
+            {
+                return;
+            }
+
+            handFingerprint = fingerprint;
+            handRow.Clear();
+            for (var i = 0; i < player.Hand.Length; i++)
+            {
+                var cardId = player.Hand[i].Value;
+                director.TryGetCard(cardId, out var definition);
+                var label = definition != null ? definition.DisplayName : $"#{cardId}";
+                var button = new Button { text = label };
+                button.AddToClassList("hand-card");
+                if (definition != null && definition.IsSignature)
+                {
+                    button.AddToClassList("signature");
+                }
+
+                var captured = cardId;
+                button.clicked += () => director?.PlayCard(captured);
+                handRow.Add(button);
+            }
         }
 
         void RefreshResultBanner(MatchState state)
@@ -216,8 +269,7 @@ namespace EraserWars.UI
             return phase switch
             {
                 Phase.TurnStart => "じゅんびちゅう",
-                // Card play is not wired into hotseat yet; CardSelect is the aiming seat.
-                Phase.CardSelect => "ねらえ!",
+                Phase.CardSelect => "カード / ねらえ!",
                 Phase.Aim => "ねらえ!",
                 Phase.Simulating => "ころがり中...",
                 Phase.Resolve => "けっか",

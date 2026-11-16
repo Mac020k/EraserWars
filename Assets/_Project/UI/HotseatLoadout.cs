@@ -20,12 +20,28 @@ namespace EraserWars.UI
 
             for (var i = 0; i < Seats.Length; i++)
             {
-                if (Seats[i] != null)
+                if (Seats[i] == null)
+                {
+                    Seats[i] = catalog.FindCharacter(i) ?? catalog.Characters[i % catalog.Characters.Count];
+                }
+
+                if (Commons[i].Count > 0 || catalog.Cards == null)
                 {
                     continue;
                 }
 
-                Seats[i] = catalog.FindCharacter(i) ?? catalog.Characters[i % catalog.Characters.Count];
+                // Seed a tiny default common package so hands are non-empty in hotseat.
+                TryAddCommon(Commons[i], catalog.FindCard(1));
+                TryAddCommon(Commons[i], catalog.FindCard(5));
+                TryAddCommon(Commons[i], catalog.FindCard(12));
+            }
+        }
+
+        static void TryAddCommon(List<CardDefinition> list, CardDefinition card)
+        {
+            if (card != null && !card.IsSignature)
+            {
+                list.Add(card);
             }
         }
     }

@@ -209,6 +209,11 @@ namespace EraserWars.UI
             selectedPlayers = playerCount;
             EnsureCatalog();
             director.SetSeatRoster(loadout.Seats);
+            for (var i = 0; i < playerCount; i++)
+            {
+                director.SetSeatCommons(i, loadout.Commons[i]);
+            }
+
             director.SetDebugChromeVisible(false);
             director.StartHotseat(playerCount);
             matchRunning = true;
