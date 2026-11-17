@@ -107,7 +107,9 @@ namespace EraserWars.Tests.EditMode
             Pref.Float(UiSettings.Keys.FlickScale),
             Pref.Float(UiSettings.Keys.UiScale),
             Pref.Float(GameSettings.BgmPercentKey),
-            Pref.Float(GameSettings.SePercentKey));
+            Pref.Float(GameSettings.SePercentKey),
+            Pref.Int(UiSettings.Keys.ReduceMotion),
+            Pref.Int(UiSettings.Keys.ColorblindSeats));
 
         readonly struct PrefSnapshot
         {
@@ -123,7 +125,9 @@ namespace EraserWars.Tests.EditMode
                 Pref flickScale,
                 Pref uiScale,
                 Pref bgmPercent,
-                Pref sePercent)
+                Pref sePercent,
+                Pref reduceMotion,
+                Pref colorblindSeats)
             {
                 prefs = new[]
                 {
@@ -137,6 +141,8 @@ namespace EraserWars.Tests.EditMode
                     uiScale,
                     bgmPercent,
                     sePercent,
+                    reduceMotion,
+                    colorblindSeats,
                 };
             }
 

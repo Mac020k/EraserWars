@@ -83,6 +83,17 @@
                         <ui:Button name="opt-ui-120" text="大" class="options-choice" />
                     </ui:VisualElement>
 
+                    <ui:Label name="opt-section-access" text="見やすさ" class="options-section" />
+                    <ui:Button name="opt-reduce-motion" text="動きを減らす: OFF" class="options-toggle" />
+                    <ui:Button name="opt-seat-palette" text="座席の色: 標準" class="options-toggle" />
+                    <ui:VisualElement name="opt-seat-swatches" class="options-swatches">
+                        <ui:VisualElement name="opt-swatch-0" class="options-swatch" />
+                        <ui:VisualElement name="opt-swatch-1" class="options-swatch" />
+                        <ui:VisualElement name="opt-swatch-2" class="options-swatch" />
+                        <ui:VisualElement name="opt-swatch-3" class="options-swatch" />
+                    </ui:VisualElement>
+                    <ui:Label name="opt-note-access" text="動きを減らすと、画面端の光は点滅せず、うすく固定されます。座席の色は次の試合のコマと表示に使います。" class="options-note" />
+
                     <ui:Label name="opt-section-dev" text="開発" class="options-section" />
                     <ui:Button name="opt-debug-mode" text="デバッグモード: ON" class="options-debug-button debug-on" />
                     <ui:Label name="opt-note-debug" text="リリース前にこのボタンを非表示にします。" class="options-note" />

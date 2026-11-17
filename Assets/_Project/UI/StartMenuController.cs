@@ -56,6 +56,8 @@ namespace EraserWars.UI
         Label flickValue;
         Label turnValue;
         Button shakeButton;
+        Button reduceMotionButton;
+        Button seatPaletteButton;
         Button uiScaleSmall;
         Button uiScaleStandard;
         Button uiScaleLarge;
@@ -191,6 +193,8 @@ namespace EraserWars.UI
             flickValue = root.Q<Label>("opt-flick-value");
             turnValue = root.Q<Label>("opt-turn-value");
             shakeButton = root.Q<Button>("opt-shake");
+            reduceMotionButton = root.Q<Button>("opt-reduce-motion");
+            seatPaletteButton = root.Q<Button>("opt-seat-palette");
             uiScaleSmall = root.Q<Button>("opt-ui-80");
             uiScaleStandard = root.Q<Button>("opt-ui-100");
             uiScaleLarge = root.Q<Button>("opt-ui-120");
@@ -224,6 +228,8 @@ namespace EraserWars.UI
                 turnSlider?.RegisterValueChangedCallback(OnTurnChanged);
                 turnSlider?.RegisterCallback<PointerUpEvent>(_ => SnapTurnSlider(), TrickleDown.TrickleDown);
                 shakeButton?.RegisterCallback<ClickEvent>(_ => ToggleCameraShake());
+                reduceMotionButton?.RegisterCallback<ClickEvent>(_ => ToggleReduceMotion());
+                seatPaletteButton?.RegisterCallback<ClickEvent>(_ => ToggleSeatPalette());
                 uiScaleSmall?.RegisterCallback<ClickEvent>(_ => SetUiScale(0.8f));
                 uiScaleStandard?.RegisterCallback<ClickEvent>(_ => SetUiScale(1f));
                 uiScaleLarge?.RegisterCallback<ClickEvent>(_ => SetUiScale(1.2f));
@@ -274,7 +280,8 @@ namespace EraserWars.UI
             Debug.Log(
                 $"[EraserWars] options applied master={settings.Master:0.00} bgm={settings.Bgm:0.00} " +
                 $"se={settings.Se:0.00} flick={settings.FlickScale:0.00} turn={settings.TurnSeconds} " +
-                $"shake={settings.CameraShake} ui={settings.UiScale:0.00} listener={AudioListener.volume:0.00}");
+                $"shake={settings.CameraShake} reduce={settings.ReduceMotion} seats={settings.ColorblindSeats} " +
+                $"ui={settings.UiScale:0.00} listener={AudioListener.volume:0.00}");
         }
 
         void ApplyOptionsLive(bool scaleChanged)
@@ -314,6 +321,24 @@ namespace EraserWars.UI
                     : UiText.Get(UiKey.OptShakeOff);
                 shakeButton.EnableInClassList("on", settings.CameraShake);
             }
+
+            if (reduceMotionButton != null)
+            {
+                reduceMotionButton.text = settings.ReduceMotion
+                    ? UiText.Get(UiKey.OptReduceOn)
+                    : UiText.Get(UiKey.OptReduceOff);
+                reduceMotionButton.EnableInClassList("on", settings.ReduceMotion);
+            }
+
+            if (seatPaletteButton != null)
+            {
+                seatPaletteButton.text = settings.ColorblindSeats
+                    ? UiText.Get(UiKey.OptPaletteOn)
+                    : UiText.Get(UiKey.OptPaletteOff);
+                seatPaletteButton.EnableInClassList("on", settings.ColorblindSeats);
+            }
+
+            PaintSeatSwatches(settings.ColorblindSeats);
 
             uiScaleSmall?.EnableInClassList("selected", settings.UiScale < 0.9f);
             uiScaleStandard?.EnableInClassList("selected", settings.UiScale >= 0.9f && settings.UiScale < 1.1f);
@@ -401,6 +426,35 @@ namespace EraserWars.UI
         void ToggleCameraShake()
         {
             CommitOptions(GameSettings.Current with { CameraShake = !GameSettings.Current.CameraShake });
+        }
+
+        void ToggleReduceMotion()
+        {
+            CommitOptions(GameSettings.Current with { ReduceMotion = !GameSettings.Current.ReduceMotion });
+        }
+
+        void ToggleSeatPalette()
+        {
+            CommitOptions(GameSettings.Current with { ColorblindSeats = !GameSettings.Current.ColorblindSeats });
+        }
+
+        void PaintSeatSwatches(bool colorblind)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < SeatPalette.Count; i++)
+            {
+                var swatch = root.Q($"opt-swatch-{i}");
+                if (swatch == null)
+                {
+                    continue;
+                }
+
+                swatch.style.backgroundColor = SeatPalette.Ui(i, colorblind);
+            }
         }
 
         void SetUiScale(float scale)
