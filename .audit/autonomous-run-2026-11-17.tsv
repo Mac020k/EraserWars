@@ -41,3 +41,4 @@
 2026-11-17T08:57:57+09:00	absorb-tick13	wave5 2/6; ready=	main@ca4370e	ok
 2026-11-17T09:00:22+09:00	merge	merged agent/secret-room-stub@ae5d1ea	wave5 3/6	main@0cd4d92	merged
 2026-11-17T09:02:02+09:00	merge	merged agent/options-accessibility@88c7ec3	wave5 4/6	main@f06ee68	merged
+2026-11-17T09:06:19+09:00	merge	merged agent/collection-unlock-fx@5f2c358	wave5 5/6	main@a923678	merged
