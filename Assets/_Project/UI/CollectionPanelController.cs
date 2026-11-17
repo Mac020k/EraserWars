@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using EraserWars.Cards;
+using EraserWars.Persistence;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -17,6 +18,9 @@ namespace EraserWars.UI
         VisualElement portrait;
         Button tabCharacters;
         Button tabCards;
+        public const string UnlockFlashClass = "unlock-flash";
+        const long UnlockFlashMs = 650;
+        readonly HashSet<int> visitFlashes = new();
         string mode = "characters";
         string filter = "all";
         int selectedCharacterId = -1;
@@ -201,10 +205,12 @@ namespace EraserWars.UI
                     continue;
                 }
 
-                var unlocked = character.UnlockedByDefault;
+                var unlocked = IsUnlocked(character);
+                var flash = BeginFaceFlash(character.IdValue);
                 var tile = new Button();
                 tile.AddToClassList("char-tile");
                 tile.EnableInClassList("locked", !unlocked);
+                tile.EnableInClassList(UnlockFlashClass, flash);
                 tile.EnableInClassList("selected", character.IdValue == selectedCharacterId);
 
                 var art = new VisualElement();
@@ -227,6 +233,10 @@ namespace EraserWars.UI
                 var captured = character;
                 tile.clicked += () => ShowCharacter(captured);
                 strip.Add(tile);
+                if (flash)
+                {
+                    ScheduleFlashEnd(tile, character.IdValue);
+                }
                 shown++;
             }
 
@@ -282,7 +292,7 @@ namespace EraserWars.UI
                 return;
             }
 
-            var unlocked = character.UnlockedByDefault;
+            var unlocked = IsUnlocked(character);
             detailTitle.text = unlocked ? character.DisplayName : character.MaskedDisplayName;
             var archetype = unlocked
                 ? CharacterArchetypes.DisplayJa(character.ArchetypeKey)
@@ -376,6 +386,47 @@ namespace EraserWars.UI
             {
                 detailUnlock.text = string.Empty;
             }
+        }
+
+        bool IsUnlocked(CharacterDefinition character)
+        {
+            return character.UnlockedByDefault || CharacterUnlocks.IsEarned(character.IdValue);
+        }
+
+        bool BeginFaceFlash(int characterId)
+        {
+            if (visitFlashes.Contains(characterId))
+            {
+                return true;
+            }
+
+            if (!CharacterUnlocks.ConsumeFlash(characterId))
+            {
+                return false;
+            }
+
+            visitFlashes.Add(characterId);
+            return true;
+        }
+
+        void ScheduleFlashEnd(VisualElement tile, int characterId)
+        {
+            if (tile.panel == null)
+            {
+                return;
+            }
+
+            tile.schedule.Execute(() =>
+            {
+                tile.RemoveFromClassList(UnlockFlashClass);
+                if (tile.parent == null)
+                {
+                    // A rebuild already replaced this tile. Leave the visit flash for the new one.
+                    return;
+                }
+
+                visitFlashes.Remove(characterId);
+            }).ExecuteLater(UnlockFlashMs);
         }
 
         static string FormatPassiveLabel(string passiveKey)

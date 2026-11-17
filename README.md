@@ -186,6 +186,8 @@ On a gamepad, the left stick aims on the camera's horizontal plane. Up flies awa
 7. During Simulating, an eraser within 0.05 m of the outer desk edge, or dropping through the 0.05 m slice under the desk marker, slows time to 0.4 for 0.22 seconds. While that slow runs, MatchHud paints a dark rim vignette that clears when the slow ends (reduce-motion prefers a flat edge). An eraser-hit freeze cancels that slow, and the next one waits until every eraser has left the zone and 0.6 seconds from the start have passed.
 
 `EraserWars > Import All Content CSV` imports cards (`Assets/Data/Csv/cards.csv` → `Assets/Data/Cards/`), erasers / characters (`erasers.csv`, `characters.csv` → `Assets/Data/Erasers/`, `Assets/Data/Characters/`), and refreshes `Assets/Resources/EraserWars/ContentCatalog.asset`. The Start Menu **コレクション** panel browses that catalog (20 characters, 50 cards, school-motif filters).
+`CharacterUnlocks.Grant` stores an extra character id in PlayerPrefs.
+The next character strip draws that face unlocked and adds `unlock-flash` for 650 ms.
 
 ## Fish-Net spike
 
