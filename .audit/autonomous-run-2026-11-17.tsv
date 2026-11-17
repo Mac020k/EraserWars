@@ -38,3 +38,5 @@
 2026-11-17T08:47:55+09:00	absorb-tick12	wave4 6/6; wave5 0/6; ready=	main@9da9d90	ok
 2026-11-17T08:52:52+09:00	merge	merged agent/hotseat-e2e-harness@e4f3986	wave5 1/6	main@99cc19c	merged
 2026-11-17T08:56:31+09:00	merge	merged agent/replay-stub@6ab9dfc; fix Cutoff UiText after loc	wave5 2/6	main	merged
+2026-11-17T08:57:57+09:00	absorb-tick13	wave5 2/6; ready=	main@ca4370e	ok
+2026-11-17T09:00:22+09:00	merge	merged agent/secret-room-stub@ae5d1ea	wave5 3/6	main@0cd4d92	merged
