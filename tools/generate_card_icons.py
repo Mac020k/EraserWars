@@ -150,6 +150,252 @@ SYMBOLS = [
     ("Star", "star"),
 ]
 
+REUSE = {
+    "SwapPositions": "swap",
+    "ExtraFlick": "extra",
+    "RevealTrajectory:2": "sight",
+    "Teleport:0.5:0.5": "pin",
+    "RestoreStock:1": "heart",
+    "ModifyRule:CenterBias:0.3:1": "center",
+    "GrantShield:0.5:1": "shield",
+}
+
+
+def dumbbell(plate_w, plate_h):
+    x = (VIEW - plate_w) / 2
+    return [
+        rect(x, 4, plate_w, plate_h, INK, 4),
+        rect(28, plate_h, 8, VIEW - plate_h * 2, INK),
+        rect(x, VIEW - 4 - plate_h, plate_w, plate_h, INK, 4),
+    ]
+
+
+def build_effect_shapes():
+    clock_slash = list(ICONS["clock"]) + [poly([(8, 54), (16, 60), (56, 12), (48, 6)], INK)]
+    shield_cross = list(ICONS["shield"]) + [rect(16, 26, 32, 8, PAPER)]
+    return {
+        "ModifyStat:Mass:1.5:1": dumbbell(36, 12),
+        "ModifyStat:Mass:1.8:1": dumbbell(48, 16),
+        "ModifyStat:Mass:2.2:1": dumbbell(58, 20),
+        "ModifyStat:Friction:0.5:1": [
+            poly([(6, 8), (34, 22), (6, 36)], INK),
+            poly([(30, 28), (58, 42), (30, 56)], INK),
+        ],
+        "ModifyStat:Friction:2:2": [
+            rect(24, 6, 16, 10, INK, 2),
+            rect(16, 16, 32, 40, INK, 8),
+            rect(24, 28, 16, 16, PAPER),
+        ],
+        "ModifyStat:Friction:2.5:1": [
+            circle(30, 32, 20, INK),
+            circle(30, 32, 8, PAPER),
+            rect(36, 26, 24, 12, INK, 2),
+        ],
+        "ModifyStat:Friction:3:1": [
+            rect(8, 8, 48, 48, INK, 8),
+            circle(22, 24, 5, PAPER),
+            circle(42, 24, 5, PAPER),
+            circle(32, 42, 5, PAPER),
+        ],
+        "ModifyStat:Bounciness:1.4:1": [
+            rect(10, 52, 44, 6, INK, 2),
+            circle(32, 36, 10, INK),
+            poly([(32, 8), (42, 20), (22, 20)], INK),
+        ],
+        "ModifyStat:Bounciness:1.8:1": [
+            rect(4, 54, 56, 6, INK, 2),
+            circle(32, 32, 18, INK),
+            poly([(32, 2), (48, 16), (16, 16)], INK),
+        ],
+        "ModifyStat:Power:1.15:1": [poly(star(32, 34, 16, 6, 4), INK)],
+        "ModifyStat:Power:1.25:1": [poly(star(32, 32, 26, 10, 4), INK)],
+        "ModifyStat:Power:1.35:1": [poly(star(32, 32, 26, 11, 6), INK)],
+        "ModifyStat:Power:1.8:1": [poly(star(32, 32, 28, 12, 8), INK)],
+        "ModifyStat:Speed:1.3:1": [
+            poly([(6, 6), (48, 18), (6, 30)], INK),
+            poly([(6, 34), (48, 46), (6, 58)], INK),
+        ],
+        "ModifyStat:Speed:1.5:1": [
+            poly([(8, 4), (54, 12), (8, 20)], INK),
+            poly([(8, 24), (54, 32), (8, 40)], INK),
+            poly([(8, 44), (54, 52), (8, 60)], INK),
+        ],
+        "ModifyFlick:1:0:1": [
+            poly([(4, 26), (40, 32), (4, 38)], INK),
+            circle(50, 32, 8, INK),
+        ],
+        "ModifyFlick:1.4:1:2": [
+            poly([(4, 16), (38, 32), (4, 48)], INK),
+            circle(50, 32, 12, INK),
+            poly(star(16, 12, 8, 3, 4), INK),
+        ],
+        "ModifyFlick:1:0.5:1": [
+            poly([(4, 22), (46, 32), (4, 42)], INK),
+            poly([(24, 40), (36, 52), (18, 56)], INK),
+        ],
+        "ModifyFlick:1:0:0.5": [
+            poly([(8, 26), (28, 32), (8, 38)], INK),
+            circle(40, 32, 6, INK),
+        ],
+        "ModifyRule:OpponentTurnTime:0.3:1": [
+            circle(26, 32, 18, INK),
+            circle(38, 26, 14, PAPER),
+            rect(48, 12, 10, 4, INK),
+            rect(54, 12, 4, 10, INK),
+        ],
+        "ModifyRule:OpponentTurnTime:0.5:1": [
+            rect(10, 8, 44, 8, INK, 3),
+            poly([(12, 40), (32, 22), (52, 40), (32, 52)], INK),
+            circle(32, 38, 5, PAPER),
+        ],
+        "ModifyRule:OpponentTurnTime:0.6:1": [
+            circle(36, 36, 16, INK),
+            circle(14, 28, 8, INK),
+            rect(18, 48, 10, 8, INK, 2),
+            rect(40, 48, 10, 8, INK, 2),
+            rect(24, 18, 10, 8, INK, 2),
+        ],
+        "ModifyRule:OpponentTurnTime:0.8:1": [
+            poly([(10, 6), (40, 6), (54, 20), (54, 58), (10, 58)], INK),
+            rect(18, 18, 26, 6, PAPER),
+            rect(18, 30, 20, 6, PAPER),
+            rect(18, 42, 24, 6, PAPER),
+        ],
+        "ModifyRule:SelfTurnTime:1.2:1": [
+            poly([(32, 6), (50, 18), (46, 40), (18, 40), (14, 18)], INK),
+            rect(28, 40, 8, 8, INK),
+            rect(16, 50, 32, 6, INK, 2),
+            circle(32, 26, 4, PAPER),
+        ],
+        "ModifyRule:SelfTurnTime:1.5:1": [
+            poly([(22, 8), (40, 18), (36, 38), (14, 38), (10, 18)], INK),
+            rect(44, 14, 8, 24, INK),
+            rect(36, 22, 24, 8, INK),
+            rect(12, 50, 28, 6, INK, 2),
+        ],
+        "ModifyRule:CooldownCut:0.5:1": clock_slash,
+        "ModifyRule:HideTrajectory:1:1": [
+            poly([(4, 32), (18, 18), (32, 16), (46, 18), (60, 32), (46, 46), (32, 48), (18, 46)], INK),
+            poly([(14, 16), (24, 16), (50, 50), (40, 50)], INK),
+            poly([(40, 16), (50, 16), (24, 50), (14, 50)], INK),
+        ],
+        "ModifyRule:PushEdge:0.4:1": [
+            rect(50, 8, 8, 48, INK),
+            poly([(8, 24), (30, 32), (8, 40)], INK),
+        ],
+        "ModifyRule:PushEdge:0.7:1": [
+            rect(54, 4, 8, 56, INK),
+            rect(6, 28, 22, 8, INK),
+            poly([(20, 16), (48, 32), (20, 48)], INK),
+        ],
+        "PlaceDeskObject:RulerWall:2": [
+            rect(4, 26, 56, 14, INK, 2),
+            rect(12, 26, 3, 7, PAPER),
+            rect(22, 26, 3, 7, PAPER),
+            rect(32, 26, 3, 7, PAPER),
+            rect(42, 26, 3, 7, PAPER),
+            rect(52, 26, 3, 7, PAPER),
+        ],
+        "PlaceDeskObject:DustPatch:2": [
+            circle(14, 16, 5, INK),
+            circle(36, 12, 4, INK),
+            circle(52, 24, 3, INK),
+            circle(24, 34, 7, INK),
+            circle(46, 40, 5, INK),
+            circle(16, 50, 4, INK),
+        ],
+        "PlaceDeskObject:DustPile:2": [
+            poly([(6, 54), (58, 54), (32, 14)], INK),
+            circle(24, 42, 4, PAPER),
+            circle(40, 36, 3, PAPER),
+        ],
+        "PlaceDeskObject:ClearDust:1": [
+            rect(30, 4, 6, 34, INK),
+            rect(10, 34, 44, 8, INK, 2),
+            rect(14, 42, 4, 16, INK),
+            rect(24, 42, 4, 16, INK),
+            rect(34, 42, 4, 16, INK),
+            rect(44, 42, 4, 16, INK),
+        ],
+        "PlaceDeskObject:Cone:2": [
+            poly([(32, 4), (54, 56), (10, 56)], INK),
+            rect(20, 34, 24, 8, PAPER),
+        ],
+        "GrantShield:1:2": shield_cross,
+        "GrantShield:1:3": [
+            poly([(32, 2), (60, 16), (56, 36), (32, 62), (8, 36), (4, 16)], INK),
+            rect(16, 20, 32, 6, PAPER),
+            rect(16, 32, 32, 6, PAPER),
+            rect(16, 44, 32, 6, PAPER),
+        ],
+        "GrantWeapon:0.1:1": [
+            poly([(32, 2), (40, 16), (36, 16), (36, 54), (28, 54), (28, 16), (24, 16)], INK),
+            rect(29, 36, 6, 8, PAPER),
+        ],
+        "GrantWeapon:0.15:1": [
+            poly([(32, 4), (48, 22), (42, 56), (22, 56), (16, 22)], INK),
+            rect(26, 30, 12, 8, PAPER),
+        ],
+        "GrantWeapon:0.18:1": [
+            circle(32, 34, 22, INK),
+            rect(6, 34, 52, 26, PAPER),
+            rect(6, 30, 52, 6, INK),
+        ],
+        "GrantWeapon:0.2:1": [
+            rect(16, 28, 36, 16, INK, 3),
+            rect(20, 12, 28, 18, INK, 3),
+            rect(26, 16, 14, 8, PAPER),
+            rect(20, 46, 8, 10, INK),
+            rect(36, 46, 8, 10, INK),
+        ],
+        "GrantWeapon:0.25:1": [
+            rect(14, 12, 10, 36, INK, 4),
+            rect(40, 16, 10, 36, INK, 4),
+            rect(14, 8, 36, 10, INK, 4),
+            rect(18, 46, 28, 10, INK, 4),
+        ],
+        "GrantWeapon:0.28:1": [
+            rect(26, 4, 12, 12, INK, 2),
+            poly([(18, 16), (46, 16), (52, 56), (12, 56)], INK),
+            circle(24, 30, 4, PAPER),
+            circle(40, 38, 5, PAPER),
+            circle(30, 48, 4, PAPER),
+        ],
+        "GrantWeapon:0.3:1": [
+            rect(14, 30, 36, 14, INK, 2),
+            rect(18, 14, 26, 18, INK, 2),
+            poly([(6, 6), (16, 6), (58, 58), (48, 58)], INK),
+            poly([(48, 6), (58, 6), (16, 58), (6, 58)], INK),
+        ],
+    }
+
+
+def effect_shapes(effect):
+    if effect in REUSE:
+        return ICONS[REUSE[effect]]
+    custom = build_effect_shapes()
+    if effect not in custom:
+        raise SystemExit(f"no icon for {effect}")
+    return custom[effect]
+
+
+def fx_slug(effect):
+    return "fx-" + effect.replace(":", "-").replace(".", "_")
+
+
+def catalog_effects():
+    path = ROOT / "Assets" / "Data" / "Csv" / "cards.csv"
+    seen = []
+    known = set()
+    for line in path.read_text(encoding="utf-8").splitlines()[1:]:
+        if not line.strip():
+            continue
+        effect = line.split(",")[10]
+        if effect not in known:
+            known.add(effect)
+            seen.append(effect)
+    return seen
+
 
 def fmt_num(value):
     if isinstance(value, float) and not value.is_integer():
@@ -316,7 +562,7 @@ def top_first(buf, size, flip_y):
     return rows
 
 
-def emit_cs(markups):
+def emit_cs(markups, card_markups):
     cases = []
     fields = []
     names = []
@@ -329,6 +575,14 @@ def emit_cs(markups):
         )
         escaped = markups[key].replace('"', '""')
         fields.append(f"        const string {enum_name} =\n@\"{escaped}\";")
+    card_cases = []
+    for index, (effect, markup) in enumerate(card_markups.items()):
+        const = f"Fx{index}"
+        escaped = markup.replace('"', '""')
+        fields.append(f"        const string {const} =\n@\"{escaped}\";")
+        card_cases.append(
+            f'                case "{effect}":\n                    markup = {const};\n                    return true;'
+        )
     return (
         "using System;\n"
         "using EraserWars.Cards;\n"
@@ -347,6 +601,17 @@ def emit_cs(markups):
         + "            }\n"
         + "        }\n"
         + "\n"
+        + "        public static bool TryMarkup(string iconKey, out string markup)\n"
+        + "        {\n"
+        + "            switch (iconKey)\n"
+        + "            {\n"
+        + "\n".join(card_cases)
+        + "\n                default:\n"
+        + "                    markup = null;\n"
+        + "                    return false;\n"
+        + "            }\n"
+        + "        }\n"
+        + "\n"
         + "        public static string FileName(CardSymbol symbol)\n"
         + "        {\n"
         + "            switch (symbol)\n"
@@ -355,6 +620,11 @@ def emit_cs(markups):
         + "\n                default:\n"
         + '                    throw new InvalidOperationException($"Unhandled CardSymbol {symbol}");\n'
         + "            }\n"
+        + "        }\n"
+        + "\n"
+        + "        public static string EffectFileName(string iconKey)\n"
+        + "        {\n"
+        + '            return "fx-" + iconKey.Replace(":", "-").Replace(".", "_") + ".svg";\n'
         + "        }\n"
         + "\n"
         + "\n\n".join(fields)
@@ -509,6 +779,42 @@ def draw_digit(pixels, width, x, y, digit, color):
                         pixels[(y + row * 2 + py) * width + x + col * 2 + px] = (*color, 255)
 
 
+def write_svg_meta(path):
+    meta_path = Path(str(path) + ".meta")
+    if meta_path.exists():
+        return
+    template = (ICON_DIR / "weight.svg.meta").read_text(encoding="utf-8")
+    import uuid
+
+    guid = uuid.uuid4().hex
+    lines = template.splitlines()
+    replaced = False
+    out = []
+    for line in lines:
+        if not replaced and line.startswith("guid: "):
+            out.append("guid: " + guid)
+            replaced = True
+        else:
+            out.append(line)
+    meta_path.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+
+
+def assert_distinct(card_markups):
+    rasters = {}
+    for effect, markup in card_markups.items():
+        up = raster(markup, 96, True)
+        down = raster(markup, 96, False)
+        if top_first(up, 96, True) != down:
+            raise SystemExit(f"flip check failed for {effect}")
+        rasters[effect] = up
+    effects = list(rasters)
+    for i, left in enumerate(effects):
+        for right in effects[i + 1 :]:
+            differ = sum(1 for a, b in zip(rasters[left], rasters[right]) if a != b)
+            if differ < 120:
+                raise SystemExit(f"icons too similar ({differ} px): {left} vs {right}")
+
+
 def main():
     markups = {key: to_svg(shapes) for key, shapes in ICONS.items()}
     yup = raster(markups["shield"], 64, True)
@@ -521,12 +827,19 @@ def main():
         if top_first(up, 96, True) != down:
             raise SystemExit(f"flip check failed for {key}")
 
+    card_markups = {effect: to_svg(effect_shapes(effect)) for effect in catalog_effects()}
+    assert_distinct(card_markups)
+
     ICON_DIR.mkdir(parents=True, exist_ok=True)
     for key, markup in markups.items():
         (ICON_DIR / f"{key}.svg").write_text(markup, encoding="utf-8", newline="\n")
-    CS_PATH.write_text(emit_cs(markups), encoding="utf-8", newline="\n")
+    for effect, markup in card_markups.items():
+        path = ICON_DIR / f"{fx_slug(effect)}.svg"
+        path.write_text(markup, encoding="utf-8", newline="\n")
+        write_svg_meta(path)
+    CS_PATH.write_text(emit_cs(markups, card_markups), encoding="utf-8", newline="\n")
     paint_sheet(markups)
-    print(f"wrote {len(markups)} icons and {SHEET_PATH}")
+    print(f"wrote {len(markups)} family icons, {len(card_markups)} effect icons, and {SHEET_PATH}")
 
 
 if __name__ == "__main__":

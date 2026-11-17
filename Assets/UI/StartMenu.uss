@@ -663,6 +663,52 @@
     border-color: rgb(255, 248, 220);
 }
 
+.collection-filter.filter-kiai {
+    background-color: rgb(214, 24, 40);
+    color: rgb(255, 248, 246);
+    border-color: rgb(120, 16, 24);
+}
+
+.collection-filter.filter-homework {
+    background-color: rgb(12, 92, 214);
+    color: rgb(244, 248, 255);
+    border-color: rgb(8, 40, 110);
+}
+
+.collection-filter.filter-seat {
+    background-color: rgb(8, 150, 64);
+    color: rgb(244, 255, 246);
+    border-color: rgb(6, 72, 32);
+}
+
+.collection-filter.filter-stationery {
+    background-color: rgb(230, 128, 8);
+    color: rgb(48, 24, 8);
+    border-color: rgb(120, 64, 4);
+}
+
+.collection-filter.filter-cover {
+    background-color: rgb(214, 32, 104);
+    color: rgb(255, 244, 248);
+    border-color: rgb(110, 12, 48);
+}
+
+.collection-filter.filter-signature {
+    background-color: rgb(232, 184, 72);
+    color: rgb(42, 28, 8);
+    border-color: rgb(120, 84, 16);
+}
+
+.collection-filter.filter-kiai.selected,
+.collection-filter.filter-homework.selected,
+.collection-filter.filter-seat.selected,
+.collection-filter.filter-stationery.selected,
+.collection-filter.filter-cover.selected,
+.collection-filter.filter-signature.selected {
+    border-width: 3px;
+    border-color: rgb(255, 248, 230);
+}
+
 .collection-strip-scroll {
     height: 268px;
     flex-shrink: 0;
@@ -750,6 +796,7 @@
     background-repeat: no-repeat;
     background-position-x: center;
     background-position-y: 8%;
+    -unity-background-scale-mode: scale-and-crop;
 }
 
 .char-tile .char-tile-art {
@@ -956,6 +1003,49 @@
     translate: 0 0;
 }
 
+.card-tile.selected {
+    border-color: rgb(255, 244, 210);
+    border-width: 4px;
+}
+
+.collection-hero-card {
+    width: 196px;
+    height: 274px;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.collection-hero-card .card-effect-icon {
+    top: 44px;
+    left: 42px;
+    width: 112px;
+    height: 112px;
+}
+
+.collection-hero-card .card-ribbon {
+    top: 176px;
+    height: 22px;
+    font-size: 13px;
+}
+
+.collection-hero-card .card-face-body {
+    height: 46px;
+}
+
+.collection-hero-card .card-face-name {
+    white-space: normal;
+}
+
+.collection-hero-card .card-cost-gem {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+}
+
+.collection-hero-card .card-cost-value {
+    font-size: 18px;
+}
+
 .collection-feature {
     flex-grow: 1;
     flex-direction: row;
@@ -1079,6 +1169,27 @@
     background-color: rgb(255, 210, 80);
     color: rgb(30, 28, 36);
     border-color: rgb(40, 40, 48);
+}
+
+.collection-card-slots {
+    flex-direction: row;
+    width: 210px;
+    margin-top: 8px;
+}
+
+.collection-card-slot {
+    flex-grow: 1;
+    min-height: 72px;
+    margin-right: 8px;
+    padding: 8px 6px;
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: rgb(255, 200, 64);
+    background-color: rgba(16, 20, 32, 0.92);
+}
+
+#collection-play-slot {
+    margin-right: 0;
 }
 
 .collection-detail {

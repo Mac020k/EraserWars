@@ -36,6 +36,9 @@ namespace EraserWars.UI
         Button modeDesign;
         Button tabCharacters;
         Button tabCards;
+        VisualElement cardSlots;
+        Label grantCaption;
+        Label playCaption;
         public const string UnlockFlashClass = "unlock-flash";
         const long UnlockFlashMs = 650;
         const string PreviewWiredClass = "preview-wired";
@@ -43,6 +46,7 @@ namespace EraserWars.UI
         string mode = "characters";
         string filter = "all";
         int selectedCharacterId = -1;
+        int selectedCardId = -1;
         CollectionPreviewMode previewMode = CollectionPreviewMode.Still;
 
         public CollectionPanelController(ContentCatalog catalog)
@@ -169,8 +173,20 @@ namespace EraserWars.UI
             modeStill = EnsureButton(modes, "collection-mode-still", "collection-preview-mode", "立ち絵");
             mode3d = EnsureButton(modes, "collection-mode-3d", "collection-preview-mode", "3D");
             modeDesign = EnsureButton(modes, "collection-mode-design", "collection-preview-mode", "デザイン");
+            EnsureCardSlots(preview ?? stage?.parent);
             previewMode = ReadPreviewMode();
             ApplyPreviewVisibility();
+        }
+
+        void EnsureCardSlots(VisualElement preview)
+        {
+            cardSlots = EnsureElement(preview, "collection-card-slots", "collection-card-slots", "hidden");
+            var grant = EnsureElement(cardSlots, "collection-grant-slot", "collection-card-slot");
+            EnsureLabel(grant, "collection-grant-kicker", "collection-preview-kicker", "付与演出");
+            grantCaption = EnsureLabel(grant, "collection-grant-caption", "collection-slot-caption", "準備中");
+            var play = EnsureElement(cardSlots, "collection-play-slot", "collection-card-slot");
+            EnsureLabel(play, "collection-play-kicker", "collection-preview-kicker", "プレイ演出");
+            playCaption = EnsureLabel(play, "collection-play-caption", "collection-slot-caption", "準備中");
         }
 
         void WirePreviewModes()
@@ -299,10 +315,36 @@ namespace EraserWars.UI
             tabCards?.EnableInClassList("selected", mode == "cards");
             filter = "all";
             selectedCharacterId = -1;
+            selectedCardId = -1;
             SetPreviewMode(CollectionPreviewMode.Still);
+            ApplyCollectionChrome();
+            if (mode == "cards")
+            {
+                CollectionDisplay.FitCardFrame(stage);
+            }
+            else
+            {
+                CollectionDisplay.FitStillFrame(stage, CollectionDisplay.StillLockedSize, CollectionDisplay.StillLockedSize);
+            }
+
             RebuildFilters();
             RebuildList();
             ClearDetail(mode == "characters" ? "キャラを選んでください" : "カードを選んでください");
+            if (mode == "cards")
+            {
+                var first = FirstListedCard();
+                if (first != null)
+                {
+                    ShowCard(first);
+                }
+            }
+        }
+
+        void ApplyCollectionChrome()
+        {
+            var cards = mode == "cards";
+            cardSlots?.EnableInClassList("hidden", !cards);
+            panel?.Q("collection-preview-modes")?.EnableInClassList("hidden", cards);
         }
 
         void RebuildFilters()
@@ -347,17 +389,43 @@ namespace EraserWars.UI
                 button.Add(icon);
             }
 
+            if (mode == "cards" && key != "all")
+            {
+                button.AddToClassList("filter-" + key);
+            }
+
             var caption = new Label(label) { pickingMode = PickingMode.Ignore };
             caption.AddToClassList("collection-filter-label");
             button.Add(caption);
             var captured = key;
-            button.clicked += () =>
-            {
-                filter = captured;
-                RebuildFilters();
-                RebuildList();
-            };
+            button.clicked += () => ApplyFilter(captured);
             row.Add(button);
+        }
+
+        void ApplyFilter(string key)
+        {
+            filter = key;
+            RebuildFilters();
+            RebuildList();
+            if (mode != "cards")
+            {
+                return;
+            }
+
+            if (IsCardListed(selectedCardId))
+            {
+                return;
+            }
+
+            var first = FirstListedCard();
+            if (first != null)
+            {
+                ShowCard(first);
+                return;
+            }
+
+            selectedCardId = -1;
+            ClearCardHero();
         }
 
         static string FilterMotifClass(string key)
@@ -515,6 +583,7 @@ namespace EraserWars.UI
 
                 var tile = new Button { text = string.Empty };
                 CardFaceBuilder.Paint(tile, card, CardSurface.Collection);
+                tile.EnableInClassList("selected", card.IdValue == selectedCardId);
                 var captured = card;
                 tile.clicked += () => ShowCard(captured);
                 strip.Add(tile);
@@ -757,6 +826,7 @@ namespace EraserWars.UI
             }
 
             portrait.Clear();
+            portrait.EnableInClassList("showing-card", false);
             portrait.EnableInClassList("locked", !unlocked);
             stage?.EnableInClassList("locked", !unlocked);
             if (!unlocked || character.Portrait == null)
@@ -778,12 +848,30 @@ namespace EraserWars.UI
 
         void ShowCard(CardDefinition card)
         {
+            if (card == null)
+            {
+                return;
+            }
+
+            selectedCardId = card.IdValue;
+            SetPreviewMode(CollectionPreviewMode.Still);
+            PaintHero(card);
+            if (grantCaption != null)
+            {
+                grantCaption.text = card.DisplayName;
+            }
+
+            if (playCaption != null)
+            {
+                playCaption.text = card.DisplayName;
+            }
+
+            RebuildList();
             if (detailTitle == null)
             {
                 return;
             }
 
-            SetPreviewMode(CollectionPreviewMode.Still);
             detailTitle.text = card.DisplayName;
             archRow?.Clear();
             subjects?.Clear();
@@ -810,11 +898,95 @@ namespace EraserWars.UI
             {
                 detailUnlock.text = card.IsSignature ? "キャラ固有" : "コモンプール";
             }
+        }
 
+        void PaintHero(CardDefinition card)
+        {
+            if (portrait == null)
+            {
+                return;
+            }
+
+            portrait.Clear();
+            UiImageUtil.Clear(portrait);
+            portrait.EnableInClassList("locked", false);
+            portrait.EnableInClassList("showing-card", true);
+            stage?.EnableInClassList("locked", false);
+            var hero = new VisualElement { name = "collection-hero-card", pickingMode = PickingMode.Ignore };
+            CardFaceBuilder.Paint(hero, card, CardSurface.Showcase);
+            portrait.Add(hero);
+            CollectionDisplay.FitCardFrame(stage);
+        }
+
+        void ClearCardHero()
+        {
             portrait?.Clear();
+            portrait?.EnableInClassList("showing-card", false);
             portrait?.EnableInClassList("locked", false);
             UiImageUtil.Clear(portrait);
-            CollectionDisplay.FitStillFrame(stage, CollectionDisplay.StillLockedSize, CollectionDisplay.StillLockedSize);
+            if (mode == "cards")
+            {
+                CollectionDisplay.FitCardFrame(stage);
+            }
+
+            if (grantCaption != null)
+            {
+                grantCaption.text = "準備中";
+            }
+
+            if (playCaption != null)
+            {
+                playCaption.text = "準備中";
+            }
+        }
+
+        CardDefinition FirstListedCard()
+        {
+            var cards = catalog?.Cards;
+            if (cards == null)
+            {
+                return null;
+            }
+
+            for (var i = 0; i < cards.Count; i++)
+            {
+                var card = cards[i];
+                if (card == null)
+                {
+                    continue;
+                }
+
+                if (filter != "all" && card.FamilyKey != filter)
+                {
+                    continue;
+                }
+
+                return card;
+            }
+
+            return null;
+        }
+
+        bool IsCardListed(int id)
+        {
+            var cards = catalog?.Cards;
+            if (cards == null)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < cards.Count; i++)
+            {
+                var card = cards[i];
+                if (card == null || card.IdValue != id)
+                {
+                    continue;
+                }
+
+                return filter == "all" || card.FamilyKey == filter;
+            }
+
+            return false;
         }
 
         void ClearDetail(string title)
@@ -848,8 +1020,19 @@ namespace EraserWars.UI
             subjects?.Clear();
             signatures?.Clear();
             portrait?.Clear();
+            portrait?.EnableInClassList("showing-card", false);
             portrait?.EnableInClassList("locked", false);
             UiImageUtil.Clear(portrait);
+            if (grantCaption != null)
+            {
+                grantCaption.text = "準備中";
+            }
+
+            if (playCaption != null)
+            {
+                playCaption.text = "準備中";
+            }
+
             if (slot3d != null)
             {
                 slot3d.text = "モデル枠";

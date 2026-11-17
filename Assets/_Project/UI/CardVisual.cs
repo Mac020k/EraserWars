@@ -6,12 +6,13 @@ using UnityEngine.UIElements;
 
 namespace EraserWars.UI
 {
-    public enum CardSurface
-    {
-        Collection,
-        Hand,
-        CutIn,
-    }
+        public enum CardSurface
+        {
+            Collection,
+            Hand,
+            CutIn,
+            Showcase,
+        }
 
     public static class CardFaceBuilder
     {
@@ -23,6 +24,7 @@ namespace EraserWars.UI
             }
 
             var symbol = CardGlance.Primary(card.FamilyKey, card.EffectKinds);
+            var iconKey = CardGlance.IconKey(card.FamilyKey, card.EffectKinds);
             Prepare(host, surface, FamilyClass(card.FamilyKey), card.IsSignature);
             host.tooltip = CardGlance.LabelJa(symbol);
 
@@ -32,7 +34,7 @@ namespace EraserWars.UI
 
             var icon = Layer("card-icon", "card-effect-icon");
             icon.tooltip = CardGlance.LabelJa(symbol);
-            UiImageUtil.ApplyGlyph(icon, CardIconLibrary.Icon(symbol));
+            UiImageUtil.ApplyGlyph(icon, CardIconLibrary.Glyph(iconKey, symbol));
 
             var mat = Layer("card-mat", "card-face-mat");
             var gem = Layer("card-cost", "card-cost-gem");
@@ -84,6 +86,11 @@ namespace EraserWars.UI
         static int TitleSize(string title, CardSurface surface)
         {
             var length = string.IsNullOrEmpty(title) ? 0 : title.Length;
+            if (surface == CardSurface.Showcase)
+            {
+                return length >= 8 ? 15 : 18;
+            }
+
             var size = length >= 8 ? 11 : length >= 7 ? 12 : 14;
             if (surface == CardSurface.Hand)
             {
@@ -127,18 +134,27 @@ namespace EraserWars.UI
             {
                 case CardSurface.Collection:
                     host.EnableInClassList("card-tile", true);
+                    host.EnableInClassList("collection-hero-card", false);
                     host.EnableInClassList("hand-card", false);
                     host.EnableInClassList("cutin-card", false);
                     break;
                 case CardSurface.Hand:
                     host.EnableInClassList("card-tile", false);
+                    host.EnableInClassList("collection-hero-card", false);
                     host.EnableInClassList("hand-card", true);
                     host.EnableInClassList("cutin-card", false);
                     break;
                 case CardSurface.CutIn:
                     host.EnableInClassList("card-tile", false);
+                    host.EnableInClassList("collection-hero-card", false);
                     host.EnableInClassList("hand-card", false);
                     host.EnableInClassList("cutin-card", true);
+                    break;
+                case CardSurface.Showcase:
+                    host.EnableInClassList("card-tile", false);
+                    host.EnableInClassList("collection-hero-card", true);
+                    host.EnableInClassList("hand-card", false);
+                    host.EnableInClassList("cutin-card", false);
                     break;
                 default:
                     throw new InvalidOperationException($"Unhandled CardSurface {surface}");
@@ -172,6 +188,8 @@ namespace EraserWars.UI
                     return "hand-card-name";
                 case CardSurface.CutIn:
                     return "cutin-card-name";
+                case CardSurface.Showcase:
+                    return "collection-hero-name";
                 default:
                     throw new InvalidOperationException($"Unhandled CardSurface {surface}");
             }

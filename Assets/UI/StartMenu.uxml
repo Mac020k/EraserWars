@@ -170,6 +170,16 @@
                             <ui:Button name="collection-mode-3d" text="3D" class="collection-preview-mode" />
                             <ui:Button name="collection-mode-design" text="デザイン" class="collection-preview-mode" />
                         </ui:VisualElement>
+                        <ui:VisualElement name="collection-card-slots" class="collection-card-slots hidden">
+                            <ui:VisualElement name="collection-grant-slot" class="collection-card-slot">
+                                <ui:Label name="collection-grant-kicker" text="付与演出" class="collection-preview-kicker" />
+                                <ui:Label name="collection-grant-caption" text="準備中" class="collection-slot-caption" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="collection-play-slot" class="collection-card-slot">
+                                <ui:Label name="collection-play-kicker" text="プレイ演出" class="collection-preview-kicker" />
+                                <ui:Label name="collection-play-caption" text="準備中" class="collection-slot-caption" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:ScrollView class="collection-detail" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto">
                         <ui:Label name="collection-detail-title" text="キャラを選んでください" class="collection-detail-title" />

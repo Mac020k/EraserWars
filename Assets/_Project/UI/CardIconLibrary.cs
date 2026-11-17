@@ -9,7 +9,8 @@ namespace EraserWars.UI
     public static class CardIconLibrary
     {
         const int IconSize = 128;
-        const int PatternSize = 64;
+        const int PatternSize = 128;
+        const int PatternBand = 4;
 
         static readonly Regex TagPattern = new(
             "<(rect|circle|polygon)\\b([^>]*)/?>",
@@ -20,6 +21,7 @@ namespace EraserWars.UI
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         static readonly Dictionary<CardSymbol, Texture2D> icons = new();
+        static readonly Dictionary<string, Texture2D> glyphs = new();
         static readonly Dictionary<string, Texture2D> patterns = new();
 
         public static Texture2D Icon(CardSymbol symbol)
@@ -33,6 +35,24 @@ namespace EraserWars.UI
             tex.name = CardIconSvg.FileName(symbol);
             icons[symbol] = tex;
             return tex;
+        }
+
+        public static Texture2D Glyph(string iconKey, CardSymbol fallback)
+        {
+            if (!string.IsNullOrEmpty(iconKey) && glyphs.TryGetValue(iconKey, out var cached) && cached != null)
+            {
+                return cached;
+            }
+
+            if (!string.IsNullOrEmpty(iconKey) && CardIconSvg.TryMarkup(iconKey, out var svg))
+            {
+                var tex = Raster(svg, IconSize);
+                tex.name = iconKey;
+                glyphs[iconKey] = tex;
+                return tex;
+            }
+
+            return Icon(fallback);
         }
 
         public static Texture2D Pattern(string familyKey)
@@ -263,9 +283,7 @@ namespace EraserWars.UI
                 }
             }
 
-            var tex = Finish(pixels, PatternSize, "card-pattern-" + familyKey);
-            tex.wrapMode = TextureWrapMode.Repeat;
-            return tex;
+            return Finish(pixels, PatternSize, "card-pattern-" + familyKey, FilterMode.Point, TextureWrapMode.Repeat);
         }
 
         static bool Hits(string familyKey, int x, int y)
@@ -273,19 +291,19 @@ namespace EraserWars.UI
             switch (familyKey)
             {
                 case CardFamilies.Kiai:
-                    return (x + y) % 7 < 2;
+                    return (x + y) % 32 < PatternBand;
                 case CardFamilies.Homework:
-                    return Mod(x - y, 7) < 2;
+                    return Mod(x - y, 32) < PatternBand;
                 case CardFamilies.Seat:
-                    return (x + y) % 6 < 2;
+                    return (x + y) % 40 < PatternBand;
                 case CardFamilies.Stationery:
-                    return Mod(x - y, 6) < 2;
+                    return Mod(x - y, 36) < PatternBand;
                 case CardFamilies.Cover:
-                    return (x + y) % 8 < 2;
+                    return (x + y) % 28 < PatternBand;
                 case CardFamilies.Signature:
-                    return (x + y) % 10 < 2 || Mod(x - y, 10) < 2;
+                    return (x + y) % 48 < PatternBand || Mod(x - y, 48) < PatternBand;
                 default:
-                    return (x + y) % 8 < 2;
+                    return (x + y) % 32 < PatternBand;
             }
         }
 
@@ -295,12 +313,17 @@ namespace EraserWars.UI
             return result < 0 ? result + divisor : result;
         }
 
-        static Texture2D Finish(Color32[] pixels, int size, string name)
+        static Texture2D Finish(
+            Color32[] pixels,
+            int size,
+            string name,
+            FilterMode filter = FilterMode.Bilinear,
+            TextureWrapMode wrap = TextureWrapMode.Clamp)
         {
             var tex = new Texture2D(size, size, TextureFormat.RGBA32, false)
             {
-                filterMode = FilterMode.Bilinear,
-                wrapMode = TextureWrapMode.Clamp,
+                filterMode = filter,
+                wrapMode = wrap,
                 hideFlags = HideFlags.HideAndDontSave,
                 name = name,
             };
