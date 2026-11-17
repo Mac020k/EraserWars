@@ -560,6 +560,9 @@
 }
 
 .collection-filter {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     height: 36px;
     min-width: 64px;
     margin: 0 6px 6px 0;
@@ -579,20 +582,23 @@
 }
 
 .collection-strip-scroll {
-    height: 200px;
+    height: 268px;
     flex-shrink: 0;
     margin-bottom: 12px;
     background-color: rgba(12, 22, 16, 0.45);
     border-radius: 12px;
-    padding: 10px;
+    padding: 8px 8px 4px 8px;
     border-width: 2px;
     border-color: rgba(255, 255, 255, 0.08);
 }
 
 .collection-strip {
     flex-direction: row;
-    align-items: stretch;
-    height: 100%;
+    align-items: flex-start;
+    padding-top: 14px;
+    padding-bottom: 16px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 .char-tile {
@@ -628,6 +634,20 @@
     background-color: rgb(255, 248, 220);
 }
 
+.collection-strip .char-tile {
+    flex-shrink: 0;
+}
+
+.collection-strip .char-tile:hover {
+    scale: 1.04 1.04;
+    translate: 0 -3px;
+}
+
+.collection-strip .char-tile:active {
+    scale: 0.98 0.98;
+    translate: 0 0;
+}
+
 .char-tile.locked {
     background-color: rgb(48, 52, 64);
     border-color: rgb(90, 96, 110);
@@ -640,11 +660,15 @@
     background-color: rgb(210, 216, 230);
     border-radius: 48px;
     overflow: hidden;
-    /* Zoom into upper face region of full-body stills. */
     background-size: 280% 280%;
     background-repeat: no-repeat;
     background-position: 50% 8%;
     -unity-background-scale-mode: scale-and-crop;
+}
+
+.char-tile .char-tile-art {
+    background-size: 520% 520%;
+    background-position: 50% 3%;
 }
 
 .char-tile.locked .char-tile-art {
@@ -673,6 +697,147 @@
     color: rgb(160, 160, 170);
 }
 
+.char-tile-arch-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.char-lock {
+    width: 36px;
+    height: 42px;
+    margin-top: 26px;
+    margin-left: auto;
+    margin-right: auto;
+    align-items: center;
+}
+
+.char-lock-shackle {
+    width: 20px;
+    height: 14px;
+    border-width: 3px;
+    border-bottom-width: 0;
+    border-color: rgb(232, 214, 140);
+    border-radius: 10px 10px 0 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.char-lock-body {
+    width: 30px;
+    height: 22px;
+    margin-top: -1px;
+    border-radius: 4px;
+    background-color: rgb(240, 206, 96);
+}
+
+.arch-mark {
+    width: 18px;
+    height: 18px;
+    margin-right: 3px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.arch-diamond {
+    width: 10px;
+    height: 10px;
+    background-color: rgb(255, 84, 64);
+    rotate: 45deg;
+    border-radius: 1px;
+}
+
+.arch-seat-take {
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.arch-chair-back {
+    width: 10px;
+    height: 7px;
+    border-width: 2px;
+    border-bottom-width: 0;
+    border-color: rgb(90, 160, 255);
+    border-radius: 2px 2px 0 0;
+}
+
+.arch-chair-seat {
+    width: 14px;
+    height: 4px;
+    background-color: rgb(90, 160, 255);
+    border-radius: 1px;
+}
+
+.arch-teacher {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.arch-teacher-head {
+    width: 7px;
+    height: 7px;
+    border-radius: 4px;
+    background-color: rgb(255, 196, 120);
+}
+
+.arch-teacher-body {
+    width: 12px;
+    height: 6px;
+    margin-top: 1px;
+    border-radius: 3px 3px 1px 1px;
+    background-color: rgb(72, 150, 96);
+}
+
+.arch-afterschool {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.arch-flask-neck {
+    width: 4px;
+    height: 5px;
+    background-color: rgb(180, 140, 255);
+}
+
+.arch-flask-bowl {
+    width: 14px;
+    height: 9px;
+    border-radius: 0 0 7px 7px;
+    background-color: rgb(150, 90, 255);
+}
+
+.arch-desk-king {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.arch-crown-points {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.arch-crown-point {
+    width: 4px;
+    height: 8px;
+    margin-left: 1px;
+    margin-right: 1px;
+    background-color: rgb(255, 196, 48);
+    border-radius: 2px 2px 0 0;
+}
+
+.arch-crown-base {
+    width: 16px;
+    height: 4px;
+    background-color: rgb(255, 176, 32);
+    border-radius: 1px;
+}
+
 .card-tile {
     width: 120px;
     height: 168px;
@@ -696,24 +861,123 @@
     min-height: 0;
 }
 
-.collection-portrait {
-    width: 28%;
-    min-width: 180px;
-    max-width: 280px;
+.collection-preview {
+    width: 240px;
+    flex-shrink: 0;
     margin-right: 14px;
-    background-color: rgba(10, 12, 20, 0.45);
-    border-radius: 12px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.collection-stage {
+    width: 220px;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 18px;
     border-width: 2px;
     border-color: rgb(255, 200, 64);
+    background-color: rgba(10, 12, 20, 0.55);
+    position: relative;
+}
+
+.collection-stage.locked {
+    border-color: rgb(80, 84, 96);
+    background-color: rgb(24, 26, 34);
+}
+
+.collection-portrait {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    background-color: rgba(10, 12, 20, 0);
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     -unity-background-scale-mode: scale-to-fit;
+    align-items: center;
+    justify-content: center;
 }
 
 .collection-portrait.locked {
     background-color: rgb(24, 26, 34);
-    border-color: rgb(80, 84, 96);
+}
+
+.collection-portrait .char-lock {
+    position: relative;
+    width: 72px;
+    height: 84px;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.collection-portrait .char-lock-shackle {
+    width: 36px;
+    height: 24px;
+    border-width: 5px;
+    border-radius: 16px 16px 0 0;
+}
+
+.collection-portrait .char-lock-body {
+    width: 52px;
+    height: 36px;
+    border-radius: 6px;
+}
+
+.collection-preview-panel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 14px;
+    background-color: rgba(16, 20, 32, 0.96);
+    justify-content: center;
+}
+
+.collection-preview-kicker {
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(255, 220, 120);
+    margin-bottom: 8px;
+    white-space: normal;
+}
+
+.collection-slot-caption {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(236, 236, 244);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.collection-preview-modes {
+    flex-direction: row;
+    margin-top: 8px;
+    width: 220px;
+}
+
+.collection-preview-mode {
+    flex-grow: 1;
+    height: 32px;
+    margin-right: 4px;
+    font-size: 12px;
+    -unity-font-style: bold;
+    background-color: rgb(40, 46, 64);
+    color: rgb(230, 230, 240);
+    border-width: 1px;
+    border-color: rgb(80, 88, 110);
+    border-radius: 6px;
+}
+
+.collection-preview-mode.selected {
+    background-color: rgb(255, 210, 80);
+    color: rgb(30, 28, 36);
+    border-color: rgb(40, 40, 48);
 }
 
 .collection-detail {
@@ -750,6 +1014,74 @@
     font-size: 14px;
     color: rgb(220, 220, 230);
     white-space: normal;
+}
+
+.collection-arch-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.collection-arch-label {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(255, 220, 120);
+}
+
+.collection-subjects {
+    flex-direction: row;
+    margin-bottom: 8px;
+}
+
+.collection-subject-strong {
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(255, 214, 96);
+    margin-right: 16px;
+}
+
+.collection-subject-weak {
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(160, 186, 220);
+}
+
+.collection-passive {
+    font-size: 14px;
+    color: rgb(190, 230, 190);
+    white-space: normal;
+    margin-top: 8px;
+}
+
+.collection-signatures {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-top: 10px;
+}
+
+.collection-signature {
+    width: 120px;
+    margin-right: 10px;
+    flex-direction: column;
+}
+
+.collection-signatures .card-tile {
+    width: 108px;
+    height: 148px;
+    margin-right: 0;
+}
+
+.collection-signatures .card-tile:hover,
+.collection-signatures .card-tile:active {
+    scale: 1 1;
+    translate: 0 0;
+}
+
+.collection-signature-effect {
+    font-size: 12px;
+    color: rgb(210, 220, 235);
+    white-space: normal;
+    margin-top: 4px;
 }
 
 .collection-empty {

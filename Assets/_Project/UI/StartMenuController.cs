@@ -147,6 +147,12 @@ namespace EraserWars.UI
             SecretRoomPanel.Bind(root);
             ApplyMenuIcons();
             EnsureCatalog();
+            CharacterAccess.SetDebugUnlockAll(debugModeEnabled);
+            if (!debugModeEnabled)
+            {
+                loadout.ReleaseLockedSeats(contentCatalog);
+            }
+
             EnsureCollectionBound();
             EnsureDeckBound();
             EnsureSeatPickBound();
@@ -247,10 +253,23 @@ namespace EraserWars.UI
             UiImageUtil.ApplyFit(root.Q("icon-options"), iconOptions);
         }
 
+        void OnDisable()
+        {
+            CharacterAccess.SetDebugUnlockAll(false);
+        }
+
         void ToggleDebugMode()
         {
             debugModeEnabled = !debugModeEnabled;
+            CharacterAccess.SetDebugUnlockAll(debugModeEnabled);
+            if (!debugModeEnabled)
+            {
+                loadout.ReleaseLockedSeats(contentCatalog);
+            }
+
             RefreshDebugModeButton();
+            collection?.Refresh();
+            seatPick?.Refresh(selectedPlayers);
             if (matchRunning && director != null)
             {
                 director.SetDebugChromeVisible(debugModeEnabled);

@@ -199,7 +199,7 @@ namespace EraserWars.UI
 
             foreach (var character in catalog.Characters)
             {
-                if (character != null && character.UnlockedByDefault)
+                if (CharacterAccess.IsUnlocked(character))
                 {
                     list.Add(character);
                 }

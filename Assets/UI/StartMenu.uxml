@@ -153,13 +153,34 @@
                     <ui:VisualElement name="collection-strip" class="collection-strip" />
                 </ui:ScrollView>
                 <ui:VisualElement class="collection-feature">
-                    <ui:VisualElement name="collection-portrait" class="collection-portrait" />
-                    <ui:VisualElement class="collection-detail">
+                    <ui:VisualElement name="collection-preview" class="collection-preview">
+                        <ui:VisualElement name="collection-stage" class="collection-stage">
+                            <ui:VisualElement name="collection-portrait" class="collection-portrait" />
+                            <ui:VisualElement name="collection-eraser-3d" class="collection-preview-panel hidden">
+                                <ui:Label name="collection-eraser-3d-kicker" text="3D消しゴム" class="collection-preview-kicker" />
+                                <ui:Label name="collection-eraser-3d-slot" text="モデル枠" class="collection-slot-caption" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="collection-eraser-design" class="collection-preview-panel hidden">
+                                <ui:Label name="collection-eraser-design-kicker" text="消しゴムデザイン" class="collection-preview-kicker" />
+                                <ui:Label name="collection-eraser-design-slot" text="デザイン枠" class="collection-slot-caption" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="collection-preview-modes" class="collection-preview-modes">
+                            <ui:Button name="collection-mode-still" text="立ち絵" class="collection-preview-mode selected" />
+                            <ui:Button name="collection-mode-3d" text="3D" class="collection-preview-mode" />
+                            <ui:Button name="collection-mode-design" text="デザイン" class="collection-preview-mode" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:ScrollView class="collection-detail" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto">
                         <ui:Label name="collection-detail-title" text="キャラを選んでください" class="collection-detail-title" />
                         <ui:Label name="collection-detail-unlock" text="" class="collection-detail-unlock" />
+                        <ui:VisualElement name="collection-arch-row" class="collection-arch-row" />
                         <ui:Label name="collection-detail-meta" text="" class="collection-detail-meta" />
+                        <ui:VisualElement name="collection-detail-subjects" class="collection-subjects" />
                         <ui:Label name="collection-detail-body" text="" class="collection-detail-body" />
-                    </ui:VisualElement>
+                        <ui:Label name="collection-passive" text="" class="collection-passive" />
+                        <ui:VisualElement name="collection-signatures" class="collection-signatures" />
+                    </ui:ScrollView>
                 </ui:VisualElement>
             </ui:VisualElement>
 
