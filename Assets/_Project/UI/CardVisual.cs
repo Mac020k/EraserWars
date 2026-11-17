@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using EraserWars.Cards;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace EraserWars.UI
@@ -27,37 +28,30 @@ namespace EraserWars.UI
 
             var pattern = Layer("card-pattern", "card-face-pattern");
             UiImageUtil.ApplyPattern(pattern, CardIconLibrary.Pattern(card.FamilyKey));
+            pattern.style.backgroundColor = ArtPaper(card.FamilyKey);
+
+            var icon = Layer("card-icon", "card-effect-icon");
+            icon.tooltip = CardGlance.LabelJa(symbol);
+            UiImageUtil.ApplyGlyph(icon, CardIconLibrary.Icon(symbol));
+
             var mat = Layer("card-mat", "card-face-mat");
             var gem = Layer("card-cost", "card-cost-gem");
             var cost = new Label(card.BuildCost.ToString()) { pickingMode = PickingMode.Ignore };
             cost.AddToClassList("card-cost-value");
             gem.Add(cost);
 
-            var icon = Layer("card-icon", "card-effect-icon");
-            icon.tooltip = CardGlance.LabelJa(symbol);
-            UiImageUtil.ApplyGlyph(icon, CardIconLibrary.Icon(symbol));
-
             host.Add(pattern);
+            host.Add(icon);
             host.Add(mat);
             host.Add(gem);
-            host.Add(icon);
             if (card.IsSignature)
             {
-                var ribbon = new Label("★ とくぎ") { pickingMode = PickingMode.Ignore };
+                var ribbon = new Label("★ とくぎ") { name = "card-ribbon", pickingMode = PickingMode.Ignore };
                 ribbon.AddToClassList("card-ribbon");
                 host.Add(ribbon);
             }
 
-            var body = Layer("card-body", "card-face-body");
-            var family = new Label(CardFamilies.DisplayJa(card.FamilyKey)) { pickingMode = PickingMode.Ignore };
-            family.AddToClassList("card-face-family");
-            var name = new Label(card.DisplayName) { pickingMode = PickingMode.Ignore };
-            name.AddToClassList("card-face-name");
-            name.AddToClassList(NameClass(surface));
-
-            body.Add(family);
-            body.Add(name);
-            host.Add(body);
+            AddPlate(host, card.DisplayName, surface);
         }
 
         public static void PaintUnknown(VisualElement host, string name, CardSurface surface)
@@ -68,9 +62,56 @@ namespace EraserWars.UI
             }
 
             Prepare(host, surface, "family-unknown", false);
-            var label = new Label(string.IsNullOrEmpty(name) ? "?" : name) { pickingMode = PickingMode.Ignore };
-            label.AddToClassList("card-face-name");
-            host.Add(label);
+            var pattern = Layer("card-pattern", "card-face-pattern");
+            UiImageUtil.ApplyPattern(pattern, CardIconLibrary.Pattern(string.Empty));
+            pattern.style.backgroundColor = ArtPaper(string.Empty);
+            host.Add(pattern);
+            host.Add(Layer("card-mat", "card-face-mat"));
+            AddPlate(host, string.IsNullOrEmpty(name) ? "?" : name, surface);
+        }
+
+        static void AddPlate(VisualElement host, string title, CardSurface surface)
+        {
+            var body = Layer("card-body", "card-face-body");
+            var name = new Label(title) { pickingMode = PickingMode.Ignore };
+            name.AddToClassList("card-face-name");
+            name.AddToClassList(NameClass(surface));
+            name.style.fontSize = TitleSize(title, surface);
+            body.Add(name);
+            host.Add(body);
+        }
+
+        static int TitleSize(string title, CardSurface surface)
+        {
+            var length = string.IsNullOrEmpty(title) ? 0 : title.Length;
+            var size = length >= 8 ? 11 : length >= 7 ? 12 : 14;
+            if (surface == CardSurface.Hand)
+            {
+                size -= 1;
+            }
+
+            return size;
+        }
+
+        static Color ArtPaper(string familyKey)
+        {
+            switch (familyKey)
+            {
+                case CardFamilies.Kiai:
+                    return new Color32(255, 206, 196, 255);
+                case CardFamilies.Homework:
+                    return new Color32(210, 230, 255, 255);
+                case CardFamilies.Seat:
+                    return new Color32(196, 238, 204, 255);
+                case CardFamilies.Stationery:
+                    return new Color32(255, 224, 150, 255);
+                case CardFamilies.Cover:
+                    return new Color32(255, 196, 214, 255);
+                case CardFamilies.Signature:
+                    return new Color32(22, 26, 42, 255);
+                default:
+                    return new Color32(232, 232, 228, 255);
+            }
         }
 
         static void Prepare(VisualElement host, CardSurface surface, string familyClass, bool signature)

@@ -250,8 +250,8 @@ namespace EraserWars.UI
         {
             var pixels = new Color32[PatternSize * PatternSize];
             var ink = familyKey == CardFamilies.Signature
-                ? new Color32(232, 184, 72, 140)
-                : new Color32(36, 24, 15, 70);
+                ? new Color32(232, 184, 72, 190)
+                : new Color32(40, 22, 16, 175);
             for (var y = 0; y < PatternSize; y++)
             {
                 for (var x = 0; x < PatternSize; x++)
@@ -263,7 +263,9 @@ namespace EraserWars.UI
                 }
             }
 
-            return Finish(pixels, PatternSize, "card-pattern-" + familyKey);
+            var tex = Finish(pixels, PatternSize, "card-pattern-" + familyKey);
+            tex.wrapMode = TextureWrapMode.Repeat;
+            return tex;
         }
 
         static bool Hits(string familyKey, int x, int y)
@@ -271,21 +273,19 @@ namespace EraserWars.UI
             switch (familyKey)
             {
                 case CardFamilies.Kiai:
-                    return (x + y) % 8 < 2;
+                    return (x + y) % 7 < 2;
                 case CardFamilies.Homework:
-                    return y % 8 == 0;
+                    return Mod(x - y, 7) < 2;
                 case CardFamilies.Seat:
-                    return x % 10 == 0 || y % 10 == 0;
+                    return (x + y) % 6 < 2;
                 case CardFamilies.Stationery:
-                    return Mod(x - y, 8) < 2;
+                    return Mod(x - y, 6) < 2;
                 case CardFamilies.Cover:
-                    var dx = x % 10 - 4;
-                    var dy = y % 10 - 4;
-                    return dx * dx + dy * dy <= 2;
+                    return (x + y) % 8 < 2;
                 case CardFamilies.Signature:
-                    return (x + y) % 12 < 2 || Mod(x - y, 12) < 2;
+                    return (x + y) % 10 < 2 || Mod(x - y, 10) < 2;
                 default:
-                    return false;
+                    return (x + y) % 8 < 2;
             }
         }
 
