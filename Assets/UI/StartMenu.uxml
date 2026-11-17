@@ -134,25 +134,50 @@
                     <ui:Button name="deck-seat-2" text="P3" class="collection-tab" />
                     <ui:Button name="deck-seat-3" text="P4" class="collection-tab" />
                 </ui:VisualElement>
-                <ui:VisualElement name="deck-budget" class="deck-budget">
-                    <ui:VisualElement class="deck-budget-head">
-                        <ui:Label name="deck-budget-label" text="デッキコスト 0/8" class="deck-budget-label" />
-                        <ui:Label name="deck-budget-remain" text="残り 8" class="deck-budget-remain" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="deck-budget-track">
-                        <ui:VisualElement name="deck-budget-fill" class="deck-budget-fill" />
-                    </ui:VisualElement>
-                    <ui:Label name="deck-budget-warning" text="" class="deck-budget-warning hidden" />
-                    <ui:Button name="deck-save" text="保存" class="deck-save" />
-                </ui:VisualElement>
-                <ui:Label name="deck-status" text="" class="collection-detail-meta" />
-                <ui:Label name="deck-detail" text="" class="collection-detail-body" />
-                <ui:VisualElement class="collection-body">
-                    <ui:VisualElement class="deck-column">
+                <ui:VisualElement class="deck-binder">
+                    <ui:VisualElement class="deck-page deck-page-left">
+                        <ui:VisualElement class="deck-portrait-ring">
+                            <ui:VisualElement name="deck-portrait" class="deck-portrait" />
+                        </ui:VisualElement>
+                        <ui:Label name="deck-profile-name" text="未選択" class="deck-name" />
+                        <ui:Label name="deck-archetype" text="" class="deck-archetype" />
+                        <ui:Label name="deck-stats" text="" class="deck-stats" />
+                        <ui:Label name="deck-flavor" text="" class="deck-flavor" />
+                        <ui:Label name="deck-detail" text="" class="deck-detail" />
+                        <ui:VisualElement name="deck-signatures" class="deck-signatures" />
                         <ui:Label name="deck-col-character" text="キャラ" class="deck-column-title" />
                         <ui:ScrollView name="deck-character-list" class="collection-list deck-list" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="deck-column">
+                    <ui:VisualElement class="deck-spiral">
+                        <ui:VisualElement class="deck-ring" />
+                        <ui:VisualElement class="deck-ring" />
+                        <ui:VisualElement class="deck-ring" />
+                        <ui:VisualElement class="deck-ring" />
+                        <ui:VisualElement class="deck-ring" />
+                        <ui:VisualElement class="deck-ring" />
+                        <ui:VisualElement class="deck-ring" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="deck-page deck-page-right">
+                        <ui:VisualElement class="deck-presets">
+                            <ui:Button name="deck-preset-0" text="1" class="deck-preset selected" />
+                            <ui:Button name="deck-preset-1" text="2" class="deck-preset" />
+                            <ui:Button name="deck-preset-2" text="3" class="deck-preset" />
+                            <ui:Button name="deck-preset-3" text="4" class="deck-preset" />
+                            <ui:Button name="deck-preset-4" text="5" class="deck-preset" />
+                            <ui:Label name="deck-preset-name" text="プリセット1" class="deck-preset-name" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="deck-budget" class="deck-budget">
+                            <ui:VisualElement class="deck-budget-head">
+                                <ui:Label name="deck-budget-label" text="デッキコスト 0/8" class="deck-budget-label" />
+                                <ui:Label name="deck-budget-remain" text="残り 8" class="deck-budget-remain" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="deck-budget-track">
+                                <ui:VisualElement name="deck-budget-fill" class="deck-budget-fill" />
+                            </ui:VisualElement>
+                            <ui:Label name="deck-budget-warning" text="" class="deck-budget-warning hidden" />
+                            <ui:Button name="deck-save" text="保存" class="deck-save" />
+                        </ui:VisualElement>
+                        <ui:Label name="deck-status" text="" class="deck-status" />
                         <ui:Label name="deck-col-common" text="コモンカード" class="deck-column-title" />
                         <ui:Label name="deck-empty" text="デッキは空です。カードの「追加」で入れてください。" class="deck-empty" />
                         <ui:ScrollView name="deck-card-list" class="collection-list deck-list" mode="VerticalAndHorizontal" horizontal-scroller-visibility="Auto" vertical-scroller-visibility="Auto" />

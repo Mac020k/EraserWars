@@ -93,6 +93,7 @@ namespace EraserWars.UI
                 return false;
             }
 
+            loadout.ApplyActivePreset(editingSeat, catalog);
             editingSeat = -1;
             RebuildSeats();
             HidePicker();

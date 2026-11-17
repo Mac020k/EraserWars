@@ -1490,7 +1490,7 @@
 .deck-column-title {
     font-size: 13px;
     -unity-font-style: bold;
-    color: rgb(255, 220, 120);
+    color: rgb(92, 48, 28);
     margin-bottom: 4px;
 }
 
@@ -1523,10 +1523,10 @@
     flex-shrink: 0;
     margin-bottom: 8px;
     padding: 10px 12px;
-    background-color: rgba(8, 10, 18, 0.55);
+    background-color: rgb(255, 236, 214);
     border-radius: 10px;
-    border-width: 1px;
-    border-color: rgba(255, 220, 120, 0.45);
+    border-width: 2px;
+    border-color: rgb(232, 160, 176);
 }
 
 .deck-budget-head {
@@ -1537,15 +1537,15 @@
 }
 
 .deck-budget-label {
-    font-size: 22px;
+    font-size: 16px;
     -unity-font-style: bold;
-    color: rgb(255, 248, 230);
+    color: rgb(92, 48, 28);
 }
 
 .deck-budget-remain {
     font-size: 16px;
     -unity-font-style: bold;
-    color: rgb(255, 220, 120);
+    color: rgb(140, 72, 28);
 }
 
 .deck-budget-remain.full {
@@ -1558,8 +1558,10 @@
 
 .deck-budget-track {
     height: 12px;
-    background-color: rgba(255, 255, 255, 0.14);
+    background-color: rgb(255, 248, 236);
     border-radius: 6px;
+    border-width: 1px;
+    border-color: rgb(214, 160, 140);
     overflow: hidden;
 }
 
@@ -1582,7 +1584,7 @@
     margin-top: 8px;
     font-size: 15px;
     -unity-font-style: bold;
-    color: rgb(255, 214, 196);
+    color: rgb(160, 40, 36);
     white-space: normal;
 }
 
@@ -1591,11 +1593,11 @@
     height: 44px;
     font-size: 16px;
     -unity-font-style: bold;
-    background-color: rgb(255, 210, 80);
-    color: rgb(32, 28, 20);
+    background-color: rgb(232, 104, 140);
+    color: rgb(255, 252, 244);
     border-radius: 8px;
     border-width: 2px;
-    border-color: rgb(120, 84, 20);
+    border-color: rgb(140, 48, 80);
 }
 
 .deck-save:disabled {
@@ -1608,7 +1610,7 @@
     flex-shrink: 0;
     margin: 0 0 6px 0;
     font-size: 14px;
-    color: rgb(220, 220, 230);
+    color: rgb(120, 80, 72);
     white-space: normal;
 }
 
@@ -1679,6 +1681,191 @@
     background-color: rgb(255, 252, 244);
     color: rgb(90, 32, 28);
     border-color: rgb(180, 90, 80);
+}
+
+.deck-panel.destination-page {
+    background-color: rgb(176, 122, 74);
+    border-color: rgb(112, 68, 36);
+    padding: 12px 16px 16px 16px;
+}
+
+.deck-panel .destination-title {
+    color: rgb(255, 248, 236);
+}
+
+.deck-seats .collection-tab {
+    flex-grow: 0;
+    width: 72px;
+    height: 36px;
+    background-color: rgb(255, 228, 214);
+    color: rgb(92, 48, 28);
+    border-width: 2px;
+    border-color: rgb(196, 120, 88);
+}
+
+.deck-seats .collection-tab.selected {
+    background-color: rgb(232, 104, 140);
+    color: rgb(255, 252, 244);
+    border-color: rgb(140, 48, 80);
+}
+
+.deck-binder {
+    flex-grow: 1;
+    flex-direction: row;
+    min-height: 0;
+    background-color: rgb(232, 104, 140);
+    border-radius: 18px;
+    border-width: 3px;
+    border-color: rgb(176, 64, 104);
+    padding: 10px 8px;
+}
+
+.deck-page {
+    flex-grow: 1;
+    flex-basis: 0;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background-color: rgb(255, 248, 236);
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+.deck-spiral {
+    width: 22px;
+    flex-shrink: 0;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.deck-ring {
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    background-color: rgb(214, 122, 58);
+    border-width: 2px;
+    border-color: rgb(140, 72, 28);
+}
+
+.deck-portrait-ring {
+    width: 120px;
+    height: 120px;
+    align-self: center;
+    flex-shrink: 0;
+    margin-bottom: 6px;
+    padding: 6px;
+    border-radius: 60px;
+    background-color: rgb(255, 214, 228);
+    border-width: 4px;
+    border-color: rgb(232, 104, 140);
+}
+
+.deck-portrait {
+    flex-grow: 1;
+    border-radius: 52px;
+    background-color: rgb(255, 236, 214);
+}
+
+.deck-name {
+    flex-shrink: 0;
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: rgb(92, 48, 28);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.deck-archetype {
+    flex-shrink: 0;
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(196, 72, 112);
+    white-space: normal;
+    -unity-text-align: middle-center;
+    margin-bottom: 4px;
+}
+
+.deck-stats {
+    flex-shrink: 0;
+    margin-bottom: 4px;
+    padding: 4px 8px;
+    font-size: 13px;
+    color: rgb(72, 48, 36);
+    white-space: normal;
+    -unity-text-align: middle-center;
+    background-color: rgb(255, 236, 214);
+    border-radius: 8px;
+}
+
+.deck-flavor,
+.deck-detail,
+.deck-status {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: rgb(110, 72, 64);
+    white-space: normal;
+    -unity-text-align: middle-center;
+    margin-bottom: 4px;
+}
+
+.deck-status {
+    -unity-text-align: middle-left;
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(92, 48, 28);
+}
+
+.deck-signatures {
+    flex-direction: row;
+    flex-shrink: 0;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.deck-signatures .card-tile:hover,
+.deck-signatures .card-tile:active {
+    scale: 1 1;
+    translate: 0 0;
+}
+
+.deck-page .deck-list {
+    background-color: rgba(255, 255, 255, 0.45);
+}
+
+.deck-presets {
+    flex-direction: row;
+    flex-shrink: 0;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.deck-preset {
+    width: 36px;
+    height: 32px;
+    margin-right: 4px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    background-color: rgb(255, 236, 214);
+    color: rgb(92, 48, 28);
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgb(232, 160, 176);
+}
+
+.deck-preset.selected {
+    background-color: rgb(232, 104, 140);
+    color: rgb(255, 252, 244);
+    border-color: rgb(140, 48, 80);
+}
+
+.deck-preset-name {
+    margin-left: 8px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(92, 48, 28);
+    white-space: nowrap;
 }
 
 .seat-strip-scroll {
