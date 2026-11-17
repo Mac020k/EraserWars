@@ -53,7 +53,7 @@ namespace EraserWars.Tests.EditMode
             Assert.IsFalse(rig.Director.IsCardCutInShowing);
             Assert.IsTrue(rig.CutInHidden);
             Assert.IsFalse(rig.CalloutHidden, "The turn callout should return when the banner ends.");
-            Assert.IsFalse(rig.HandHidden);
+            Assert.IsTrue(rig.HandHidden, "The card is already played, so the hand stays hidden.");
             Assert.IsFalse(rig.PassHidden);
             Assert.AreEqual(Phase.Aim, rig.Director.State.Phase);
 
