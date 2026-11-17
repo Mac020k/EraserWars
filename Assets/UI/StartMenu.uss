@@ -950,15 +950,8 @@
     background-color: rgb(210, 216, 230);
     border-radius: 48px;
     overflow: hidden;
-    background-size: 280% 280%;
-    background-repeat: no-repeat;
-    background-position-x: center;
-    background-position-y: 8%;
-    -unity-background-scale-mode: scale-and-crop;
-}
-
-.char-tile .char-tile-art {
     background-size: 780% 780%;
+    background-repeat: no-repeat;
     background-position-x: center;
     background-position-y: 2%;
 }

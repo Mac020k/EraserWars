@@ -101,10 +101,11 @@ namespace EraserWars.Tests.EditMode
             Assert.GreaterOrEqual(stageRule, 0);
             Assert.IsTrue(uss.Substring(portrait, 500).Contains("overflow: hidden"));
             Assert.IsTrue(uss.Substring(stageRule, 300).Contains("overflow: hidden"));
-            var tileArt = uss.IndexOf(".char-tile .char-tile-art {", System.StringComparison.Ordinal);
+            var tileArt = uss.IndexOf(".char-tile-art {", System.StringComparison.Ordinal);
             Assert.GreaterOrEqual(tileArt, 0);
-            Assert.IsTrue(uss.Substring(tileArt, 180).Contains("background-size: 780% 780%"));
-            Assert.IsTrue(uss.Contains("-unity-background-scale-mode: scale-and-crop"));
+            var tileArtBlock = uss.Substring(tileArt, 280);
+            Assert.IsTrue(tileArtBlock.Contains("background-size: 780% 780%"));
+            Assert.IsFalse(tileArtBlock.Contains("scale-and-crop"));
             Assert.IsTrue(uss.Contains(".collection-strip .char-tile:hover"));
             var stripRule = uss.IndexOf(".collection-strip {", System.StringComparison.Ordinal);
             Assert.GreaterOrEqual(stripRule, 0);
