@@ -43,3 +43,4 @@
 2026-11-17T09:02:02+09:00	merge	merged agent/options-accessibility@88c7ec3	wave5 4/6	main@f06ee68	merged
 2026-11-17T09:06:19+09:00	merge	merged agent/collection-unlock-fx@5f2c358	wave5 5/6	main@a923678	merged
 2026-11-17T09:06:54+09:00	merge	merged agent/cpu-pass-ai@4fa26c3	wave5 6/6 complete	main@baa8fe7	merged
+2026-11-17T09:08:18+09:00	verify	hotseat-e2e SelfTest pass; Wave5 EditMode filter 40/40	W1-W5 landed	main@b66dc8f	pass
