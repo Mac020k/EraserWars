@@ -207,6 +207,9 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual("To menu", root.Q<Button>("match-end-menu").text);
             Assert.AreEqual("Pass", root.Q<Label>("pass-label").text);
             Assert.AreEqual("s", root.Q<Label>("timer-unit").text);
+            Assert.AreEqual("Pause", root.Q<Label>("pause-title").text);
+            Assert.AreEqual("Resume", root.Q<Button>("pause-continue").text);
+            Assert.AreEqual("Main menu", root.Q<Button>("pause-main").text);
             Assert.AreEqual("Decided", root.Q<Label>("result-kicker").text);
         }
 

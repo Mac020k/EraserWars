@@ -622,6 +622,12 @@ namespace EraserWars.UI
 
             if (matchRunning)
             {
+                var hud = FindAnyObjectByType<MatchHudController>();
+                if (hud != null && hud.isActiveAndEnabled)
+                {
+                    return;
+                }
+
                 ShowMenu(suspendMatch: true);
             }
         }

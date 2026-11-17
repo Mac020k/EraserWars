@@ -5,26 +5,29 @@
             <ui:Label name="hand-title" text="" class="hand-title" picking-mode="Ignore" />
             <ui:VisualElement name="hand" class="hand-row" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement class="hud-stack" picking-mode="Ignore">
-            <ui:VisualElement class="top-bar">
-                <ui:VisualElement name="brand-chip" class="brand-chip" />
-                <ui:Label name="title" text="ERASER WARS" class="hud-title" />
-                <ui:Label name="phase" text="—" class="hud-phase" />
-                <ui:Button name="menu" text="メニュー" class="hud-menu-button" />
-            </ui:VisualElement>
-            <ui:VisualElement name="turn-callout" class="turn-callout" picking-mode="Ignore">
-                <ui:VisualElement class="turn-copy" picking-mode="Ignore">
-                    <ui:Label name="turn" text="" class="hud-turn" picking-mode="Ignore" />
-                    <ui:Label name="pass-hint" text="" class="pass-hint" picking-mode="Ignore" />
-                </ui:VisualElement>
-                <ui:VisualElement name="timer-box" class="timer-box" picking-mode="Ignore">
-                    <ui:Label name="timer" text="--" class="hud-timer" picking-mode="Ignore" />
-                    <ui:Label name="timer-unit" text="秒" class="timer-unit" picking-mode="Ignore" />
-                    <ui:Label name="turn-yield" text="" class="turn-yield hidden" picking-mode="Ignore" />
-                </ui:VisualElement>
-            </ui:VisualElement>
+        <ui:VisualElement name="score-rail" class="score-rail" picking-mode="Ignore">
+            <ui:VisualElement name="score-rail-line" class="score-rail-line" picking-mode="Ignore" />
             <ui:VisualElement name="players" class="players-row" picking-mode="Ignore" />
+            <ui:VisualElement name="turn-callout" class="turn-callout" picking-mode="Ignore">
+                <ui:VisualElement name="timer-ring" class="timer-ring" picking-mode="Ignore" />
+                <ui:VisualElement name="timer-box" class="timer-box" picking-mode="Ignore">
+                    <ui:Label name="phase" text="Round1" class="hud-round" picking-mode="Ignore" />
+                    <ui:VisualElement class="timer-row" picking-mode="Ignore">
+                        <ui:Label name="timer" text="--" class="hud-timer" picking-mode="Ignore" />
+                        <ui:Label name="timer-unit" text="秒" class="timer-unit" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label name="turn" text="" class="hud-turn" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="turn-yield" text="" class="turn-yield hidden" picking-mode="Ignore" />
+            </ui:VisualElement>
         </ui:VisualElement>
+        <ui:Label name="pass-hint" text="" class="pass-hint hidden" picking-mode="Ignore" />
+        <ui:Button name="menu" text="メニュー" class="hud-menu-button" />
+        <ui:Button name="pass" class="action-chip action-pass">
+            <ui:VisualElement name="pass-icon" class="action-icon" picking-mode="Ignore" />
+            <ui:Label name="pass-label" text="パス" class="action-label" picking-mode="Ignore" />
+            <ui:Label text="▶▶" class="pass-marks" picking-mode="Ignore" />
+        </ui:Button>
         <ui:VisualElement name="match-end" class="match-end hidden" picking-mode="Ignore">
             <ui:VisualElement name="match-end-dim" class="match-end-dim" picking-mode="Ignore" />
             <ui:VisualElement name="match-end-card" class="match-end-card">
@@ -39,12 +42,6 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement class="action-bar" picking-mode="Ignore">
-            <ui:Button name="pass" class="action-chip action-pass">
-                <ui:VisualElement name="pass-icon" class="action-icon" picking-mode="Ignore" />
-                <ui:Label name="pass-label" text="パス" class="action-label" picking-mode="Ignore" />
-            </ui:Button>
-        </ui:VisualElement>
         <ui:VisualElement name="turn-announce" class="turn-announce hidden" picking-mode="Ignore">
             <ui:Label name="turn-announce-line" text="" class="turn-announce-line" picking-mode="Ignore" />
         </ui:VisualElement>
@@ -55,6 +52,19 @@
                 <ui:VisualElement class="card-cutin-copy" picking-mode="Ignore">
                     <ui:Label name="card-cutin-kicker" text="" class="card-cutin-kicker" picking-mode="Ignore" />
                     <ui:Label name="card-cutin-name" text="" class="card-cutin-name" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="pause-overlay" class="pause-overlay hidden">
+            <ui:VisualElement name="pause-dim" class="pause-dim" />
+            <ui:VisualElement name="pause-card" class="pause-card">
+                <ui:Label name="pause-title" text="ポーズ" class="pause-title" />
+                <ui:Label name="pause-rules" text="" class="pause-copy" />
+                <ui:Label name="pause-seats" text="" class="pause-seats" />
+                <ui:Label name="pause-options" text="" class="pause-copy pause-options" />
+                <ui:VisualElement class="pause-actions">
+                    <ui:Button name="pause-continue" text="つづける" class="pause-button pause-continue" />
+                    <ui:Button name="pause-main" text="メインメニューへ" class="pause-button pause-main" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

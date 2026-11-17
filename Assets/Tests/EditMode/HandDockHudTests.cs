@@ -23,6 +23,7 @@ namespace EraserWars.Tests.EditMode
         [UnityTest]
         public IEnumerator SelectedCardLiftsInsideTheGapAndStaysBelowTheCallout()
         {
+            PlayerPrefs.SetInt(EdgeSlowmoCue.ReduceMotionPref, 0);
             using var rig = new Rig();
             rig.GiveHand();
             rig.StartMatch();
@@ -33,6 +34,7 @@ namespace EraserWars.Tests.EditMode
             var other = rig.HandCard(1);
             Snap(chosen);
             Snap(other);
+            rig.Hud.RefreshFromState();
             PointAt(chosen);
             yield return null;
 
@@ -45,17 +47,20 @@ namespace EraserWars.Tests.EditMode
             Assert.IsNotNull(chosen.Q("card-icon"));
             Assert.AreEqual("クリップ", other.Q<Label>(null, "card-face-name").text);
 
-            Assert.AreEqual(8f, chosen.resolvedStyle.marginLeft, 0.01f);
-            Assert.AreEqual(8f, other.resolvedStyle.marginLeft, 0.01f);
-            Assert.AreEqual(32f, rig.HandRow.resolvedStyle.paddingTop, 0.01f);
+            Assert.Less(chosen.resolvedStyle.marginLeft, 0f);
+            Assert.Less(other.resolvedStyle.marginLeft, 0f);
+            Assert.AreEqual(48f, rig.HandRow.resolvedStyle.paddingTop, 0.01f);
             Assert.AreEqual(4f, chosen.resolvedStyle.borderTopWidth, 0.01f);
             Assert.AreEqual(3f, other.resolvedStyle.borderTopWidth, 0.01f);
             Assert.Greater(chosen.resolvedStyle.borderTopColor.r, 0.95f);
             Assert.Greater(chosen.resolvedStyle.borderTopColor.g, 0.95f);
             Assert.Less(other.resolvedStyle.borderTopColor.r, 0.5f);
 
+            Assert.Less(Degrees(chosen), -1f);
+            Assert.Greater(Degrees(other), 1f);
+            Assert.AreEqual(-Degrees(chosen), Degrees(other), 0.5f);
             var lift = chosen.resolvedStyle.translate.y;
-            Assert.AreEqual(-16f, lift, 0.5f);
+            Assert.Less(lift, other.resolvedStyle.translate.y);
             Assert.AreEqual(1.1f, chosen.resolvedStyle.scale.value.y, 0.02f);
 
             var box = chosen.worldBound;
@@ -92,6 +97,116 @@ namespace EraserWars.Tests.EditMode
             Assert.IsFalse(rig.CutInHidden);
             Assert.IsTrue(rig.CalloutHidden);
             Assert.IsFalse(rig.AnySelected);
+        }
+
+        static float Degrees(VisualElement element)
+        {
+            return element.resolvedStyle.rotate.angle.ToDegrees();
+        }
+
+        [UnityTest]
+        public IEnumerator EmptyHandHidesTheCards()
+        {
+            using var rig = new Rig();
+            rig.StartMatch();
+            rig.Hud.RefreshFromState();
+            yield return null;
+
+            Assert.AreEqual(0, rig.HandCount);
+            Assert.IsTrue(rig.HandHidden);
+            Assert.AreEqual(DisplayStyle.None, rig.HandRow.resolvedStyle.display);
+        }
+
+        [UnityTest]
+        public IEnumerator PlayedCardHidesTheHandAfterTheCutIn()
+        {
+            using var rig = new Rig();
+            rig.GiveHand();
+            rig.StartMatch();
+            rig.Hud.RefreshFromState();
+            yield return null;
+
+            Assert.IsFalse(rig.HandHidden);
+            Assert.AreEqual(DisplayStyle.Flex, rig.HandRow.resolvedStyle.display);
+
+            rig.Director.PlayCard(11);
+            rig.Director.AdvanceMatchClock(1f);
+            rig.Hud.RefreshFromState();
+            yield return null;
+
+            Assert.AreEqual(Phase.Aim, rig.Director.State.Phase);
+            Assert.IsTrue(rig.CutInHidden);
+            Assert.IsTrue(rig.HandHidden);
+            Assert.AreEqual(DisplayStyle.None, rig.HandRow.resolvedStyle.display);
+        }
+
+        [Test]
+        public void PauseHoldsTheClockUntilContinue()
+        {
+            UiLocale.Set(UiLang.Ja);
+            var hadWinMode = PlayerPrefs.HasKey(MatchDirector.HotseatWinModeKey);
+            var previousWinMode = PlayerPrefs.GetInt(MatchDirector.HotseatWinModeKey, (int)WinMode.Stock);
+            PlayerPrefs.SetInt(MatchDirector.HotseatWinModeKey, (int)WinMode.Stock);
+            try
+            {
+                using var rig = new Rig();
+                rig.StartMatch();
+                var before = rig.Director.State.TurnTimeLeft;
+                rig.Hud.OpenPause();
+
+                Assert.IsTrue(rig.Hud.IsPauseOpen);
+                Assert.IsTrue(rig.Director.IsStartMenuOpen);
+                Assert.IsFalse(rig.Root.Q("pause-overlay").ClassListContains("hidden"));
+                Assert.That(rig.Root.Q<Label>("pause-rules").text, Does.Contain("カードを1枚"));
+                Assert.That(rig.Root.Q<Label>("pause-seats").text, Does.Contain("ストック"));
+                rig.Director.AdvanceMatchClock(3f);
+                Assert.AreEqual(before, rig.Director.State.TurnTimeLeft, 0.001f);
+
+                rig.Hud.ClosePause();
+                Assert.IsFalse(rig.Hud.IsPauseOpen);
+                Assert.IsFalse(rig.Director.IsStartMenuOpen);
+                Assert.IsTrue(rig.Root.Q("pause-overlay").ClassListContains("hidden"));
+                rig.Director.AdvanceMatchClock(1f);
+                Assert.Less(rig.Director.State.TurnTimeLeft, before);
+            }
+            finally
+            {
+                if (hadWinMode)
+                {
+                    PlayerPrefs.SetInt(MatchDirector.HotseatWinModeKey, previousWinMode);
+                }
+                else
+                {
+                    PlayerPrefs.DeleteKey(MatchDirector.HotseatWinModeKey);
+                }
+            }
+        }
+
+        [Test]
+        public void RingFillUsesRemainingTimeAndTheActiveSeatColor()
+        {
+            using var rig = new Rig();
+            rig.StartMatch();
+            var before = rig.Director.State.TurnTimeLeft;
+            rig.Hud.RefreshFromState();
+
+            var ring = rig.Root.Q<TimerRingElement>("timer-ring");
+            Assert.NotNull(ring);
+            var budget = rig.Director.State.Rules.TurnTimeSeconds;
+            Assert.AreEqual(before / budget, ring.Fill, 0.02f);
+            Assert.IsTrue(ring.HasArc);
+            var color = SeatPalette.Ui(
+                rig.Director.State.CurrentPlayerId.Value,
+                SeatPalette.ColorblindPreferred());
+            Assert.AreEqual(color.r, ring.ArcColor.r, 0.01f);
+            Assert.AreEqual(color.g, ring.ArcColor.g, 0.01f);
+            Assert.AreEqual(color.b, ring.ArcColor.b, 0.01f);
+
+            rig.Director.AdvanceMatchClock(before * 0.5f);
+            rig.Hud.RefreshFromState();
+            var after = rig.Director.State.TurnTimeLeft;
+            Assert.AreEqual(before * 0.5f, after, 0.05f);
+            Assert.AreEqual(after / budget, ring.Fill, 0.02f);
         }
 
         static void PointAt(VisualElement element)

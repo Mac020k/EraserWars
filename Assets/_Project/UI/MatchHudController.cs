@@ -5,6 +5,7 @@ using EraserWars.Core;
 using EraserWars.Gameplay;
 using EraserWars.Persistence;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace EraserWars.UI
@@ -44,7 +45,15 @@ namespace EraserWars.UI
         VisualElement turnAnnounce;
         Label turnAnnounceLine;
         VisualElement timerBox;
+        TimerRingElement timerRing;
         Label turnYieldLabel;
+        Button menuButton;
+        VisualElement pauseOverlay;
+        VisualElement pauseCard;
+        Label pauseRules;
+        Label pauseSeats;
+        Label pauseOptions;
+        bool pauseOpen;
         VisualElement cardCutIn;
         VisualElement cardCutInDim;
         VisualElement cardCutInBanner;
@@ -134,6 +143,8 @@ namespace EraserWars.UI
             handDock = root.Q("hand-dock");
             handRow = root.Q("hand");
             handTitle = root.Q<Label>("hand-title");
+            timerRing = TimerRingElement.Adopt(root.Q("timer-ring"));
+            HudPlate.BindRail(root.Q("score-rail-line"));
             passButton = livePass;
             rematchButton = root.Q<Button>("rematch");
             matchEndMenuButton = root.Q<Button>("match-end-menu");
@@ -160,6 +171,13 @@ namespace EraserWars.UI
             resultText = root.Q<Label>("result-text");
             resultSummary = root.Q<Label>("result-summary");
             resultXp = root.Q<Label>("result-xp");
+            menuButton = root.Q<Button>("menu");
+            pauseOverlay = root.Q("pause-overlay");
+            pauseCard = root.Q("pause-card");
+            pauseRules = root.Q<Label>("pause-rules");
+            pauseSeats = root.Q<Label>("pause-seats");
+            pauseOptions = root.Q<Label>("pause-options");
+            BindPlates();
 
             if (passButton == null || ReferenceEquals(passButton, boundPass))
             {
@@ -179,8 +197,34 @@ namespace EraserWars.UI
             passButton?.RegisterCallback<ClickEvent>(_ => director?.Pass());
             rematchButton?.RegisterCallback<ClickEvent>(_ => director?.Rematch());
             matchEndMenuButton?.RegisterCallback<ClickEvent>(_ => startMenu?.ShowMenu());
-            root.Q<Button>("menu")?.RegisterCallback<ClickEvent>(_ => startMenu?.ShowMenu());
+            menuButton?.RegisterCallback<ClickEvent>(_ => OpenPause());
+            root.Q<Button>("pause-continue")?.RegisterCallback<ClickEvent>(_ => ClosePause());
+            root.Q<Button>("pause-main")?.RegisterCallback<ClickEvent>(_ => OpenMainMenu());
             ApplyChrome();
+        }
+
+        void BindPlates()
+        {
+            HudPlate.Bind(menuButton, () => new HudPlate.PlateInk(
+                new Color(1f, 1f, 1f, 0.96f),
+                new Color(1f, 120f / 255f, 170f / 255f, 1f),
+                4f));
+            HudPlate.Bind(passButton, () => new HudPlate.PlateInk(
+                new Color(1f, 1f, 1f, 0.96f),
+                new Color(1f, 120f / 255f, 170f / 255f, 1f),
+                4f));
+            HudPlate.Bind(pauseCard, () => new HudPlate.PlateInk(
+                new Color(1f, 250f / 255f, 236f / 255f, 0.98f),
+                new Color(1f, 120f / 255f, 170f / 255f, 1f),
+                8f));
+            HudPlate.Bind(root.Q<Button>("pause-continue"), () => new HudPlate.PlateInk(
+                new Color(40f / 255f, 32f / 255f, 48f / 255f, 1f),
+                new Color(40f / 255f, 32f / 255f, 48f / 255f, 1f),
+                0f));
+            HudPlate.Bind(root.Q<Button>("pause-main"), () => new HudPlate.PlateInk(
+                new Color(1f, 1f, 1f, 0.2f),
+                new Color(1f, 120f / 255f, 170f / 255f, 1f),
+                4f));
         }
 
         void OnDisable()
@@ -191,7 +235,30 @@ namespace EraserWars.UI
         void Update()
         {
             praiseView?.Tick(Time.unscaledDeltaTime);
+            if (WasEscapePressed() && !StartMenuCoversMatch())
+            {
+                TogglePause();
+            }
+
             RefreshFromState();
+        }
+
+        static bool WasEscapePressed()
+        {
+            var keyboard = Keyboard.current;
+            return keyboard != null && keyboard.escapeKey.wasPressedThisFrame;
+        }
+
+        bool StartMenuCoversMatch()
+        {
+            if (startMenu == null)
+            {
+                startMenu = FindAnyObjectByType<StartMenuController>(FindObjectsInactive.Include);
+            }
+
+            return startMenu != null
+                && startMenu.isActiveAndEnabled
+                && startMenu.IsMenuVisible;
         }
 
         public void RefreshFromState()
@@ -229,9 +296,19 @@ namespace EraserWars.UI
             SetVisible(true);
             PaintEdgeCue();
             var state = director.State;
+            if (pauseOpen && state.Phase == Phase.MatchEnd)
+            {
+                ClosePause();
+            }
+
             if (phaseLabel != null)
             {
-                phaseLabel.text = UiText.Format(UiKey.HudRound, state.Round, PhaseText(state.Phase));
+                phaseLabel.text = UiText.Format(UiKey.HudRoundMark, state.Round);
+            }
+
+            if (pauseOpen)
+            {
+                PaintPause(state);
             }
 
             RefreshTurnChrome(state);
@@ -261,7 +338,8 @@ namespace EraserWars.UI
             if (passHintLabel != null)
             {
                 passHintLabel.text = chrome.PassHint;
-                passHintLabel.EnableInClassList(HiddenClass, !chrome.ShowPassHint);
+                var showHint = chrome.ShowPassHint && chrome.ShowCallout && !cutInUp;
+                passHintLabel.EnableInClassList(HiddenClass, !showHint);
             }
 
             if (timerLabel != null)
@@ -272,7 +350,21 @@ namespace EraserWars.UI
             timerUnit?.EnableInClassList(HiddenClass, !chrome.TimerTicking);
             timerBox?.EnableInClassList(TimerIdleClass, !chrome.TimerTicking);
             timerBox?.EnableInClassList(TimerUrgentClass, chrome.TimerUrgent);
+            PaintTimerRing(chrome);
             PaintTurnYield(cutInUp);
+        }
+
+        void PaintTimerRing(TurnChrome chrome)
+        {
+            if (timerRing == null)
+            {
+                return;
+            }
+
+            var color = chrome.Seat >= 0
+                ? SeatPalette.Ui(chrome.Seat, SeatPalette.ColorblindPreferred())
+                : new Color(0.72f, 0.68f, 0.74f, 1f);
+            timerRing.SetArc(chrome.TimerFill, color, chrome.TimerTicking);
         }
 
         void RefreshTurnAnnounce(MatchState state)
@@ -350,6 +442,7 @@ namespace EraserWars.UI
             var ended = state.Phase == Phase.MatchEnd;
             var cutInUp = director != null && director.IsCardCutInShowing;
             var cpuSeat = director != null && director.IsCpuSeat(state.CurrentPlayerId.Value);
+            menuButton?.EnableInClassList(HiddenClass, ended);
             passButton?.EnableInClassList(HiddenClass, ended || cutInUp);
             passButton?.SetEnabled(
                 !cpuSeat && state.Phase is Phase.CardSelect or Phase.Aim or Phase.TurnStart);
@@ -363,17 +456,18 @@ namespace EraserWars.UI
             }
 
             var cpuSeat = director != null && director.IsCpuSeat(state.CurrentPlayerId.Value);
-            var canPlay = !cpuSeat && state.Phase is Phase.CardSelect or Phase.Aim;
             var cutInUp = director != null && director.IsCardCutInShowing;
-            if (!canPlay || cutInUp)
+            var showCards = HandOffer.ShowCards(state, cpuSeat) && !cutInUp;
+            if (!showCards)
             {
                 selectedHandIndex = -1;
-                ApplyHandSelection();
             }
 
-            handDock.EnableInClassList(HiddenClass, !canPlay || cutInUp);
-            if (!canPlay)
+            handDock.EnableInClassList(HiddenClass, !showCards);
+            handRow.EnableInClassList(HiddenClass, !showCards);
+            if (!showCards)
             {
+                ApplyHandSelection();
                 return;
             }
 
@@ -460,9 +554,18 @@ namespace EraserWars.UI
                 selectedHandIndex = -1;
             }
 
-            for (var i = 0; i < handRow.childCount; i++)
+            var reduce = EdgeSlowmoCue.ReduceMotionPreferred();
+            var count = handRow.childCount;
+            for (var i = 0; i < count; i++)
             {
-                handRow[i].EnableInClassList(HandSelectedClass, i == selectedHandIndex);
+                var card = handRow[i];
+                var pose = HandFan.Pose(i, count, i == selectedHandIndex, reduce);
+                card.EnableInClassList(HandSelectedClass, i == selectedHandIndex);
+                card.style.rotate = new Rotate(Angle.Degrees(pose.Degrees));
+                card.style.translate = new Translate(new Length(0f), new Length(pose.LiftPixels));
+                card.style.marginLeft = pose.Overlap;
+                card.style.marginRight = pose.Overlap;
+                card.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(100));
             }
         }
 
@@ -601,33 +704,7 @@ namespace EraserWars.UI
             var title = winner is PlayerId won
                 ? UiText.Format(UiKey.HudWin, won.Value + 1)
                 : UiText.Get(UiKey.HudDraw);
-            return new MatchEndCopy(title, SummarizeSeats(state), seat);
-        }
-
-        static string SummarizeSeats(MatchState state)
-        {
-            var mode = state.Rules.WinMode;
-            var parts = new string[state.Players.Length];
-            for (var i = 0; i < state.Players.Length; i++)
-            {
-                parts[i] = FormatSeat(mode, state.Players[i]);
-            }
-
-            return string.Join("  ·  ", parts);
-        }
-
-        static string FormatSeat(WinMode mode, PlayerState player)
-        {
-            var seat = player.Id.Value + 1;
-            switch (mode)
-            {
-                case WinMode.Stock:
-                    return UiText.Format(UiKey.HudStockLine, seat, player.Stocks);
-                case WinMode.Points:
-                    return UiText.Format(UiKey.HudPointsLine, seat, player.Points);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unhandled win mode.");
-            }
+            return new MatchEndCopy(title, PauseBrief.SeatLine(state), seat);
         }
 
         void RefreshPills(MatchState state)
@@ -651,6 +728,7 @@ namespace EraserWars.UI
                 var pill = pills[i];
                 var active = player.Id.Value == activeSeat;
                 pill.Root.EnableInClassList(PillActiveClass, active);
+                pill.Root.MarkDirtyRepaint();
                 pill.Now?.EnableInClassList(HiddenClass, !active);
                 if (pill.Now != null)
                 {
@@ -677,6 +755,16 @@ namespace EraserWars.UI
                 var pill = new PlayerPill { Root = new VisualElement() };
                 pill.Root.AddToClassList("player-pill");
                 pill.Root.AddToClassList($"seat-{i % SeatClassCount}");
+                var seat = i;
+                HudPlate.Bind(pill.Root, () =>
+                {
+                    var color = SeatPalette.Ui(seat, SeatPalette.ColorblindPreferred());
+                    var active = pill.Root.ClassListContains(PillActiveClass);
+                    var fill = active
+                        ? new Color(1f, 248f / 255f, 214f / 255f, 0.96f)
+                        : new Color(1f, 1f, 1f, 0.94f);
+                    return new HudPlate.PlateInk(fill, color, active ? 6f : 3.5f);
+                });
 
                 pill.Now = new Label(UiText.Get(UiKey.HudNow));
                 pill.Now.AddToClassList("pill-now");
@@ -708,21 +796,6 @@ namespace EraserWars.UI
                 playersRow.Add(pill.Root);
                 pills.Add(pill);
             }
-        }
-
-        static string PhaseText(Phase phase)
-        {
-            return phase switch
-            {
-                Phase.TurnStart => UiText.Get(UiKey.HudPhaseReady),
-                Phase.CardSelect => UiText.Get(UiKey.HudPhaseCard),
-                Phase.Aim => UiText.Get(UiKey.HudPhaseAim),
-                Phase.Simulating => UiText.Get(UiKey.HudPhaseRoll),
-                Phase.Resolve => UiText.Get(UiKey.HudPhaseResult),
-                Phase.RoundEnd => UiText.Get(UiKey.HudPhaseRoundEnd),
-                Phase.MatchEnd => UiText.Get(UiKey.HudPhaseMatchEnd),
-                _ => phase.ToString(),
-            };
         }
 
         void ApplyChrome()
@@ -840,6 +913,90 @@ namespace EraserWars.UI
                 ? EdgeSlowmoCue.Idle
                 : watcher.CurrentCue(Time.unscaledTime, EdgeSlowmoCue.ReduceMotionPreferred());
             EdgeSlowmoVignette.Paint(root, cue);
+        }
+
+        public bool IsPauseOpen => pauseOpen;
+
+        public void OpenPause()
+        {
+            BindTree();
+            if (director == null)
+            {
+                director = FindAnyObjectByType<MatchDirector>();
+            }
+
+            if (director?.State == null || director.State.Phase == Phase.MatchEnd)
+            {
+                return;
+            }
+
+            pauseOpen = true;
+            director.SetStartMenuOpen(true);
+            PaintPause(director.State);
+            pauseOverlay?.EnableInClassList(HiddenClass, false);
+        }
+
+        public void ClosePause()
+        {
+            if (!pauseOpen)
+            {
+                return;
+            }
+
+            pauseOpen = false;
+            pauseOverlay?.EnableInClassList(HiddenClass, true);
+            if (director != null && director.State != null && director.State.Phase != Phase.MatchEnd)
+            {
+                director.SetStartMenuOpen(false);
+            }
+        }
+
+        public void TogglePause()
+        {
+            if (pauseOpen)
+            {
+                ClosePause();
+                return;
+            }
+
+            OpenPause();
+        }
+
+        void OpenMainMenu()
+        {
+            pauseOpen = false;
+            pauseOverlay?.EnableInClassList(HiddenClass, true);
+            if (startMenu == null)
+            {
+                startMenu = FindAnyObjectByType<StartMenuController>(FindObjectsInactive.Include);
+            }
+
+            startMenu?.ShowMenu(suspendMatch: true);
+        }
+
+        void PaintPause(MatchState state)
+        {
+            if (pauseOverlay == null)
+            {
+                return;
+            }
+
+            pauseOverlay.EnableInClassList(HiddenClass, false);
+            var brief = PauseBrief.From(state, GameSettings.Load());
+            if (pauseRules != null)
+            {
+                pauseRules.text = brief.Rules;
+            }
+
+            if (pauseSeats != null)
+            {
+                pauseSeats.text = brief.Seats;
+            }
+
+            if (pauseOptions != null)
+            {
+                pauseOptions.text = brief.Options;
+            }
         }
 
         void SetVisible(bool visible)

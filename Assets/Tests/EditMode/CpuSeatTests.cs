@@ -1,6 +1,8 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 using EraserWars.Audio;
+using EraserWars.Cards;
 using EraserWars.Core;
 using EraserWars.Gameplay;
 using EraserWars.UI;
@@ -97,28 +99,43 @@ namespace EraserWars.Tests.EditMode
         [Test]
         public void MarkedSeat0PassesAfterTheCallout_AndTheHumanSeatGetsTheTableBack()
         {
-            using var rig = new Rig();
-            rig.StartMatch(new CpuSeatMask(0b0001));
-            Assert.IsFalse(rig.Director.AcceptsHumanAim);
-            Assert.IsFalse(rig.Pass.enabledSelf, "A CPU seat should not offer Pass.");
-            Assert.IsTrue(rig.HandHidden, "A CPU seat should not offer the hand.");
+            var card = ScriptableObject.CreateInstance<CardDefinition>();
+            card.IdValue = 11;
+            card.DisplayNameJa = "ワックス";
+            card.NameKey = "wax";
+            card.FamilyKey = CardFamilies.Stationery;
+            card.EffectKinds = new List<string>();
+            try
+            {
+                using var rig = new Rig();
+                rig.Director.SetSeatCommons(0, new[] { card });
+                rig.Director.SetSeatCommons(1, new[] { card });
+                rig.StartMatch(new CpuSeatMask(0b0001));
+                Assert.IsFalse(rig.Director.AcceptsHumanAim);
+                Assert.IsFalse(rig.Pass.enabledSelf, "A CPU seat should not offer Pass.");
+                Assert.IsTrue(rig.HandHidden, "A CPU seat should not offer the hand.");
 
-            rig.Director.AdvanceMatchClock(TurnAnnounce.ShowSeconds);
-            Assert.AreEqual(0, rig.Director.State.CurrentPlayerId.Value);
-            Assert.AreEqual(Phase.CardSelect, rig.Director.State.Phase);
+                rig.Director.AdvanceMatchClock(TurnAnnounce.ShowSeconds);
+                Assert.AreEqual(0, rig.Director.State.CurrentPlayerId.Value);
+                Assert.AreEqual(Phase.CardSelect, rig.Director.State.Phase);
 
-            rig.Director.AdvanceMatchClock(CpuTurn.ThinkSeconds);
-            rig.Hud.RefreshFromState();
+                rig.Director.AdvanceMatchClock(CpuTurn.ThinkSeconds);
+                rig.Hud.RefreshFromState();
 
-            Assert.AreEqual(new PlayerId(1), rig.Director.State.CurrentPlayerId);
-            Assert.AreEqual(Phase.CardSelect, rig.Director.State.Phase);
-            Assert.Greater(rig.Director.State.TurnTimeLeft, 0f);
-            Assert.IsTrue(rig.Director.TryGetTurnYield(out var notice));
-            Assert.AreEqual(TurnYieldKind.Pass, notice.Kind);
-            Assert.AreEqual(0, notice.Seat);
-            Assert.IsTrue(rig.Director.AcceptsHumanAim);
-            Assert.IsTrue(rig.Pass.enabledSelf, "The next human seat should get Pass back.");
-            Assert.IsFalse(rig.HandHidden, "The next human seat should get the hand back.");
+                Assert.AreEqual(new PlayerId(1), rig.Director.State.CurrentPlayerId);
+                Assert.AreEqual(Phase.CardSelect, rig.Director.State.Phase);
+                Assert.Greater(rig.Director.State.TurnTimeLeft, 0f);
+                Assert.IsTrue(rig.Director.TryGetTurnYield(out var notice));
+                Assert.AreEqual(TurnYieldKind.Pass, notice.Kind);
+                Assert.AreEqual(0, notice.Seat);
+                Assert.IsTrue(rig.Director.AcceptsHumanAim);
+                Assert.IsTrue(rig.Pass.enabledSelf, "The next human seat should get Pass back.");
+                Assert.IsFalse(rig.HandHidden, "The next human seat should get the hand back.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(card);
+            }
         }
 
         [Test]

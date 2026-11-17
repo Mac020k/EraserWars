@@ -122,6 +122,9 @@ namespace EraserWars.UI
         HudYieldPass,
         HudYieldTime,
         HudYieldCutoff,
+        PauseTitle,
+        PauseMain,
+        HudRoundMark,
         OptSectionAccess,
         OptReduceOn,
         OptReduceOff,
@@ -247,6 +250,9 @@ namespace EraserWars.UI
             { UiKey.HudYieldPass, new Line("パスした", "Passed") },
             { UiKey.HudYieldTime, new Line("じかんぎれ", "Time's up") },
             { UiKey.HudYieldCutoff, new Line("うちきり", "Cutoff") },
+            { UiKey.PauseTitle, new Line("ポーズ", "Pause") },
+            { UiKey.PauseMain, new Line("メインメニューへ", "Main menu") },
+            { UiKey.HudRoundMark, new Line("Round{0}", "Round {0}") },
         };
 
         public static readonly Slot[] StartMenuSlots =
@@ -303,6 +309,9 @@ namespace EraserWars.UI
             new Slot("rematch", UiKey.HudRematch),
             new Slot("match-end-menu", UiKey.HudToMenu),
             new Slot("pass-label", UiKey.HudPass),
+            new Slot("pause-title", UiKey.PauseTitle),
+            new Slot("pause-continue", UiKey.MenuResume),
+            new Slot("pause-main", UiKey.PauseMain),
         };
 
         public static string Get(UiKey key)

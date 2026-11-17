@@ -96,6 +96,32 @@ namespace EraserWars.Tests.EditMode
         }
 
         [Test]
+        public void RemainingTimeFillsTheRingAndIdleTimeDoesNot()
+        {
+            var state = MatchFactory.CreateHotseat(2, RuleSet.CasualStock) with
+            {
+                Phase = Phase.CardSelect,
+                TurnTimeLeft = 10f,
+            };
+
+            var half = TurnChrome.From(state);
+            Assert.AreEqual(0.5f, half.TimerFill, 0.001f);
+            Assert.AreEqual(180f, TurnChrome.SweepDegrees(half.TimerFill), 0.01f);
+            Assert.AreEqual(0, half.Seat);
+            Assert.IsTrue(half.TimerTicking);
+
+            var idle = TurnChrome.From(state with { Phase = Phase.Simulating });
+            Assert.AreEqual(0f, idle.TimerFill, 0.001f);
+            Assert.IsFalse(idle.TimerTicking);
+            Assert.AreEqual(0, idle.Seat);
+
+            var full = TurnChrome.From(state with { TurnTimeLeft = 20f });
+            Assert.AreEqual(1f, full.TimerFill, 0.001f);
+            Assert.AreEqual(360f, TurnChrome.SweepDegrees(1f), 0.01f);
+            Assert.AreEqual(0f, TurnChrome.SweepDegrees(0f), 0.01f);
+        }
+
+        [Test]
         public void MatchEndHidesTheCallout()
         {
             var state = MatchFactory.CreateHotseat(4, RuleSet.CasualStock) with
