@@ -58,46 +58,67 @@
                 <ui:VisualElement class="destination-chrome">
                     <ui:Button name="close-options" text="← もどる" class="destination-back options-back" />
                     <ui:Label name="options-title" text="オプション" class="destination-title" />
+                    <ui:VisualElement name="options-eraser" class="options-eraser" picking-mode="Ignore" />
                 </ui:VisualElement>
-                <ui:ScrollView name="options-scroll" class="options-body options-scroll" mode="Vertical" horizontal-scroller-visibility="Hidden">
-                    <ui:Label name="opt-section-volume" text="音量" class="options-section options-section-first" />
-                    <ui:Label name="opt-master-value" text="マスター 100" class="options-label" />
-                    <ui:Slider name="opt-master" low-value="0" high-value="100" value="100" class="options-slider" />
-                    <ui:Label name="opt-bgm-value" text="BGM 70" class="options-label" />
-                    <ui:Slider name="opt-bgm" low-value="0" high-value="100" value="70" class="options-slider" />
-                    <ui:Label name="opt-se-value" text="SE 80" class="options-label" />
-                    <ui:Slider name="opt-se" low-value="0" high-value="100" value="80" class="options-slider" />
-                    <ui:Label name="opt-note-volume" text="マスターは今すぐ変わります。BGM と SE は音が入ると、この割合で鳴ります。" class="options-note" />
-
-                    <ui:Label name="opt-section-match" text="対戦" class="options-section" />
-                    <ui:Label name="opt-flick-value" text="フリックの強さ 100" class="options-label" />
-                    <ui:Slider name="opt-flick" low-value="50" high-value="150" value="100" class="options-slider" />
-                    <ui:Label name="opt-turn-value" text="1ターン 20秒" class="options-label" />
-                    <ui:Slider name="opt-turn" low-value="10" high-value="60" value="20" class="options-slider" />
-                    <ui:Button name="opt-shake" text="カメラ揺れ: ON" class="options-toggle on" />
-                    <ui:Label name="opt-note-match" text="フリックの強さ、ターン時間、カメラ揺れは保存されます。試合側がこの値を読むと効きます。" class="options-note" />
-
-                    <ui:Label name="opt-section-display" text="表示" class="options-section" />
-                    <ui:Label name="opt-ui-size" text="画面の大きさ" class="options-label" />
-                    <ui:VisualElement class="options-choice-row">
-                        <ui:Label name="opt-ui-120" text="大" class="options-choice selected" />
+                <ui:ScrollView name="options-scroll" class="options-body options-scroll" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto">
+                    <ui:VisualElement name="opt-card-volume" class="options-card options-card-first">
+                        <ui:Label name="opt-section-volume" text="音量" class="options-section" />
+                        <ui:Label name="opt-master-value" text="マスター 100" class="options-label" />
+                        <ui:Slider name="opt-master" low-value="0" high-value="100" value="100" class="options-slider" />
+                        <ui:Label name="opt-bgm-value" text="BGM 70" class="options-label" />
+                        <ui:Slider name="opt-bgm" low-value="0" high-value="100" value="70" class="options-slider" />
+                        <ui:Label name="opt-se-value" text="SE 80" class="options-label" />
+                        <ui:Slider name="opt-se" low-value="0" high-value="100" value="80" class="options-slider" />
+                        <ui:Label name="opt-note-volume" text="マスターは今すぐ変わります。BGM と SE は音が入ると、この割合で鳴ります。" class="options-note" />
                     </ui:VisualElement>
-
-                    <ui:Label name="opt-section-access" text="見やすさ" class="options-section" />
-                    <ui:Button name="opt-reduce-motion" text="動きを減らす: OFF" class="options-toggle" />
-                    <ui:Button name="opt-seat-palette" text="座席の色: 標準" class="options-toggle" />
-                    <ui:VisualElement name="opt-seat-swatches" class="options-swatches">
-                        <ui:VisualElement name="opt-swatch-0" class="options-swatch" />
-                        <ui:VisualElement name="opt-swatch-1" class="options-swatch" />
-                        <ui:VisualElement name="opt-swatch-2" class="options-swatch" />
-                        <ui:VisualElement name="opt-swatch-3" class="options-swatch" />
+                    <ui:VisualElement name="opt-card-match" class="options-card">
+                        <ui:Label name="opt-section-match" text="対戦" class="options-section" />
+                        <ui:Label name="opt-flick-value" text="フリックの強さ 100" class="options-label" />
+                        <ui:Slider name="opt-flick" low-value="50" high-value="150" value="100" class="options-slider" />
+                        <ui:Label name="opt-turn-value" text="1ターン 20秒" class="options-label" />
+                        <ui:Slider name="opt-turn" low-value="10" high-value="60" value="20" class="options-slider" />
+                        <ui:Button name="opt-shake" text="カメラ揺れ: ON" class="options-toggle on">
+                            <ui:VisualElement class="options-switch" picking-mode="Ignore">
+                                <ui:VisualElement class="options-switch-knob" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                        </ui:Button>
+                        <ui:Label name="opt-note-match" text="フリックの強さ、ターン時間、カメラ揺れは保存されます。試合側がこの値を読むと効きます。" class="options-note" />
                     </ui:VisualElement>
-                    <ui:Label name="opt-note-access" text="動きを減らすと、画面端の光は点滅せず、うすく固定されます。座席の色は次の試合のコマと表示に使います。" class="options-note" />
-
-                    <ui:Label name="opt-section-dev" text="開発" class="options-section" />
-                    <ui:Button name="opt-debug-mode" text="デバッグモード: ON" class="options-debug-button debug-on" />
-                    <ui:Label name="opt-note-debug" text="リリース前にこのボタンを非表示にします。" class="options-note" />
-
+                    <ui:VisualElement name="opt-card-display" class="options-card">
+                        <ui:Label name="opt-section-display" text="表示" class="options-section" />
+                        <ui:Label name="opt-ui-size" text="画面の大きさ" class="options-label" />
+                        <ui:VisualElement class="options-choice-row">
+                            <ui:Label name="opt-ui-120" text="大" class="options-choice selected" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="opt-card-access" class="options-card">
+                        <ui:Label name="opt-section-access" text="見やすさ" class="options-section" />
+                        <ui:Button name="opt-reduce-motion" text="動きを減らす: OFF" class="options-toggle">
+                            <ui:VisualElement class="options-switch" picking-mode="Ignore">
+                                <ui:VisualElement class="options-switch-knob" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                        </ui:Button>
+                        <ui:Button name="opt-seat-palette" text="座席の色: 標準" class="options-toggle">
+                            <ui:VisualElement class="options-switch" picking-mode="Ignore">
+                                <ui:VisualElement class="options-switch-knob" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                        </ui:Button>
+                        <ui:VisualElement name="opt-seat-swatches" class="options-swatches">
+                            <ui:VisualElement name="opt-swatch-0" class="options-swatch" />
+                            <ui:VisualElement name="opt-swatch-1" class="options-swatch" />
+                            <ui:VisualElement name="opt-swatch-2" class="options-swatch" />
+                            <ui:VisualElement name="opt-swatch-3" class="options-swatch" />
+                        </ui:VisualElement>
+                        <ui:Label name="opt-note-access" text="動きを減らすと、画面端の光は点滅せず、うすく固定されます。座席の色は次の試合のコマと表示に使います。" class="options-note" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="opt-card-dev" class="options-card options-card-dev">
+                        <ui:Label name="opt-section-dev" text="開発" class="options-section" />
+                        <ui:Button name="opt-debug-mode" text="デバッグモード: ON" class="options-toggle options-debug-button debug-on">
+                            <ui:VisualElement class="options-switch" picking-mode="Ignore">
+                                <ui:VisualElement class="options-switch-knob" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                        </ui:Button>
+                    </ui:VisualElement>
                     <ui:Button name="opt-reset" text="初期値に戻す" class="options-reset" />
                 </ui:ScrollView>
             </ui:VisualElement>

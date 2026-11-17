@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 namespace EraserWars.UI
 {
     /// <summary>
-    /// Full-screen pre-match menu (ADR-0009 / 6B). CoroCoro-energy CTA, icon-led modes.
+    /// Full-screen pre-match menu (ADR-0009 / 6B). High-energy CTA, icon-led modes.
     /// </summary>
     public sealed class StartMenuController : MonoBehaviour
     {
