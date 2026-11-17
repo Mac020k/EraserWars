@@ -32,6 +32,8 @@ namespace EraserWars.Gameplay
         TurnYieldNotice turnYieldNotice;
         float turnYieldSecondsLeft;
         int activeSeat;
+        bool seatColorsReady;
+        bool appliedColorblind;
 
         // Broadcast-style debug chrome: top banner stays readable on stream, side panel keeps the desk clear.
         static readonly Rect SidePanelRect = new(12f, 96f, 288f, 318f);
@@ -218,6 +220,7 @@ namespace EraserWars.Gameplay
 
         public void PresentActiveEraserCue(float deltaSeconds, float timeSeconds)
         {
+            RefreshSeatBodyColors();
             var cueSeat = -1;
             if (state != null && ActiveEraserCue.PhaseShowsCue(state.Phase))
             {
@@ -233,7 +236,7 @@ namespace EraserWars.Gameplay
                 }
 
                 var seat = eraser.PlayerIndex;
-                var color = PlayerColors[seat % PlayerColors.Length];
+                var color = SeatPalette.Body(seat);
                 var sample = ActiveEraserCue.At(seat == cueSeat, color, timeSeconds);
                 cueView.Apply(eraser, sample, deltaSeconds);
             }
@@ -906,13 +909,25 @@ namespace EraserWars.Gameplay
             cueView.Clear();
         }
 
-        static readonly Color[] PlayerColors =
+        void RefreshSeatBodyColors()
         {
-            new(0.92f, 0.28f, 0.35f),
-            new(0.25f, 0.45f, 0.95f),
-            new(0.25f, 0.75f, 0.40f),
-            new(0.95f, 0.78f, 0.20f),
-        };
+            var colorblind = SeatPalette.ColorblindPreferred();
+            if (seatColorsReady && appliedColorblind == colorblind)
+            {
+                return;
+            }
+
+            seatColorsReady = true;
+            appliedColorblind = colorblind;
+            for (var i = 0; i < erasers.Count; i++)
+            {
+                var eraser = erasers[i];
+                if (eraser != null)
+                {
+                    ApplyPlayerLook(eraser, eraser.PlayerIndex);
+                }
+            }
+        }
 
         static void ApplyPlayerLook(EraserBody eraser, int playerIndex)
         {
@@ -922,7 +937,7 @@ namespace EraserWars.Gameplay
                 return;
             }
 
-            var color = PlayerColors[playerIndex % PlayerColors.Length];
+            var color = SeatPalette.Body(playerIndex);
             var mat = renderer.material;
             if (mat.HasProperty("_BaseColor"))
             {
@@ -1006,11 +1021,11 @@ namespace EraserWars.Gameplay
             GUILayout.BeginHorizontal();
             GUILayout.Label("ERASER WARS", bannerTitleStyle, GUILayout.Width(210f));
             GUILayout.Label($"ROUND {state.Round}", bannerStatStyle, GUILayout.Width(110f));
-            var seatColor = PlayerColors[activeSeat % PlayerColors.Length];
+            var seatColor = SeatPalette.Body(activeSeat);
             var prev = GUI.color;
             GUI.color = seatColor;
             GUILayout.Label(
-                $"SEAT {activeSeat}  {PlayerIndexColorName(activeSeat).ToUpperInvariant()}",
+                $"SEAT {activeSeat}  {SeatPalette.DebugName(activeSeat).ToUpperInvariant()}",
                 seatStyle,
                 GUILayout.Width(210f));
             GUI.color = prev;
@@ -1031,7 +1046,7 @@ namespace EraserWars.Gameplay
             foreach (var p in state.Players)
             {
                 var idx = p.Id.Value;
-                var color = p.IsAlive ? PlayerColors[idx % PlayerColors.Length] : new Color(0.38f, 0.38f, 0.38f);
+                var color = p.IsAlive ? SeatPalette.Body(idx) : new Color(0.38f, 0.38f, 0.38f);
                 DrawStockRow(idx, p.Stocks, p.Points, color, idx == activeSeat);
             }
 
@@ -1092,17 +1107,6 @@ namespace EraserWars.Gameplay
             GUI.color = prev;
         }
 
-        static string PlayerIndexColorName(int index)
-        {
-            return index switch
-            {
-                0 => "red",
-                1 => "blue",
-                2 => "green",
-                3 => "yellow",
-                _ => $"p{index}",
-            };
-        }
     }
 }
 

@@ -754,3 +754,97 @@
     white-space: normal;
 }
 
+.cb-seats .pill-name,
+.cb-seats .hand-title {
+    color: rgb(28, 18, 24);
+}
+
+.cb-seats .turn-callout.seat-0 { border-color: rgb(100, 143, 255); }
+.cb-seats .turn-callout.seat-1 { border-color: rgb(220, 38, 127); }
+.cb-seats .turn-callout.seat-2 { border-color: rgb(254, 97, 0); }
+.cb-seats .turn-callout.seat-3 { border-color: rgb(255, 176, 0); }
+
+.cb-seats .turn-callout.seat-0 .hud-turn,
+.cb-seats .turn-callout.seat-0 .pass-hint { color: rgb(20, 52, 160); }
+.cb-seats .turn-callout.seat-1 .hud-turn,
+.cb-seats .turn-callout.seat-1 .pass-hint { color: rgb(140, 16, 78); }
+.cb-seats .turn-callout.seat-2 .hud-turn,
+.cb-seats .turn-callout.seat-2 .pass-hint { color: rgb(168, 56, 0); }
+.cb-seats .turn-callout.seat-3 .hud-turn,
+.cb-seats .turn-callout.seat-3 .pass-hint { color: rgb(130, 84, 0); }
+
+.cb-seats .turn-yield.seat-0 { border-color: rgb(100, 143, 255); }
+.cb-seats .turn-yield.seat-1 { border-color: rgb(220, 38, 127); }
+.cb-seats .turn-yield.seat-2 { border-color: rgb(254, 97, 0); }
+.cb-seats .turn-yield.seat-3 { border-color: rgb(255, 176, 0); }
+
+.cb-seats .player-pill.seat-0 { border-color: rgb(100, 143, 255); }
+.cb-seats .player-pill.seat-1 { border-color: rgb(220, 38, 127); }
+.cb-seats .player-pill.seat-2 { border-color: rgb(254, 97, 0); }
+.cb-seats .player-pill.seat-3 { border-color: rgb(255, 176, 0); }
+
+.cb-seats .seat-0 .pill-name { background-color: rgb(100, 143, 255); }
+.cb-seats .seat-1 .pill-name { background-color: rgb(220, 38, 127); }
+.cb-seats .seat-2 .pill-name { background-color: rgb(254, 97, 0); }
+.cb-seats .seat-3 .pill-name { background-color: rgb(255, 176, 0); }
+
+.cb-seats .player-pill.seat-0 .pill-points { color: rgb(20, 52, 160); }
+.cb-seats .player-pill.seat-1 .pill-points { color: rgb(140, 16, 78); }
+.cb-seats .player-pill.seat-2 .pill-points { color: rgb(168, 56, 0); }
+.cb-seats .player-pill.seat-3 .pill-points { color: rgb(130, 84, 0); }
+
+.cb-seats .match-end-card.seat-0 { border-color: rgb(100, 143, 255); }
+.cb-seats .match-end-card.seat-1 { border-color: rgb(220, 38, 127); }
+.cb-seats .match-end-card.seat-2 { border-color: rgb(254, 97, 0); }
+.cb-seats .match-end-card.seat-3 { border-color: rgb(255, 176, 0); }
+
+.cb-seats .match-end-card.seat-0 .result-seat-bar { background-color: rgb(100, 143, 255); }
+.cb-seats .match-end-card.seat-1 .result-seat-bar { background-color: rgb(220, 38, 127); }
+.cb-seats .match-end-card.seat-2 .result-seat-bar { background-color: rgb(254, 97, 0); }
+.cb-seats .match-end-card.seat-3 .result-seat-bar { background-color: rgb(255, 176, 0); }
+
+.cb-seats .match-end-card.seat-0 .result-kicker,
+.cb-seats .match-end-card.seat-0 .result-text { color: rgb(20, 52, 160); }
+.cb-seats .match-end-card.seat-1 .result-kicker,
+.cb-seats .match-end-card.seat-1 .result-text { color: rgb(140, 16, 78); }
+.cb-seats .match-end-card.seat-2 .result-kicker,
+.cb-seats .match-end-card.seat-2 .result-text { color: rgb(168, 56, 0); }
+.cb-seats .match-end-card.seat-3 .result-kicker,
+.cb-seats .match-end-card.seat-3 .result-text { color: rgb(130, 84, 0); }
+
+.cb-seats .hand-dock.seat-0 .hand-title { background-color: rgb(100, 143, 255); }
+.cb-seats .hand-dock.seat-1 .hand-title { background-color: rgb(220, 38, 127); }
+.cb-seats .hand-dock.seat-2 .hand-title { background-color: rgb(254, 97, 0); }
+.cb-seats .hand-dock.seat-3 .hand-title { background-color: rgb(255, 176, 0); }
+
+.cb-seats .turn-announce.seat-0 .turn-announce-line {
+    color: rgb(20, 52, 160);
+    border-color: rgb(100, 143, 255);
+}
+
+.cb-seats .turn-announce.seat-1 .turn-announce-line {
+    color: rgb(140, 16, 78);
+    border-color: rgb(220, 38, 127);
+}
+
+.cb-seats .turn-announce.seat-2 .turn-announce-line {
+    color: rgb(168, 56, 0);
+    border-color: rgb(254, 97, 0);
+}
+
+.cb-seats .turn-announce.seat-3 .turn-announce-line {
+    color: rgb(130, 84, 0);
+    border-color: rgb(255, 176, 0);
+}
+
+.cb-seats .card-cutin-banner.seat-0 { border-color: rgb(100, 143, 255); }
+.cb-seats .card-cutin-banner.seat-1 { border-color: rgb(220, 38, 127); }
+.cb-seats .card-cutin-banner.seat-2 { border-color: rgb(254, 97, 0); }
+.cb-seats .card-cutin-banner.seat-3 { border-color: rgb(255, 176, 0); }
+
+.cb-seats .card-cutin-banner.seat-0 .card-cutin-name { color: rgb(20, 52, 160); }
+.cb-seats .card-cutin-banner.seat-1 .card-cutin-name { color: rgb(140, 16, 78); }
+.cb-seats .card-cutin-banner.seat-2 .card-cutin-name { color: rgb(168, 56, 0); }
+.cb-seats .card-cutin-banner.seat-3 .card-cutin-name { color: rgb(130, 84, 0); }
+
+

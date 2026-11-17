@@ -1,4 +1,5 @@
 using EraserWars.Core;
+using EraserWars.Gameplay;
 using UnityEngine;
 using UnityEngine.UIElements;
 using AudioPrefs = EraserWars.Audio.GameSettings;
@@ -10,6 +11,7 @@ namespace EraserWars.UI
     /// Read Keys with PlayerPrefs. Volumes are 0..1 gains. Bgm/Se also mirror Audio.GameSettings percent keys
     /// so AudioBus and Options stay one contract. FlickScale is 0.5..1.5. TurnSeconds is 10..60.
     /// CameraShake is 0 or 1. UiScale is 0.8, 1, or 1.2. WinMode is 0 for Stock or 1 for Points.
+    /// ReduceMotion is 0 or 1 on EdgeSlowmoCue.ReduceMotionPref. ColorblindSeats is 0 or 1 on SeatPalette.PrefKey.
     /// ApplyVolume sets AudioListener.volume. MatchDirector reads Keys.WinMode and Keys.TurnSeconds.
     /// </summary>
     public sealed record GameSettings(
@@ -20,7 +22,9 @@ namespace EraserWars.UI
         int TurnSeconds,
         bool CameraShake,
         float UiScale,
-        EraserWars.Core.WinMode WinMode)
+        EraserWars.Core.WinMode WinMode,
+        bool ReduceMotion,
+        bool ColorblindSeats)
     {
         public const float DefaultMaster = 1f;
         public const float DefaultBgm = 0.7f;
@@ -29,6 +33,8 @@ namespace EraserWars.UI
         public const int DefaultTurnSeconds = 20;
         public const bool DefaultCameraShake = true;
         public const float DefaultUiScale = 1f;
+        public const bool DefaultReduceMotion = false;
+        public const bool DefaultColorblindSeats = false;
 
         public static class Keys
         {
@@ -40,6 +46,8 @@ namespace EraserWars.UI
             public const string CameraShake = "eraserwars.cameraShake";
             public const string UiScale = "eraserwars.uiScale";
             public const string WinMode = "eraserwars.winMode";
+            public const string ReduceMotion = EdgeSlowmoCue.ReduceMotionPref;
+            public const string ColorblindSeats = SeatPalette.PrefKey;
         }
 
         public static GameSettings Defaults { get; } = new(
@@ -50,7 +58,9 @@ namespace EraserWars.UI
             DefaultTurnSeconds,
             DefaultCameraShake,
             DefaultUiScale,
-            EraserWars.Core.WinMode.Stock);
+            EraserWars.Core.WinMode.Stock,
+            DefaultReduceMotion,
+            DefaultColorblindSeats);
 
         public static GameSettings Current { get; private set; } = Defaults;
 
@@ -64,7 +74,9 @@ namespace EraserWars.UI
                 PlayerPrefs.GetInt(Keys.TurnSeconds, DefaultTurnSeconds),
                 PlayerPrefs.GetInt(Keys.CameraShake, DefaultCameraShake ? 1 : 0) != 0,
                 PlayerPrefs.GetFloat(Keys.UiScale, DefaultUiScale),
-                RuleSet.WinModeFromPref(PlayerPrefs.GetInt(Keys.WinMode, (int)EraserWars.Core.WinMode.Stock)));
+                RuleSet.WinModeFromPref(PlayerPrefs.GetInt(Keys.WinMode, (int)EraserWars.Core.WinMode.Stock)),
+                PlayerPrefs.GetInt(Keys.ReduceMotion, 0) != 0,
+                PlayerPrefs.GetInt(Keys.ColorblindSeats, 0) != 0);
             Current = next.Clamped();
             return Current;
         }
@@ -82,6 +94,8 @@ namespace EraserWars.UI
             PlayerPrefs.SetInt(Keys.CameraShake, Current.CameraShake ? 1 : 0);
             PlayerPrefs.SetFloat(Keys.UiScale, Current.UiScale);
             PlayerPrefs.SetInt(Keys.WinMode, (int)Current.WinMode);
+            PlayerPrefs.SetInt(Keys.ReduceMotion, Current.ReduceMotion ? 1 : 0);
+            PlayerPrefs.SetInt(Keys.ColorblindSeats, Current.ColorblindSeats ? 1 : 0);
             PlayerPrefs.Save();
         }
 
@@ -152,7 +166,9 @@ namespace EraserWars.UI
             SnapTurnSeconds(TurnSeconds),
             CameraShake,
             SnapUiScale(UiScale),
-            RuleSet.WinModeFromPref((int)WinMode));
+            RuleSet.WinModeFromPref((int)WinMode),
+            ReduceMotion,
+            ColorblindSeats);
 
         public static float SnapVolume(float volume) => Mathf.Clamp01(volume);
 

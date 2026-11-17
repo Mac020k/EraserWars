@@ -1,4 +1,5 @@
 using System;
+using EraserWars.Gameplay;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -137,13 +138,6 @@ namespace EraserWars.UI
 
         static readonly Color Paper = new(1f, 0.98f, 0.92f, 1f);
         static readonly Color Gold = new(1f, 0.84f, 0.2f, 1f);
-        static readonly Color[] SeatColors =
-        {
-            new(1f, 120f / 255f, 160f / 255f, 1f),
-            new(70f / 255f, 130f / 255f, 240f / 255f, 1f),
-            new(70f / 255f, 190f / 255f, 100f / 255f, 1f),
-            new(1f, 160f / 255f, 50f / 255f, 1f),
-        };
 
         readonly VisualElement layer;
         readonly Func<int, VisualElement> anchorForSeat;
@@ -243,7 +237,7 @@ namespace EraserWars.UI
         {
             KnockPraiseBurst.WritePieces(time, seed, sample);
             var origin = Origin();
-            var seatColor = SeatColors[Mathf.Abs(seat) % SeatColors.Length];
+            var seatColor = SeatPalette.Praise(seat);
             for (var i = 0; i < scraps.Length; i++)
             {
                 var piece = sample[i];

@@ -81,6 +81,8 @@ The start menu segment `mode-stock` / `mode-points` stores `eraserwars.winMode` 
 `MatchDirector.StartHotseat` reads that key for both 2-player and 4-player hotseat, then applies the saved turn time.
 Points loads `RuleSet.PointsTrial`, which ends after 8 rounds. Stock loads `RuleSet.CasualStock`. Rematch and the debug Hotseat buttons read the same key.
 The home strip `home-tip` reads "カードを1枚出して、ドラッグではじく。" until the player taps わかった. That tap writes `eraserwars.firstCoach` as `1`. Match start does not read `eraserwars.firstCoach`, and the start button stays enabled while the strip is up.
+Options writes `eraserwars.reduceMotion` as `0` or `1`. The value `1` holds the edge glow at a dim constant. `EdgeSlowmoCue.ReduceMotionPreferred` reads that key.
+Options writes `eraserwars.seatPalette` as `0` or `1`. The value `1` paints seats blue, magenta, orange, and gold on the erasers, the knock praise, and the match HUD. The HUD root gains the class `cb-seats`. The value `0` keeps red, blue, green, and yellow.
 
 ## Match log
 

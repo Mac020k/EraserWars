@@ -197,6 +197,7 @@ namespace EraserWars.UI
         public void RefreshFromState()
         {
             BindTree();
+            ApplySeatPalette();
             ApplyChrome();
             if (director == null)
             {
@@ -741,6 +742,16 @@ namespace EraserWars.UI
 
             UiImageUtil.ApplyFit(element, icon);
             element.AddToClassList("has-icon");
+        }
+
+        void ApplySeatPalette()
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            root.EnableInClassList(SeatPalette.HudClass, SeatPalette.ColorblindPreferred());
         }
 
         static void SetSeatClass(VisualElement element, int seat)

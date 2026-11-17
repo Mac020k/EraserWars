@@ -430,6 +430,21 @@
     color: rgb(255, 255, 255);
 }
 
+.options-swatches {
+    flex-direction: row;
+    height: 28px;
+    margin: 8px 0 4px 0;
+}
+
+.options-swatch {
+    flex-grow: 1;
+    height: 28px;
+    margin: 0 4px;
+    border-radius: 6px;
+    border-width: 2px;
+    border-color: rgb(40, 40, 48);
+}
+
 .options-reset {
     margin-top: 22px;
     margin-bottom: 12px;
