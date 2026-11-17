@@ -3,6 +3,7 @@
     overflow: hidden;
     padding: 0;
     border-width: 3px;
+    border-color: rgb(28, 16, 14);
     border-radius: 14px;
     flex-direction: column;
     align-items: stretch;
@@ -13,34 +14,41 @@
 
 .card-face-pattern {
     position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    left: 6px;
+    right: 6px;
+    top: 6px;
+    bottom: 42px;
+    overflow: hidden;
+    border-radius: 7px;
 }
 
 .card-face-mat {
     position: absolute;
-    left: 5px;
-    right: 5px;
-    top: 5px;
-    bottom: 5px;
-    border-width: 1px;
-    border-radius: 10px;
-    border-color: rgba(36, 24, 15, 0.28);
+    left: 6px;
+    right: 6px;
+    top: 6px;
+    bottom: 42px;
+    border-width: 3px;
+    border-radius: 7px;
+    border-color: rgb(255, 255, 255);
     background-color: rgba(0, 0, 0, 0);
+}
+
+.cutin-card .card-face-pattern,
+.cutin-card .card-face-mat {
+    bottom: 6px;
 }
 
 .card-cost-gem {
     position: absolute;
-    top: 8px;
-    left: 8px;
-    width: 32px;
-    height: 32px;
-    border-radius: 16px;
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
     border-width: 2px;
-    border-color: rgb(255, 248, 236);
-    background-color: rgb(22, 18, 16);
+    border-color: rgb(255, 255, 255);
+    background-color: rgb(12, 10, 10);
     align-items: center;
     justify-content: center;
 }
@@ -48,144 +56,125 @@
 .card-cost-value {
     margin: 0;
     padding: 0;
-    font-size: 16px;
+    font-size: 15px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    color: rgb(255, 248, 236);
+    color: rgb(255, 255, 255);
 }
 
 .card-effect-icon {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    border-width: 2px;
-    border-color: rgb(36, 24, 15);
-    background-color: rgb(255, 252, 246);
+    top: 28px;
+    left: 22px;
+    width: 72px;
+    height: 72px;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.hand-card .card-effect-icon {
+    top: 20px;
+    left: 19px;
+    width: 68px;
+    height: 68px;
+}
+
+.card-tile .card-effect-icon {
+    top: 24px;
+    left: 21px;
+    width: 72px;
+    height: 72px;
 }
 
 .card-ribbon {
     position: absolute;
     left: 8px;
     right: 8px;
-    top: 52px;
-    height: 18px;
+    top: 96px;
+    height: 16px;
     margin: 0;
     padding: 0 4px;
-    font-size: 12px;
+    font-size: 11px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     color: rgb(42, 28, 8);
     background-color: rgb(232, 184, 72);
-    border-radius: 8px;
+    border-radius: 6px;
+}
+
+.hand-card .card-ribbon {
+    top: 92px;
+}
+
+.card-tile .card-ribbon {
+    top: 102px;
 }
 
 .card-face-body {
-    flex-grow: 1;
-    justify-content: flex-end;
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    height: 32px;
+    margin: 0;
+    padding: 0 2px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 6px;
+    justify-content: center;
     align-items: center;
-    padding: 8px 8px 10px 8px;
-}
-
-.card-face-family {
-    font-size: 12px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    white-space: nowrap;
 }
 
 .card-face-name {
+    margin: 0;
+    padding: 0;
     font-size: 14px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    white-space: normal;
+    white-space: nowrap;
+    color: rgb(28, 16, 12);
 }
 
 .card-face.family-kiai {
-    background-color: rgb(255, 214, 196);
-    border-color: rgb(176, 64, 44);
-}
-
-.card-face.family-kiai .card-face-name,
-.card-face.family-kiai .card-face-family {
-    color: rgb(62, 24, 16);
+    background-color: rgb(214, 24, 40);
 }
 
 .card-face.family-homework {
-    background-color: rgb(255, 248, 230);
-    border-color: rgb(46, 96, 168);
-}
-
-.card-face.family-homework .card-face-name,
-.card-face.family-homework .card-face-family {
-    color: rgb(36, 32, 24);
+    background-color: rgb(12, 92, 214);
 }
 
 .card-face.family-seat {
-    background-color: rgb(214, 236, 214);
-    border-color: rgb(36, 112, 72);
-}
-
-.card-face.family-seat .card-face-name,
-.card-face.family-seat .card-face-family {
-    color: rgb(16, 48, 32);
+    background-color: rgb(8, 150, 64);
 }
 
 .card-face.family-stationery {
-    background-color: rgb(255, 236, 176);
-    border-color: rgb(92, 64, 20);
-}
-
-.card-face.family-stationery .card-face-name,
-.card-face.family-stationery .card-face-family {
-    color: rgb(42, 32, 8);
+    background-color: rgb(230, 128, 8);
 }
 
 .card-face.family-cover {
-    background-color: rgb(255, 214, 224);
-    border-color: rgb(176, 72, 104);
-}
-
-.card-face.family-cover .card-face-name,
-.card-face.family-cover .card-face-family {
-    color: rgb(62, 20, 36);
+    background-color: rgb(214, 32, 104);
 }
 
 .card-face.family-signature {
-    background-color: rgb(28, 34, 52);
-    border-color: rgb(232, 184, 72);
+    background-color: rgb(232, 184, 72);
 }
 
-.card-face.family-signature .card-face-name,
-.card-face.family-signature .card-face-family {
-    color: rgb(255, 246, 220);
+.card-face.family-unknown {
+    background-color: rgb(64, 64, 72);
 }
 
-.card-face.family-signature .card-face-mat {
-    border-color: rgba(232, 184, 72, 0.75);
+.card-face.signature .card-face-mat {
+    border-color: rgb(255, 220, 140);
 }
 
-.card-face.family-signature .card-cost-gem {
+.card-face.signature .card-cost-gem {
     background-color: rgb(232, 184, 72);
     border-color: rgb(255, 248, 220);
 }
 
-.card-face.family-signature .card-cost-value {
+.card-face.signature .card-cost-value {
     color: rgb(28, 22, 12);
 }
 
-.card-face.family-unknown {
-    background-color: rgb(236, 236, 232);
-    border-color: rgb(80, 80, 88);
-}
-
-.card-face.family-unknown .card-face-name,
-.card-face.family-unknown .card-face-family {
-    color: rgb(28, 28, 32);
-}
-
-.card-face.signature {
-    border-color: rgb(232, 184, 72);
+.card-face.signature .card-face-body {
+    background-color: rgb(255, 232, 170);
 }

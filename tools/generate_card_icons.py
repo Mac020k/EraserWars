@@ -36,84 +36,95 @@ def circle(cx, cy, r, fill):
 
 ICONS = {
     "weight": [
-        rect(16, 8, 32, 14, INK, 4),
-        rect(28, 22, 8, 18, INK),
-        rect(16, 40, 32, 14, INK, 4),
+        rect(8, 4, 48, 18, INK, 6),
+        rect(26, 16, 12, 32, INK),
+        rect(8, 42, 48, 18, INK, 6),
     ],
     "grip": [
-        rect(12, 14, 40, 8, INK, 4),
-        rect(12, 28, 40, 8, INK, 4),
-        rect(12, 42, 40, 8, INK, 4),
+        rect(4, 10, 18, 44, INK, 4),
+        rect(42, 10, 18, 44, INK, 4),
+        rect(20, 27, 24, 10, INK, 2),
     ],
     "bounce": [
-        poly([(32, 6), (46, 24), (38, 24), (38, 32), (26, 32), (26, 24), (18, 24)], INK),
-        circle(32, 48, 10, INK),
+        rect(6, 52, 52, 8, INK, 3),
+        circle(32, 36, 12, INK),
+        poly([(32, 4), (44, 18), (36, 18), (36, 26), (28, 26), (28, 18), (20, 18)], INK),
     ],
     "power": [poly(star(32, 32, 26, 10, 4), INK)],
     "speed": [
-        poly([(6, 16), (28, 32), (6, 48), (14, 48), (36, 32), (14, 16)], INK),
-        poly([(26, 16), (48, 32), (26, 48), (34, 48), (56, 32), (34, 16)], INK),
+        rect(4, 12, 40, 8, INK, 4),
+        rect(16, 28, 44, 8, INK, 4),
+        rect(8, 44, 32, 8, INK, 4),
     ],
-    "flick": [poly([(8, 26), (34, 26), (34, 14), (56, 32), (34, 50), (34, 38), (8, 38)], INK)],
+    "flick": [
+        circle(48, 32, 12, INK),
+        poly([(4, 20), (34, 32), (4, 44)], INK),
+    ],
     "clock": [
-        circle(32, 32, 22, INK),
-        circle(32, 32, 16, PAPER),
-        rect(30, 18, 4, 16, INK),
-        rect(30, 30, 14, 4, INK),
+        circle(32, 32, 24, INK),
+        circle(32, 32, 17, PAPER),
+        rect(29, 16, 6, 18, INK),
+        rect(29, 29, 18, 6, INK),
+        circle(32, 32, 3, INK),
     ],
     "sight": [
-        poly([(4, 32), (16, 20), (32, 16), (48, 20), (60, 32), (48, 44), (32, 48), (16, 44)], INK),
-        circle(32, 32, 8, PAPER),
-        circle(32, 32, 4, INK),
+        poly([(2, 32), (14, 18), (32, 14), (50, 18), (62, 32), (50, 46), (32, 50), (14, 46)], INK),
+        circle(32, 32, 10, PAPER),
+        circle(32, 32, 5, INK),
     ],
     "edge": [
-        rect(48, 8, 8, 48, INK, 2),
-        poly([(8, 26), (28, 26), (28, 18), (44, 32), (28, 46), (28, 38), (8, 38)], INK),
+        rect(50, 4, 10, 56, INK, 2),
+        rect(6, 22, 16, 20, INK, 3),
+        poly([(22, 24), (46, 32), (22, 40)], INK),
     ],
     "center": [
-        circle(32, 32, 16, INK),
-        circle(32, 32, 10, PAPER),
+        circle(32, 32, 18, INK),
+        circle(32, 32, 11, PAPER),
         circle(32, 32, 4, INK),
-        rect(30, 6, 4, 10, INK),
-        rect(30, 48, 4, 10, INK),
-        rect(6, 30, 10, 4, INK),
-        rect(48, 30, 10, 4, INK),
+        rect(29, 4, 6, 12, INK),
+        rect(29, 48, 6, 12, INK),
+        rect(4, 29, 12, 6, INK),
+        rect(48, 29, 12, 6, INK),
     ],
     "extra": [
-        poly([(4, 16), (26, 16), (26, 10), (40, 22), (26, 34), (26, 28), (4, 28)], INK),
-        poly([(20, 36), (42, 36), (42, 30), (56, 42), (42, 54), (42, 48), (20, 48)], INK),
+        rect(8, 18, 30, 36, INK, 4),
+        rect(26, 8, 30, 36, INK, 4),
+        rect(32, 14, 18, 24, PAPER),
     ],
     "swap": [
-        poly([(6, 12), (34, 12), (34, 6), (52, 20), (34, 34), (34, 28), (6, 28)], INK),
-        poly([(58, 36), (30, 36), (30, 30), (12, 44), (30, 58), (30, 52), (58, 52)], INK),
+        rect(6, 12, 30, 12, INK, 3),
+        poly([(36, 10), (58, 18), (36, 26)], INK),
+        rect(28, 40, 30, 12, INK, 3),
+        poly([(28, 38), (6, 46), (28, 54)], INK),
     ],
     "pin": [
-        poly([(32, 58), (20, 30), (44, 30)], INK),
-        circle(32, 24, 14, INK),
+        poly([(32, 60), (16, 30), (48, 30)], INK),
+        circle(32, 24, 16, INK),
         circle(32, 24, 6, PAPER),
     ],
     "desk": [
-        rect(26, 12, 12, 14, INK, 2),
-        rect(8, 26, 48, 8, INK, 2),
-        rect(14, 34, 6, 18, INK),
-        rect(44, 34, 6, 18, INK),
+        rect(22, 6, 20, 14, INK, 3),
+        rect(6, 22, 52, 10, INK, 2),
+        rect(12, 32, 8, 24, INK),
+        rect(44, 32, 8, 24, INK),
     ],
     "shield": [
-        poly([(32, 4), (54, 16), (50, 36), (32, 58), (14, 36), (10, 16)], INK),
-        poly([(32, 14), (46, 22), (43, 36), (32, 50), (21, 36), (18, 22)], PAPER),
+        poly([(32, 4), (56, 14), (54, 34), (32, 60), (10, 34), (8, 14)], INK),
+        rect(28, 18, 8, 26, PAPER),
     ],
     "weapon": [
-        poly([(32, 4), (42, 20), (22, 20)], INK),
-        rect(24, 18, 16, 30, INK, 2),
-        rect(28, 22, 8, 22, PAPER),
-        rect(24, 46, 16, 8, INK, 2),
+        poly([(32, 2), (46, 20), (18, 20)], INK),
+        rect(20, 18, 24, 28, INK, 2),
+        rect(26, 22, 12, 20, PAPER),
+        rect(20, 44, 24, 6, INK),
+        rect(22, 50, 20, 10, INK, 3),
     ],
     "heart": [
-        circle(23, 26, 12, INK),
-        circle(41, 26, 12, INK),
-        poly([(12, 32), (52, 32), (32, 56)], INK),
-        rect(29, 20, 6, 20, PAPER),
-        rect(22, 27, 20, 6, PAPER),
+        circle(22, 24, 14, INK),
+        circle(42, 24, 14, INK),
+        poly([(8, 30), (56, 30), (32, 58)], INK),
+        rect(29, 18, 6, 18, PAPER),
+        rect(23, 24, 18, 6, PAPER),
     ],
     "star": [poly(star(32, 34, 26, 11, 5), INK)],
 }
@@ -353,12 +364,12 @@ def emit_cs(markups):
 
 
 FAMILIES = [
-    ("kiai", (255, 214, 196), "気合", "重い消しゴム", "1", "weight", False),
-    ("homework", (255, 248, 230), "宿題", "集中", "1", "clock", False),
-    ("seat", (214, 236, 214), "席替え", "席替え", "2", "swap", False),
-    ("stationery", (255, 236, 176), "文房具", "定規ビーム", "2", "desk", False),
-    ("cover", (255, 214, 224), "カバー", "シールド", "2", "shield", False),
-    ("signature", (28, 34, 52), "必殺", "もう一押し", "4", "extra", True),
+    ("kiai", (214, 24, 40), (255, 206, 196), "1", "weight", False),
+    ("homework", (12, 92, 214), (210, 230, 255), "1", "clock", False),
+    ("seat", (8, 150, 64), (196, 238, 204), "2", "swap", False),
+    ("stationery", (230, 128, 8), (255, 224, 150), "2", "desk", False),
+    ("cover", (214, 32, 104), (255, 196, 214), "2", "shield", False),
+    ("signature", (232, 184, 72), (22, 26, 42), "4", "extra", True),
 ]
 
 
@@ -376,18 +387,20 @@ def blend(bg, fg):
 
 
 def pattern_pixel(family, x, y):
-    ink = (232, 184, 72, 140) if family == "signature" else (36, 24, 15, 70)
-    if family == "kiai" and (x + y) % 8 < 2:
+    ink = (232, 184, 72, 190) if family == "signature" else (40, 22, 16, 175)
+    if family == "kiai" and (x + y) % 7 < 2:
         return ink
-    if family == "homework" and y % 8 == 0:
+    if family == "homework" and (x - y) % 7 < 2:
         return ink
-    if family == "seat" and (x % 10 == 0 or y % 10 == 0):
+    if family == "seat" and (x + y) % 6 < 2:
         return ink
-    if family == "stationery" and (x - y) % 8 < 2:
+    if family == "stationery" and (x - y) % 6 < 2:
         return ink
-    if family == "cover" and (x % 10 - 4) ** 2 + (y % 10 - 4) ** 2 <= 2:
+    if family == "cover" and (x + y) % 8 < 2:
         return ink
-    if family == "signature" and ((x + y) % 12 < 2 or (x - y) % 12 < 2):
+    if family == "signature" and ((x + y) % 10 < 2 or (x - y) % 10 < 2):
+        return ink
+    if family not in ("kiai", "homework", "seat", "stationery", "cover", "signature") and (x + y) % 8 < 2:
         return ink
     return (0, 0, 0, 0)
 
@@ -404,58 +417,76 @@ def rounded_card(px, py, w, h, radius):
 
 
 def paint_sheet(markups):
-    card_w, card_h = 132, 184
+    card_w, card_h = 140, 196
     gap = 16
     margin = 24
     cols = len(FAMILIES)
     width = margin * 2 + cols * card_w + (cols - 1) * gap
-    height = margin * 2 + card_h + 88
+    icon_rows = 2
+    height = margin * 2 + card_h + 16 + icon_rows * 48
     pixels = [(18, 32, 28, 255)] * (width * height)
     icons = {}
     for key, _shapes in ICONS.items():
         yup = raster(markups[key], 128, True)
         icons[key] = top_first(yup, 128, True)
 
-    for index, (family, bg, _label, _name, cost, icon, signature) in enumerate(FAMILIES):
+    keyline = (28, 16, 14, 255)
+    for index, (family, frame, paper, cost, icon, signature) in enumerate(FAMILIES):
         left = margin + index * (card_w + gap)
         top = margin
-        border = (232, 184, 72, 255) if signature else (36, 24, 15, 255)
+        plate = (255, 232, 170, 255) if signature else (255, 255, 255, 255)
+        stroke = (255, 220, 140, 255) if signature else (255, 255, 255, 255)
         for py in range(card_h):
             for px in range(card_w):
                 if not rounded_card(px, py, card_w, card_h, 16):
                     continue
-                color = bg
-                inset = px > 4 and py > 4 and px < card_w - 5 and py < card_h - 5
-                if inset:
-                    pat = pattern_pixel(family, px, py)
-                    color = blend((*color, 255), pat)
+                color = (*frame, 255)
                 edge = px < 3 or py < 3 or px >= card_w - 3 or py >= card_h - 3
+                in_plate = 8 <= px < card_w - 8 and card_h - 44 <= py < card_h - 8
+                in_art = 8 <= px < card_w - 8 and 8 <= py < card_h - 52
+                on_stroke = in_art and (
+                    px < 11 or py < 11 or px >= card_w - 11 or py >= card_h - 55
+                )
                 if edge:
-                    color = border[:3]
-                if len(color) == 3:
-                    color = (*color, 255)
+                    color = keyline
+                elif in_plate:
+                    color = plate
+                elif on_stroke:
+                    color = stroke
+                elif in_art:
+                    color = blend((*paper, 255), pattern_pixel(family, px, py))
                 pixels[(top + py) * width + left + px] = color
         glyph = icons[icon]
-        gx = left + card_w - 8 - 40
-        gy = top + 8
-        for py in range(40):
-            for px in range(40):
-                if rounded_card(px, py, 40, 40, 10):
-                    src = glyph[(py * 128 // 40) * 128 + (px * 128 // 40)]
-                    base = (255, 252, 246, 255)
-                    pixels[(gy + py) * width + gx + px] = blend(base, src)
-        gem = (232, 184, 72) if signature else (22, 18, 16)
-        gem_ink = (28, 22, 12) if signature else (255, 248, 236)
-        for py in range(32):
-            for px in range(32):
-                if (px - 15.5) ** 2 + (py - 15.5) ** 2 <= 15.5 ** 2:
-                    pixels[(top + 8 + py) * width + left + 8 + px] = (*gem, 255)
-        draw_digit(pixels, width, left + 16, top + 14, cost, gem_ink)
+        art_top = 8
+        art_h = card_h - 52 - 8
+        art_w = card_w - 16
+        icon_px = 78
+        gx = left + 8 + (art_w - icon_px) // 2
+        gy = top + art_top + (art_h - icon_px) // 2
+        for py in range(icon_px):
+            for px in range(icon_px):
+                src = glyph[(py * 128 // icon_px) * 128 + (px * 128 // icon_px)]
+                dest = gy + py
+                if dest >= top + card_h:
+                    continue
+                base = pixels[dest * width + gx + px]
+                pixels[dest * width + gx + px] = blend(base, src)
+        gem = (232, 184, 72) if signature else (12, 10, 10)
+        gem_ink = (28, 22, 12) if signature else (255, 255, 255)
+        for py in range(30):
+            for px in range(30):
+                dist = (px - 14.5) ** 2 + (py - 14.5) ** 2
+                if dist <= 14.5 ** 2:
+                    color = (255, 255, 255, 255) if dist >= 11.5 ** 2 else (*gem, 255)
+                    pixels[(top + py) * width + left + px] = color
+        draw_digit(pixels, width, left + 12, top + 8, cost, gem_ink)
     icon_top = margin + card_h + 16
     for index, key in enumerate(ICONS):
         glyph = icons[key]
-        gx = margin + index * 48
-        gy = icon_top
+        col = index % 9
+        row = index // 9
+        gx = margin + col * 56
+        gy = icon_top + row * 48
         for py in range(40):
             for px in range(40):
                 src = glyph[(py * 128 // 40) * 128 + (px * 128 // 40)]
