@@ -606,6 +606,20 @@
     border-radius: 12px;
     border-width: 3px;
     border-color: rgb(255, 170, 120);
+    transition-property: scale, border-color, background-color;
+    transition-duration: 0.16s;
+    transition-timing-function: ease-out;
+}
+
+.char-tile.unlock-flash {
+    scale: 1.08 1.08;
+    border-color: rgb(255, 228, 90);
+    background-color: rgb(255, 250, 214);
+}
+
+.char-tile.unlock-flash .char-tile-art {
+    background-color: rgb(255, 236, 160);
+    -unity-background-image-tint-color: rgb(255, 236, 160);
 }
 
 .char-tile.selected {
