@@ -139,15 +139,20 @@ A contact sheet of the six families is in `docs/prototypes/card-tcg/contact-shee
 
 ## Deck save
 
-`DeckRules.Evaluate` checks one seat before that seat is stored.
-The deck screen keeps a working list and writes it to the hotseat loadout only while the check passes.
-保存 stays disabled while the working list fails, and the cost meter shows the reason.
-The check fails when the eraser is missing, when the seat holds more than six commons, when one card passes its copy limit, or when the build cost passes that eraser's cap.
-A legal edit is stored immediately.
-An illegal edit stays off the stored seat.
-Switching to an eraser whose cap is below the cards already in the list is one of those edits.
+The deck screen is an open binder on a wood desk. The left page is the character. The right page is that character's common cards. The back button stays in the destination header.
+`DeckRules.Evaluate` checks the working list before that list is stored.
+保存 stays disabled while the check fails, and the cost meter shows the reason.
+The check fails when the eraser is missing, when the list holds more than six commons, when one card passes its copy limit, or when the build cost passes that eraser's cap.
+A legal edit is stored on the hotseat seat immediately.
+The same edit is written to that character's active preset.
+An illegal edit stays on the working list only.
+`DeckPresets` keeps five named presets for each character id. The store is JSON in PlayerPrefs at `ew.deck.presets.v1`.
+Tabs 1 to 5 select the active preset. A blank tab starts empty.
+Choosing another character loads that character's active preset into the working list. When the check passes, `HotseatLoadout.Commons` for the seat becomes that preset.
+Choosing a character who has no saved preset fills the working list with the starter commons, cards 1, 5, and 12.
 Leaving the deck screen stores the working list only when the check passes.
-The match keeps reading the last stored seat.
+The match reads `HotseatLoadout.Commons` for each seat.
+Picking a character on the home strip copies that character's saved preset into the seat when the check passes.
 
 ## Card cut-in
 

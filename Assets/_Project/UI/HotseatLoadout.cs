@@ -1,10 +1,16 @@
+using System;
+using System;
 using System.Collections.Generic;
 using EraserWars.Cards;
+using EraserWars.Core;
+using EraserWars.Persistence;
 
 namespace EraserWars.UI
 {
     public sealed class HotseatLoadout
     {
+        const int DefaultCap = 8;
+
         public readonly CharacterDefinition[] Seats = new CharacterDefinition[4];
         public readonly List<CardDefinition>[] Commons =
         {
@@ -20,6 +26,46 @@ namespace EraserWars.UI
 
             Seats[seat] = character;
             return true;
+        }
+
+        public void ApplyActivePreset(int seat, ContentCatalog catalog)
+        {
+            if (seat < 0 || seat >= Seats.Length || catalog == null)
+            {
+                return;
+            }
+
+            var character = Seats[seat];
+            if (character == null)
+            {
+                return;
+            }
+
+            var slot = DeckPresets.GetActiveSlot(character.IdValue);
+            if (!DeckPresets.HasSaved(character.IdValue, slot))
+            {
+                Commons[seat].Clear();
+                SeedStarter(Commons[seat], catalog);
+                return;
+            }
+
+            var resolved = ResolveCommons(catalog, DeckPresets.LoadCards(character.IdValue, slot));
+            var cap = character.Eraser != null ? character.Eraser.DeckCostCap : DefaultCap;
+            var fault = DeckRules.Evaluate(true, cap, DeckCardFacts.From(resolved)).Fault;
+            switch (fault)
+            {
+                case DeckFault.None:
+                    Commons[seat].Clear();
+                    Commons[seat].AddRange(resolved);
+                    return;
+                case DeckFault.NoCharacter:
+                case DeckFault.Slots:
+                case DeckFault.SameName:
+                case DeckFault.OverCost:
+                    return;
+                default:
+                    throw new InvalidOperationException($"Unhandled {nameof(DeckFault)} '{fault}'.");
+            }
         }
 
         public void ReleaseLockedSeats(ContentCatalog catalog)
@@ -54,11 +100,48 @@ namespace EraserWars.UI
                     continue;
                 }
 
-                // Seed a tiny default common package so hands are non-empty in hotseat.
-                TryAddCommon(Commons[i], catalog.FindCard(1));
-                TryAddCommon(Commons[i], catalog.FindCard(5));
-                TryAddCommon(Commons[i], catalog.FindCard(12));
+                var character = Seats[i];
+                if (character != null
+                    && DeckPresets.HasSaved(character.IdValue, DeckPresets.GetActiveSlot(character.IdValue)))
+                {
+                    ApplyActivePreset(i, catalog);
+                    continue;
+                }
+
+                SeedStarter(Commons[i], catalog);
             }
+        }
+
+        public static List<CardDefinition> ResolveCommons(ContentCatalog catalog, IReadOnlyList<int> ids)
+        {
+            var list = new List<CardDefinition>();
+            if (ids == null || catalog?.Cards == null)
+            {
+                return list;
+            }
+
+            for (var i = 0; i < ids.Count; i++)
+            {
+                var card = catalog.FindCard(ids[i]);
+                if (card != null && !card.IsSignature)
+                {
+                    list.Add(card);
+                }
+            }
+
+            return list;
+        }
+
+        public static void SeedStarter(List<CardDefinition> list, ContentCatalog catalog)
+        {
+            if (list == null || catalog?.Cards == null)
+            {
+                return;
+            }
+
+            TryAddCommon(list, catalog.FindCard(1));
+            TryAddCommon(list, catalog.FindCard(5));
+            TryAddCommon(list, catalog.FindCard(12));
         }
 
         static void TryAddCommon(List<CardDefinition> list, CardDefinition card)

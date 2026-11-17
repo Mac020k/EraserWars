@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using EraserWars.Cards;
 using EraserWars.Core;
+using EraserWars.Persistence;
 using UnityEngine.UIElements;
 
 namespace EraserWars.UI
@@ -22,6 +23,14 @@ namespace EraserWars.UI
         Label budgetWarning;
         Label emptyDeck;
         Button saveButton;
+        VisualElement portrait;
+        Label profileName;
+        Label archetypeLabel;
+        Label statsLabel;
+        Label flavorLabel;
+        VisualElement signatures;
+        Label presetName;
+        readonly Button[] presetTabs = new Button[DeckPresets.SlotsPerCharacter];
         readonly Button[] seatTabs = new Button[4];
         readonly CharacterDefinition[] draftSeats = new CharacterDefinition[4];
         readonly List<CardDefinition>[] draftCommons =
@@ -59,6 +68,24 @@ namespace EraserWars.UI
             {
                 saveButton.clicked += () => TrySave();
             }
+
+            portrait = deckPanel.Q("deck-portrait");
+            profileName = deckPanel.Q<Label>("deck-profile-name");
+            archetypeLabel = deckPanel.Q<Label>("deck-archetype");
+            statsLabel = deckPanel.Q<Label>("deck-stats");
+            flavorLabel = deckPanel.Q<Label>("deck-flavor");
+            signatures = deckPanel.Q("deck-signatures");
+            presetName = deckPanel.Q<Label>("deck-preset-name");
+            for (var i = 0; i < presetTabs.Length; i++)
+            {
+                var slot = i;
+                presetTabs[i] = deckPanel.Q<Button>($"deck-preset-{i}");
+                if (presetTabs[i] != null)
+                {
+                    presetTabs[i].clicked += () => SelectPreset(slot);
+                }
+            }
+
             for (var i = 0; i < seatTabs.Length; i++)
             {
                 var seat = i;
@@ -90,12 +117,14 @@ namespace EraserWars.UI
 
         void SetSeat(int seat)
         {
-            if (seat < 0 || seat >= playerCount)
+            if (seat < 0 || seat >= playerCount || seat == activeSeat)
             {
                 return;
             }
 
+            CommitIfLegal();
             activeSeat = seat;
+            ReplaceDraft(activeSeat, DraftSource.SeatCommons);
             for (var i = 0; i < seatTabs.Length; i++)
             {
                 seatTabs[i]?.EnableInClassList("selected", i == activeSeat);
@@ -149,9 +178,40 @@ namespace EraserWars.UI
 
         void SelectCharacter(CharacterDefinition character)
         {
+            if (draftSeats[activeSeat] == character)
+            {
+                RebuildCharacterList();
+                RefreshStatus();
+                return;
+            }
+
+            CommitIfLegal();
             draftSeats[activeSeat] = character;
+            ReplaceDraft(activeSeat, DraftSource.Starter);
             CommitIfLegal();
             RebuildCharacterList();
+            RebuildCardList();
+            RefreshStatus();
+        }
+
+        void SelectPreset(int slot)
+        {
+            var character = draftSeats[activeSeat];
+            if (character == null || slot < 0 || slot >= DeckPresets.SlotsPerCharacter)
+            {
+                return;
+            }
+
+            if (slot == DeckPresets.GetActiveSlot(character.IdValue))
+            {
+                return;
+            }
+
+            CommitIfLegal();
+            DeckPresets.SetActiveSlot(character.IdValue, slot);
+            ReplaceDraft(activeSeat, DraftSource.Empty);
+            CommitIfLegal();
+            RebuildCardList();
             RefreshStatus();
         }
 
@@ -293,9 +353,11 @@ namespace EraserWars.UI
 
             if (detail != null)
             {
-                detail.text =
-                    $"固有: {sigA} / {sigB}\n型: {CharacterArchetypes.DisplayJa(character?.ArchetypeKey)}";
+                detail.text = $"固有: {sigA} / {sigB}";
             }
+
+            PaintProfile(character);
+            PaintPresets(character);
         }
 
         void PaintBudget(DeckBudget budget, string reject)
@@ -350,16 +412,22 @@ namespace EraserWars.UI
             for (var i = 0; i < draftSeats.Length; i++)
             {
                 draftSeats[i] = loadout.Seats[i];
-                draftCommons[i].Clear();
-                if (loadout.Commons[i] != null)
-                {
-                    draftCommons[i].AddRange(loadout.Commons[i]);
-                }
-
+                ReplaceDraft(i, DraftSource.SeatCommons);
                 var fault = VerdictFor(i).Fault;
-                if (fault == DeckFault.SameName || fault == DeckFault.Slots || fault == DeckFault.OverCost)
+                switch (fault)
                 {
-                    loadout.Commons[i].Clear();
+                    case DeckFault.SameName:
+                    case DeckFault.Slots:
+                    case DeckFault.OverCost:
+                        loadout.Commons[i].Clear();
+                        break;
+                    case DeckFault.None:
+                        CopyDraftToSeat(i);
+                        break;
+                    case DeckFault.NoCharacter:
+                        break;
+                    default:
+                        throw new InvalidOperationException($"Unhandled {nameof(DeckFault)} '{fault}'.");
                 }
             }
         }
@@ -372,10 +440,24 @@ namespace EraserWars.UI
             }
 
             loadout.Seats[activeSeat] = draftSeats[activeSeat];
-            var saved = loadout.Commons[activeSeat];
-            saved.Clear();
-            saved.AddRange(draftCommons[activeSeat]);
+            CopyDraftToSeat(activeSeat);
+            var character = draftSeats[activeSeat];
+            if (character != null)
+            {
+                DeckPresets.SaveCards(
+                    character.IdValue,
+                    DeckPresets.GetActiveSlot(character.IdValue),
+                    IdsOf(draftCommons[activeSeat]));
+            }
+
             return true;
+        }
+
+        void CopyDraftToSeat(int seat)
+        {
+            var saved = loadout.Commons[seat];
+            saved.Clear();
+            saved.AddRange(draftCommons[seat]);
         }
 
         DeckVerdict VerdictFor(int seat)
@@ -390,6 +472,186 @@ namespace EraserWars.UI
         {
             var character = draftSeats[activeSeat];
             return character?.Eraser?.DeckCostCap ?? DefaultCap;
+        }
+
+        enum DraftSource
+        {
+            SeatCommons,
+            Starter,
+            Empty,
+        }
+
+        void ReplaceDraft(int seat, DraftSource missing)
+        {
+            draftCommons[seat].Clear();
+            var character = draftSeats[seat];
+            if (character == null)
+            {
+                return;
+            }
+
+            var slot = DeckPresets.GetActiveSlot(character.IdValue);
+            if (DeckPresets.HasSaved(character.IdValue, slot))
+            {
+                draftCommons[seat].AddRange(
+                    HotseatLoadout.ResolveCommons(catalog, DeckPresets.LoadCards(character.IdValue, slot)));
+                return;
+            }
+
+            switch (missing)
+            {
+                case DraftSource.SeatCommons:
+                    if (loadout.Commons[seat] != null)
+                    {
+                        draftCommons[seat].AddRange(loadout.Commons[seat]);
+                    }
+
+                    return;
+                case DraftSource.Starter:
+                    HotseatLoadout.SeedStarter(draftCommons[seat], catalog);
+                    return;
+                case DraftSource.Empty:
+                    return;
+                default:
+                    throw new InvalidOperationException($"Unhandled {nameof(DraftSource)} '{missing}'.");
+            }
+        }
+
+        void PaintProfile(CharacterDefinition character)
+        {
+            if (portrait != null)
+            {
+                if (character?.Portrait != null)
+                {
+                    UiImageUtil.ApplyFaceCrop(portrait, character.Portrait);
+                }
+                else
+                {
+                    UiImageUtil.Clear(portrait);
+                }
+            }
+
+            if (profileName != null)
+            {
+                profileName.text = character != null ? character.DisplayName : "未選択";
+            }
+
+            if (archetypeLabel != null)
+            {
+                archetypeLabel.text = character != null
+                    ? CharacterArchetypes.DisplayJa(character.ArchetypeKey)
+                    : string.Empty;
+            }
+
+            if (statsLabel != null)
+            {
+                statsLabel.text = StatsLine(character);
+            }
+
+            if (flavorLabel != null)
+            {
+                flavorLabel.text = FlavorLine(character);
+            }
+
+            PaintSignatures(character);
+        }
+
+        void PaintSignatures(CharacterDefinition character)
+        {
+            if (signatures == null)
+            {
+                return;
+            }
+
+            signatures.Clear();
+            if (character == null)
+            {
+                return;
+            }
+
+            AddSignatureFace(character.SignatureA);
+            AddSignatureFace(character.SignatureB);
+        }
+
+        void AddSignatureFace(CardDefinition card)
+        {
+            if (card == null || signatures == null)
+            {
+                return;
+            }
+
+            var face = new VisualElement();
+            CardFaceBuilder.Paint(face, card, CardSurface.Collection);
+            signatures.Add(face);
+        }
+
+        void PaintPresets(CharacterDefinition character)
+        {
+            var slot = character != null ? DeckPresets.GetActiveSlot(character.IdValue) : 0;
+            for (var i = 0; i < presetTabs.Length; i++)
+            {
+                presetTabs[i]?.EnableInClassList("selected", character != null && i == slot);
+                presetTabs[i]?.SetEnabled(character != null);
+            }
+
+            if (presetName != null)
+            {
+                presetName.text = character != null ? DeckPresets.GetName(character.IdValue, slot) : string.Empty;
+            }
+        }
+
+        static string StatsLine(CharacterDefinition character)
+        {
+            var eraser = character != null ? character.Eraser : null;
+            if (eraser == null)
+            {
+                return "消しゴム未設定";
+            }
+
+            return $"質量 {CollectionDisplay.DisplayedMass(eraser.Mass)} / コスト上限 {eraser.DeckCostCap}";
+        }
+
+        static string FlavorLine(CharacterDefinition character)
+        {
+            if (character == null)
+            {
+                return string.Empty;
+            }
+
+            var subjects = CharacterFlavor.TrySubjects(character.IdValue, out var strong, out var weak)
+                ? $"得意 {strong} / 苦手 {weak}"
+                : null;
+            var hasBio = !string.IsNullOrWhiteSpace(character.BioJa);
+            if (subjects != null && hasBio)
+            {
+                return subjects + "\n" + character.Bio;
+            }
+
+            if (subjects != null)
+            {
+                return subjects;
+            }
+
+            return character.Bio;
+        }
+
+        static int[] IdsOf(List<CardDefinition> cards)
+        {
+            if (cards == null || cards.Count == 0)
+            {
+                return Array.Empty<int>();
+            }
+
+            var ids = new List<int>(cards.Count);
+            foreach (var card in cards)
+            {
+                if (card != null)
+                {
+                    ids.Add(card.IdValue);
+                }
+            }
+
+            return ids.ToArray();
         }
 
         static Label EmptyCopy(string text)
