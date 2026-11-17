@@ -10,7 +10,7 @@ namespace EraserWars.Tests.EditMode
     public sealed class FirstCoachTipTests
     {
         const string MenuPath = "Assets/UI/StartMenu.uxml";
-        const string Copy = "カードを1枚出して、ドラッグではじく。";
+        const string Copy = "机から落としたらストックが1つ減る。最後まで残った人が勝ち。カードは出しても出さなくてもいい。出したらドラッグではじく。";
 
         readonly List<Object> owned = new();
         GameObject uiHost;

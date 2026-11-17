@@ -18,7 +18,7 @@ namespace EraserWars.Gameplay
         [SerializeField] Transform[] spawnPoints = new Transform[4];
         [SerializeField] EraserBody eraserPrefab;
         [SerializeField] OrbitCamera orbitCamera;
-        [SerializeField] bool showDebug = true;
+        [SerializeField] bool showDebug = false;
 
         readonly List<EraserBody> erasers = new();
         readonly Dictionary<int, EraserBody> byPlayer = new();

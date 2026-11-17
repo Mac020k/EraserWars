@@ -31,7 +31,7 @@
                         </ui:ScrollView>
                     </ui:VisualElement>
                     <ui:VisualElement name="home-tip" class="home-tip">
-                        <ui:Label name="home-tip-copy" text="カードを1枚出して、ドラッグではじく。" class="home-tip-copy" />
+                        <ui:Label name="home-tip-copy" text="机から落としたらストックが1つ減る。最後まで残った人が勝ち。カードは出しても出さなくてもいい。出したらドラッグではじく。" class="home-tip-copy" />
                         <ui:Button name="home-tip-dismiss" text="わかった" class="home-tip-dismiss" />
                     </ui:VisualElement>
                     <ui:Button name="resume-match" text="つづける" class="cta-button cta-resume hidden" />

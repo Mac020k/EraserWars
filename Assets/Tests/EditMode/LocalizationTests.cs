@@ -93,7 +93,7 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual(UiLang.Ja, UiLocale.Current);
             Assert.AreEqual("マッチ開始", UiText.Get(UiKey.MenuStart));
             Assert.AreEqual("P1 のばん", UiText.Format(UiKey.HudSeatTurn, 1));
-            Assert.AreEqual("このきを P1 にわたして", UiText.Format(UiKey.HudPassHint, 1));
+            Assert.AreEqual("マウスを P1 にわたして", UiText.Format(UiKey.HudPassHint, 1));
             Assert.AreEqual("けいけん +10  ·  ごうけい 10", UiText.Format(UiKey.HudXp, 10, 10));
             Assert.AreEqual("P2 のかち!", UiText.Format(UiKey.HudWin, 2));
             Assert.AreEqual("ひきわけ!", UiText.Get(UiKey.HudDraw));
@@ -118,7 +118,7 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual("Start match", UiText.Get(UiKey.MenuStart));
             Assert.AreEqual("New match", UiText.Get(UiKey.MenuNewMatch));
             Assert.AreEqual("P1's turn", UiText.Format(UiKey.HudSeatTurn, 1));
-            Assert.AreEqual("Hand the device to P4", UiText.Format(UiKey.HudPassHint, 4));
+            Assert.AreEqual("Pass the mouse to P4", UiText.Format(UiKey.HudPassHint, 4));
             Assert.AreEqual("XP +10  ·  total 20", UiText.Format(UiKey.HudXp, 10, 20));
             Assert.AreEqual("P1 wins!", UiText.Format(UiKey.HudWin, 1));
             Assert.AreEqual("Draw!", UiText.Get(UiKey.HudDraw));
@@ -147,12 +147,12 @@ namespace EraserWars.Tests.EditMode
             UiLocale.Set(UiLang.Ja);
             var ja = TurnChrome.From(state);
             Assert.AreEqual("P1 のばん", ja.Headline);
-            Assert.AreEqual("このきを P1 にわたして", ja.PassHint);
+            Assert.AreEqual("マウスを P1 にわたして", ja.PassHint);
 
             UiLocale.Set(UiLang.En);
             var en = TurnChrome.From(state);
             Assert.AreEqual("P1's turn", en.Headline);
-            Assert.AreEqual("Hand the device to P1", en.PassHint);
+            Assert.AreEqual("Pass the mouse to P1", en.PassHint);
 
             var ended = TurnChrome.From(state with { Phase = Phase.MatchEnd });
             Assert.AreEqual("End", ended.Headline);
@@ -190,9 +190,9 @@ namespace EraserWars.Tests.EditMode
 
             Assert.AreEqual("Start match", root.Q<Button>("start-match").text);
             Assert.AreEqual("2 players", root.Q<Button>("mode-2p").text);
-            Assert.AreEqual("Play one card, then drag to flick.", root.Q<Label>("home-tip-copy").text);
+            Assert.AreEqual("Fall off the desk and you lose a stock. Last one left wins. Cards are optional. Drag to flick if you play one.", root.Q<Label>("home-tip-copy").text);
             Assert.AreEqual("Reset", root.Q<Button>("opt-reset").text);
-            Assert.AreEqual("Debug mode: ON", root.Q<Button>("opt-debug-mode").text);
+            Assert.AreEqual("Debug mode: OFF", root.Q<Button>("opt-debug-mode").text);
         }
 
         [Test]

@@ -138,6 +138,11 @@ namespace EraserWars.Tests.EditMode
             Assert.IsTrue(rig.CutInHidden);
             Assert.IsTrue(rig.HandHidden);
             Assert.AreEqual(DisplayStyle.None, rig.HandRow.resolvedStyle.display);
+            UiLocale.Set(UiLang.Ja);
+            rig.Hud.RefreshFromState();
+            var aim = rig.Root.Q<Label>("pass-hint");
+            Assert.AreEqual("ねらえ!", aim.text);
+            Assert.IsFalse(aim.ClassListContains("hidden"));
         }
 
         [Test]
@@ -157,7 +162,7 @@ namespace EraserWars.Tests.EditMode
                 Assert.IsTrue(rig.Hud.IsPauseOpen);
                 Assert.IsTrue(rig.Director.IsStartMenuOpen);
                 Assert.IsFalse(rig.Root.Q("pause-overlay").ClassListContains("hidden"));
-                Assert.That(rig.Root.Q<Label>("pause-rules").text, Does.Contain("カードを1枚"));
+                Assert.That(rig.Root.Q<Label>("pause-rules").text, Does.Contain("最後まで残った人が勝ち"));
                 Assert.That(rig.Root.Q<Label>("pause-seats").text, Does.Contain("ストック"));
                 rig.Director.AdvanceMatchClock(3f);
                 Assert.AreEqual(before, rig.Director.State.TurnTimeLeft, 0.001f);

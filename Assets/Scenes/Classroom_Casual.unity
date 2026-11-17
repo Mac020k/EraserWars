@@ -6171,7 +6171,7 @@ MonoBehaviour:
   - {fileID: 840716316}
   eraserPrefab: {fileID: 5658546862569013159, guid: 2475706020c89f346ad4c70a6d27cbb0, type: 3}
   orbitCamera: {fileID: 0}
-  showDebug: 1
+  showDebug: 0
 --- !u!114 &261496117
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -57,7 +57,7 @@ namespace EraserWars.Tests.EditMode
 
             Assert.That(brief.Rules, Does.Contain("ストック戦"));
             Assert.That(brief.Rules, Does.Contain("Round2"));
-            Assert.That(brief.Rules, Does.Contain("カードを1枚"));
+            Assert.That(brief.Rules, Does.Contain("最後まで残った人が勝ち"));
             Assert.That(brief.Seats, Does.Contain("P1 ストック 3"));
             Assert.That(brief.Seats, Does.Contain("P2 ストック 3"));
             Assert.That(brief.Options, Does.Contain("1ターン 20秒"));

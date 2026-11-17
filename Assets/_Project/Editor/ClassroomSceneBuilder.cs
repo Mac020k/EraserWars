@@ -195,7 +195,7 @@ namespace EraserWars.Editor
             so.FindProperty("flickApplier").objectReferenceValue = flick;
             so.FindProperty("settleWatcher").objectReferenceValue = settle;
             so.FindProperty("eraserPrefab").objectReferenceValue = body;
-            so.FindProperty("showDebug").boolValue = true;
+            so.FindProperty("showDebug").boolValue = false;
             var spawnsProp = so.FindProperty("spawnPoints");
             spawnsProp.arraySize = 4;
             for (var i = 0; i < 4; i++)

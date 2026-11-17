@@ -337,7 +337,11 @@ namespace EraserWars.UI
 
             if (passHintLabel != null)
             {
-                passHintLabel.text = chrome.PassHint;
+                var handHidden = !HandOffer.ShowCards(
+                    state,
+                    director != null && director.IsCpuSeat(state.CurrentPlayerId.Value));
+                var aimCue = handHidden && state.Phase == Phase.Aim;
+                passHintLabel.text = aimCue ? UiText.Get(UiKey.HudPhaseAim) : chrome.PassHint;
                 var showHint = chrome.ShowPassHint && chrome.ShowCallout && !cutInUp;
                 passHintLabel.EnableInClassList(HiddenClass, !showHint);
             }

@@ -45,7 +45,7 @@ namespace EraserWars.UI
         MenuScreen currentScreen = MenuScreen.Home;
         bool destinationFrameBound;
         // Dev default ON; hide the options control before release.
-        bool debugModeEnabled = true;
+        bool debugModeEnabled = false;
         Button debugModeButton;
         Slider masterSlider;
         Slider bgmSlider;

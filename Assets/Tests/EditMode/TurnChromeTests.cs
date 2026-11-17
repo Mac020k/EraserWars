@@ -26,7 +26,7 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual(0, chrome.Seat);
             Assert.IsTrue(chrome.ShowCallout);
             Assert.AreEqual(showPassHint, chrome.ShowPassHint);
-            Assert.AreEqual("このきを P1 にわたして", chrome.PassHint);
+            Assert.AreEqual("マウスを P1 にわたして", chrome.PassHint);
             if (showPassHint)
             {
                 Assert.AreEqual("13", chrome.TimerDigits);
@@ -56,7 +56,7 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual(3, chrome.Seat);
             Assert.AreEqual("P4 のばん", chrome.Headline);
             Assert.IsTrue(chrome.ShowPassHint);
-            Assert.AreEqual("このきを P4 にわたして", chrome.PassHint);
+            Assert.AreEqual("マウスを P4 にわたして", chrome.PassHint);
             Assert.AreEqual("5", chrome.TimerDigits);
             Assert.IsTrue(chrome.TimerUrgent);
         }
