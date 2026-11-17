@@ -100,6 +100,22 @@ namespace EraserWars.Gameplay
         public void SetStartMenuOpen(bool open)
         {
             IsStartMenuOpen = open;
+            if (!open)
+            {
+                SetMenuCamera(homeIdle: false, blockWheel: false, blockDrag: false);
+            }
+        }
+
+        public void SetMenuCamera(bool homeIdle, bool blockWheel, bool blockDrag)
+        {
+            var camera = EnsureOrbitCamera();
+            if (camera == null)
+            {
+                return;
+            }
+
+            camera.SetHomeIdle(homeIdle);
+            camera.SetMenuPointerPolicy(blockWheel, blockDrag);
         }
 
         public void SetDebugChromeVisible(bool visible)

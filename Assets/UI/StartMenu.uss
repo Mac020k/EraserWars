@@ -286,14 +286,17 @@
 
 .destination-page {
     position: absolute;
-    left: 0;
-    top: 0;
+    left: 4%;
+    right: 4%;
+    top: 4%;
+    bottom: 4%;
     padding: 20px 24px;
     background-color: rgb(18, 22, 40);
     flex-direction: column;
     border-width: 8px;
     border-color: rgb(196, 150, 88);
     border-radius: 6px;
+    overflow: hidden;
 }
 
 .collection-panel.destination-page {
@@ -579,26 +582,31 @@
 }
 
 .collection-strip-scroll {
-    height: 200px;
+    height: 236px;
     flex-shrink: 0;
     margin-bottom: 12px;
     background-color: rgba(12, 22, 16, 0.45);
     border-radius: 12px;
-    padding: 10px;
     border-width: 2px;
     border-color: rgba(255, 255, 255, 0.08);
 }
 
 .collection-strip {
     flex-direction: row;
-    align-items: stretch;
-    height: 100%;
+    align-items: flex-start;
+    flex-shrink: 0;
+    overflow: visible;
+    padding-top: 16px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .char-tile {
     width: 118px;
     height: 176px;
     margin-right: 10px;
+    flex-shrink: 0;
     padding: 8px;
     flex-direction: column;
     align-items: center;
@@ -782,6 +790,7 @@
     flex-basis: 0;
     margin-right: 8px;
     min-width: 0;
+    min-height: 0;
 }
 
 .deck-column-title {
@@ -794,6 +803,7 @@
 .deck-list {
     width: auto;
     flex-grow: 1;
+    min-height: 0;
     margin-right: 0;
 }
 
@@ -911,8 +921,10 @@
 .deck-row {
     flex-direction: row;
     align-items: center;
+    flex-shrink: 0;
+    min-width: 360px;
     margin: 0 0 8px 0;
-    padding: 6px;
+    padding: 8px 6px;
     background-color: rgb(255, 252, 244);
     border-width: 1px;
     border-color: rgb(200, 190, 170);
@@ -975,17 +987,31 @@
     border-color: rgb(180, 90, 80);
 }
 
+.seat-strip-scroll {
+    width: 100%;
+    height: 136px;
+    flex-shrink: 0;
+    margin-top: 4px;
+    margin-bottom: 6px;
+}
+
 .seat-strip {
     flex-direction: row;
-    width: 100%;
+    flex-shrink: 0;
+    align-items: flex-start;
+    min-width: 100%;
     justify-content: center;
-    margin-top: 4px;
-    margin-bottom: 10px;
+    overflow: visible;
+    padding-top: 6px;
+    padding-bottom: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 .seat-chip {
-    flex-grow: 1;
-    flex-basis: 0;
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 96px;
     max-width: 96px;
     height: 112px;
     margin: 0 3px;
@@ -1034,13 +1060,14 @@
 
 .seat-picker {
     width: 100%;
-    height: 214px;
+    height: 250px;
     margin-bottom: 10px;
     padding: 8px;
     background-color: rgba(12, 22, 16, 0.45);
     border-radius: 12px;
     border-width: 2px;
     border-color: rgba(255, 255, 255, 0.08);
+    overflow: visible;
 }
 
 .seat-picker-caption {
@@ -1053,11 +1080,17 @@
 
 .seat-picker-scroll {
     flex-grow: 1;
-    height: 180px;
+    height: 210px;
 }
 
 .seat-picker-row {
     flex-direction: row;
     align-items: flex-start;
-    height: 176px;
+    flex-shrink: 0;
+    overflow: visible;
+    min-height: 176px;
+    padding-top: 16px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
 }

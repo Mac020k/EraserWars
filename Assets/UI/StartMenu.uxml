@@ -21,7 +21,9 @@
                         <ui:Button name="mode-stock" text="ストック戦" class="mode-chip selected" />
                         <ui:Button name="mode-points" text="ポイント戦" class="mode-chip" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="seat-strip" class="seat-strip" />
+                    <ui:ScrollView name="seat-strip-scroll" class="seat-strip-scroll" mode="Horizontal" horizontal-scroller-visibility="Auto" vertical-scroller-visibility="Hidden">
+                        <ui:VisualElement name="seat-strip" class="seat-strip" />
+                    </ui:ScrollView>
                     <ui:VisualElement name="seat-picker" class="seat-picker hidden">
                         <ui:Label name="seat-picker-caption" text="" class="seat-picker-caption" />
                         <ui:ScrollView name="seat-picker-scroll" class="seat-picker-scroll" mode="Horizontal" horizontal-scroller-visibility="Auto" vertical-scroller-visibility="Hidden">
@@ -134,7 +136,7 @@
                     <ui:VisualElement class="deck-column">
                         <ui:Label name="deck-col-common" text="コモンカード" class="deck-column-title" />
                         <ui:Label name="deck-empty" text="デッキは空です。カードの「追加」で入れてください。" class="deck-empty" />
-                        <ui:ScrollView name="deck-card-list" class="collection-list deck-list" />
+                        <ui:ScrollView name="deck-card-list" class="collection-list deck-list" mode="VerticalAndHorizontal" horizontal-scroller-visibility="Auto" vertical-scroller-visibility="Auto" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -149,7 +151,7 @@
                     <ui:Button name="collection-tab-cards" text="カード" class="collection-tab" />
                 </ui:VisualElement>
                 <ui:VisualElement name="collection-filters" class="collection-filters" />
-                <ui:ScrollView name="collection-strip-scroll" class="collection-strip-scroll" horizontal-scroller-visibility="AlwaysVisible" vertical-scroller-visibility="Hidden">
+                <ui:ScrollView name="collection-strip-scroll" class="collection-strip-scroll" mode="Horizontal" horizontal-scroller-visibility="AlwaysVisible" vertical-scroller-visibility="Hidden">
                     <ui:VisualElement name="collection-strip" class="collection-strip" />
                 </ui:ScrollView>
                 <ui:VisualElement class="collection-feature">
