@@ -127,11 +127,15 @@ The file records that accepted command so a smoke read can print it.
 
 ## Card faces
 
-`CardGlance` maps the first effect on a card to a `CardSymbol`.
-`CardFaceBuilder.Paint` draws that symbol on a collection tile, on a match hand card, and on the card cut-in.
+`CardGlance.Primary` maps the first effect on a card to a coarse `CardSymbol` such as time, weapon, or desk.
+`CardGlance.IconKey` is that effect string. Two cards share a pictogram only when the effect strings are the same.
+`CardFaceBuilder.Paint` draws the pictogram on a collection tile, on a match hand card, on the card cut-in, and on the large collection showcase.
+The card tab replaces the character still with that showcase. Under it are two placeholders labeled 付与演出 and プレイ演出.
+Card family filter chips use the same frame colors as the faces. Kiai is red, homework is blue, seat is green, stationery is orange, cover is pink, and signature is gold.
 Each common-card row in the deck builder uses the collection face, so the cost gem, family color, and effect icon match the collection.
 The deck cost meter above the lists is unchanged by the face work.
 The thick frame is the family color. Inside it are a white stroke, a black cost gem, a diagonal hatch, a large effect pictogram, and a white name plate. Those rules live in `Assets/UI/CardFace.uss`.
+The hatch is a 128 pixel tile with point filtering. `UiImageUtil.ApplyPattern` repeats that tile at the texture's pixel size.
 Glyph vectors live in `Assets/_Project/UI/CardIcons/`.
 `tools/generate_card_icons.py` writes those files and `CardIconSvg.cs`.
 The running game rasterizes the same markup. It does not depend on an SVG importer.

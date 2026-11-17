@@ -103,7 +103,7 @@ namespace EraserWars.Tests.EditMode
             Assert.IsTrue(uss.Substring(stageRule, 300).Contains("overflow: hidden"));
             Assert.IsTrue(uss.Contains("background-size: 520% 520%"));
             Assert.IsTrue(uss.Contains(".collection-strip .char-tile:hover"));
-            Assert.IsTrue(uss.Contains("padding-top: 14px"));
+            Assert.IsTrue(uss.Contains("padding-top: 16px"));
         }
 
         [Test]
@@ -171,6 +171,66 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual(CollectionPreviewMode.EraserDesign, shown.PreviewMode);
             Assert.IsTrue(panel.Q<Label>("collection-eraser-design-slot").text.Contains("デザイン枠"));
             Assert.IsFalse(panel.Q("collection-eraser-design").ClassListContains("hidden"));
+        }
+
+        [Test]
+        public void CardModeShowsLargeFaceFamilyChipsAndPerformanceSlots()
+        {
+            var catalog = Catalog();
+            var homework = ScriptableObject.CreateInstance<CardDefinition>();
+            owned.Add(homework);
+            homework.IdValue = 7;
+            homework.DisplayNameJa = "先生の目";
+            homework.FamilyKey = CardFamilies.Homework;
+            homework.BuildCost = 2;
+            homework.EffectKinds = new List<string> { "ModifyRule:OpponentTurnTime:0.5:1" };
+            var weapon = ScriptableObject.CreateInstance<CardDefinition>();
+            owned.Add(weapon);
+            weapon.IdValue = 23;
+            weapon.DisplayNameJa = "鉛筆の芯";
+            weapon.FamilyKey = CardFamilies.Stationery;
+            weapon.EffectKinds = new List<string> { "GrantWeapon:0.1:1" };
+            catalog.Cards = new List<CardDefinition> { homework, weapon };
+
+            var panel = Open();
+            var shown = new CollectionPanelController(catalog);
+            shown.Bind(panel);
+            Assert.IsTrue(panel.Q("collection-card-slots").ClassListContains("hidden"));
+            Assert.IsFalse(panel.Q("collection-preview-modes").ClassListContains("hidden"));
+
+            shown.ShowCards();
+
+            Assert.IsFalse(panel.Q("collection-card-slots").ClassListContains("hidden"));
+            Assert.IsTrue(panel.Q("collection-preview-modes").ClassListContains("hidden"));
+            Assert.AreEqual("付与演出", panel.Q<Label>("collection-grant-kicker").text);
+            Assert.AreEqual("プレイ演出", panel.Q<Label>("collection-play-kicker").text);
+            Assert.AreEqual("先生の目", panel.Q<Label>("collection-grant-caption").text);
+            Assert.AreEqual("先生の目", panel.Q<Label>("collection-play-caption").text);
+            Assert.IsNotNull(panel.Q("collection-filters").Q(className: "filter-kiai"));
+            Assert.IsNotNull(panel.Q("collection-filters").Q(className: "filter-homework"));
+            Assert.IsNotNull(panel.Q("collection-filters").Q(className: "filter-signature"));
+
+            var hero = panel.Q("collection-hero-card");
+            Assert.IsNotNull(hero);
+            Assert.IsTrue(hero.ClassListContains("collection-hero-card"));
+            Assert.IsFalse(hero.ClassListContains("card-tile"));
+            Assert.AreEqual("先生の目", hero.Q<Label>(className: "card-face-name").text);
+            var stage = panel.Q("collection-stage");
+            Assert.AreEqual(CollectionDisplay.CardFrameWidth, stage.style.width.value.value, 0.01f);
+            Assert.AreEqual(CollectionDisplay.CardFrameHeight, stage.style.height.value.value, 0.01f);
+
+            var faces = panel.Q("collection-strip").Query<Button>(className: "card-face").ToList();
+            Assert.AreEqual(2, faces.Count);
+            Assert.IsTrue(faces[0].ClassListContains("selected"));
+            Click(faces[1]);
+            Assert.AreEqual("鉛筆の芯", panel.Q("collection-hero-card").Q<Label>(className: "card-face-name").text);
+            Assert.AreEqual("鉛筆の芯", panel.Q<Label>("collection-play-caption").text);
+
+            var uss = File.ReadAllText(Path.Combine(Application.dataPath, "UI", "StartMenu.uss"));
+            Assert.IsTrue(uss.Contains(".collection-filter.filter-kiai"));
+            Assert.IsTrue(uss.Contains("rgb(214, 24, 40)"));
+            Assert.IsTrue(uss.Contains(".collection-filter.filter-homework"));
+            Assert.IsTrue(uss.Contains("rgb(12, 92, 214)"));
         }
 
         [Test]

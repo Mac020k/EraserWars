@@ -33,8 +33,8 @@ namespace EraserWars.UI
             element.style.backgroundColor = Color.clear;
             element.style.backgroundRepeat = new BackgroundRepeat(Repeat.Repeat, Repeat.Repeat);
             element.style.backgroundSize = new BackgroundSize(
-                new Length(48, LengthUnit.Pixel),
-                new Length(48, LengthUnit.Pixel));
+                new Length(texture.width, LengthUnit.Pixel),
+                new Length(texture.height, LengthUnit.Pixel));
         }
 
         public static void ApplyFit(VisualElement element, Texture2D texture)

@@ -43,6 +43,23 @@ namespace EraserWars.Cards
             return FamilyEmblem(familyKey);
         }
 
+        public static string IconKey(string familyKey, IReadOnlyList<string> effectKinds)
+        {
+            if (effectKinds != null)
+            {
+                for (var i = 0; i < effectKinds.Count; i++)
+                {
+                    var raw = effectKinds[i];
+                    if (!string.IsNullOrWhiteSpace(raw) && EffectSpecParser.TryParse(raw, out _))
+                    {
+                        return raw.Trim();
+                    }
+                }
+            }
+
+            return "emblem:" + (familyKey ?? string.Empty);
+        }
+
         public static CardSymbol SymbolFor(EffectSpec spec)
         {
             switch (spec)
