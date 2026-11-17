@@ -208,6 +208,16 @@ On a gamepad, the left stick aims on the camera's horizontal plane. Up flies awa
 `EraserWars > Import All Content CSV` imports cards (`Assets/Data/Csv/cards.csv` → `Assets/Data/Cards/`), erasers / characters (`erasers.csv`, `characters.csv` → `Assets/Data/Erasers/`, `Assets/Data/Characters/`), and refreshes `Assets/Resources/EraserWars/ContentCatalog.asset`. The Start Menu **コレクション** panel browses that catalog (20 characters, 50 cards, school-motif filters).
 `CharacterUnlocks.Grant` stores an extra character id in PlayerPrefs.
 The next character strip draws that face unlocked and adds `unlock-flash` for 650 ms.
+`CharacterAccess.IsUnlocked` is the check for the collection, the seat strip, and `HotseatLoadout.TryAssignUnlocked`.
+A character is unlocked when `UnlockedByDefault` is set, or when `CharacterUnlocks.IsEarned` contains that id.
+The start menu debug toggle calls `CharacterAccess.SetDebugUnlockAll`.
+While that flag is on, every character is unlocked.
+Turning the toggle off clears the flag, and `HotseatLoadout.ReleaseLockedSeats` puts a seat back on the default roster when that character is locked again.
+An earned id stays available after the flag is off.
+The collection shows eraser mass times 1000, so 0.02 is shown as 20.
+`EraserDefinition.Mass` stays in kilograms.
+`CharacterFlavor` and `PassiveText` hold the subject pair and the passive line for that screen.
+The still frame uses the portrait's pixel aspect, clips with `overflow: hidden`, and switches among the still, a 3D model slot, and an eraser design slot.
 
 ## Secret room stub
 

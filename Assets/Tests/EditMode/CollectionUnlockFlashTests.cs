@@ -29,6 +29,7 @@ namespace EraserWars.Tests.EditMode
             flashed = PlayerPrefs.GetString(CharacterUnlocks.FlashedKey, string.Empty);
             PlayerPrefs.DeleteKey(CharacterUnlocks.GrantedKey);
             PlayerPrefs.DeleteKey(CharacterUnlocks.FlashedKey);
+            CharacterAccess.SetDebugUnlockAll(false);
         }
 
         [TearDown]
@@ -46,6 +47,7 @@ namespace EraserWars.Tests.EditMode
             owned.Clear();
             RestoreKey(CharacterUnlocks.GrantedKey, hadGranted, granted);
             RestoreKey(CharacterUnlocks.FlashedKey, hadFlashed, flashed);
+            CharacterAccess.SetDebugUnlockAll(false);
             PlayerPrefs.Save();
         }
 

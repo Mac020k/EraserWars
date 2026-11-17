@@ -13,13 +13,26 @@ namespace EraserWars.UI
 
         public bool TryAssignUnlocked(int seat, CharacterDefinition character)
         {
-            if (seat < 0 || seat >= Seats.Length || character == null || !character.UnlockedByDefault)
+            if (seat < 0 || seat >= Seats.Length || !CharacterAccess.IsUnlocked(character))
             {
                 return false;
             }
 
             Seats[seat] = character;
             return true;
+        }
+
+        public void ReleaseLockedSeats(ContentCatalog catalog)
+        {
+            for (var i = 0; i < Seats.Length; i++)
+            {
+                if (Seats[i] != null && !CharacterAccess.IsUnlocked(Seats[i]))
+                {
+                    Seats[i] = null;
+                }
+            }
+
+            EnsureDefaults(catalog);
         }
 
         public void EnsureDefaults(ContentCatalog catalog)

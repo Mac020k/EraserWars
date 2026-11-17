@@ -15,6 +15,12 @@ namespace EraserWars.Tests.EditMode
         GameObject uiHost;
         GameObject directorHost;
 
+        [SetUp]
+        public void ClearDebugUnlock()
+        {
+            CharacterAccess.SetDebugUnlockAll(false);
+        }
+
         [TearDown]
         public void TearDown()
         {
@@ -37,6 +43,7 @@ namespace EraserWars.Tests.EditMode
             }
 
             owned.Clear();
+            CharacterAccess.SetDebugUnlockAll(false);
         }
 
         [Test]

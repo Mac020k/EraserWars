@@ -1,0 +1,340 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using EraserWars.Cards;
+using EraserWars.Persistence;
+using EraserWars.UI;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace EraserWars.Tests.EditMode
+{
+    public sealed class CollectionPreviewTests
+    {
+        readonly List<Object> owned = new();
+        GameObject uiHost;
+        bool hadGranted;
+        bool hadFlashed;
+        string granted;
+        string flashed;
+
+        [SetUp]
+        public void ClearDebugAndUnlocks()
+        {
+            CharacterAccess.SetDebugUnlockAll(false);
+            hadGranted = PlayerPrefs.HasKey(CharacterUnlocks.GrantedKey);
+            hadFlashed = PlayerPrefs.HasKey(CharacterUnlocks.FlashedKey);
+            granted = PlayerPrefs.GetString(CharacterUnlocks.GrantedKey, string.Empty);
+            flashed = PlayerPrefs.GetString(CharacterUnlocks.FlashedKey, string.Empty);
+            PlayerPrefs.DeleteKey(CharacterUnlocks.GrantedKey);
+            PlayerPrefs.DeleteKey(CharacterUnlocks.FlashedKey);
+        }
+
+        [TearDown]
+        public void Restore()
+        {
+            if (uiHost != null)
+            {
+                Object.DestroyImmediate(uiHost);
+                uiHost = null;
+            }
+
+            for (var i = owned.Count - 1; i >= 0; i--)
+            {
+                if (owned[i] != null)
+                {
+                    Object.DestroyImmediate(owned[i]);
+                }
+            }
+
+            owned.Clear();
+            CharacterAccess.SetDebugUnlockAll(false);
+            if (hadGranted)
+            {
+                PlayerPrefs.SetString(CharacterUnlocks.GrantedKey, granted);
+            }
+            else
+            {
+                PlayerPrefs.DeleteKey(CharacterUnlocks.GrantedKey);
+            }
+
+            if (hadFlashed)
+            {
+                PlayerPrefs.SetString(CharacterUnlocks.FlashedKey, flashed);
+            }
+            else
+            {
+                PlayerPrefs.DeleteKey(CharacterUnlocks.FlashedKey);
+            }
+
+            PlayerPrefs.Save();
+        }
+
+        [Test]
+        public void DisplayedMassScalesByOneThousandAndLeavesTheDefinition()
+        {
+            var eraser = ScriptableObject.CreateInstance<EraserDefinition>();
+            owned.Add(eraser);
+            eraser.Mass = 0.02f;
+
+            Assert.AreEqual(20, CollectionDisplay.DisplayedMass(0.02f));
+            Assert.AreEqual(32, CollectionDisplay.DisplayedMass(0.032f));
+            Assert.AreEqual(20, CollectionDisplay.DisplayedMass(eraser.Mass));
+            Assert.AreEqual(0.02f, eraser.Mass);
+        }
+
+        [Test]
+        public void StillFrameMatchesPortraitAspectAndClips()
+        {
+            var stage = new VisualElement();
+            CollectionDisplay.FitStillFrame(stage, 40f, 80f);
+
+            Assert.AreEqual(170f, stage.style.width.value.value, 0.01f);
+            Assert.AreEqual(340f, stage.style.height.value.value, 0.01f);
+            Assert.AreEqual(Overflow.Hidden, stage.style.overflow.value);
+
+            var uss = File.ReadAllText(Path.Combine(Application.dataPath, "UI", "StartMenu.uss"));
+            var portrait = uss.IndexOf(".collection-portrait {", System.StringComparison.Ordinal);
+            var stageRule = uss.IndexOf(".collection-stage {", System.StringComparison.Ordinal);
+            Assert.GreaterOrEqual(portrait, 0);
+            Assert.GreaterOrEqual(stageRule, 0);
+            Assert.IsTrue(uss.Substring(portrait, 500).Contains("overflow: hidden"));
+            Assert.IsTrue(uss.Substring(stageRule, 300).Contains("overflow: hidden"));
+            Assert.IsTrue(uss.Contains("background-size: 520% 520%"));
+            Assert.IsTrue(uss.Contains(".collection-strip .char-tile:hover"));
+            Assert.IsTrue(uss.Contains("padding-top: 14px"));
+        }
+
+        [Test]
+        public void FlavorTablesCoverSubjectsAndPassiveNames()
+        {
+            Assert.IsTrue(CharacterFlavor.TrySubjects(2, out var strong, out var weak));
+            Assert.AreEqual("算数", strong);
+            Assert.AreEqual("体育", weak);
+            Assert.IsFalse(CharacterFlavor.TrySubjects(99, out _, out _));
+
+            PassiveText.Describe("passive.knock_plus", out var name, out var effect);
+            Assert.AreEqual("どすこい", name);
+            Assert.IsTrue(effect.Contains("弾き"));
+            PassiveText.Describe("passive.none", out name, out effect);
+            Assert.AreEqual("なし", name);
+            PassiveText.Describe("passive.unknown_key", out name, out _);
+            Assert.AreEqual("passive.unknown_key", name);
+        }
+
+        [Test]
+        public void CollectionPreviewShowsMassSubjectsPassiveCardsAndPreviewSlots()
+        {
+            var catalog = Catalog();
+            var panel = Open();
+            var shown = new CollectionPanelController(catalog);
+            shown.Bind(panel);
+
+            var openFace = FaceNamed(panel, "水無月");
+            var lockedFace = FaceNamed(panel, "？？");
+            Assert.IsNotNull(openFace.Q(className: "arch-seat-take"));
+            Assert.IsNull(lockedFace.Q(className: "arch-mark"));
+            var lockedArt = lockedFace.Q(className: "char-tile-art");
+            Assert.IsNotNull(lockedArt.Q(LockMark.ElementName));
+            Assert.AreEqual(StyleKeyword.None, lockedArt.style.backgroundImage.keyword);
+            Assert.IsNull(openFace.Q(className: "char-tile-art").Q(LockMark.ElementName));
+            Assert.IsNotNull(panel.Q(className: "arch-all-out"));
+            Assert.IsNotNull(panel.Q(className: "arch-teacher"));
+            Assert.IsNotNull(panel.Q(className: "arch-afterschool"));
+            Assert.IsNotNull(panel.Q(className: "arch-desk-king"));
+
+            shown.SelectCharacterById(2);
+
+            Assert.AreEqual("水無月", panel.Q<Label>("collection-detail-title").text);
+            Assert.IsTrue(panel.Q<Label>("collection-detail-meta").text.Contains("質量 20"));
+            Assert.IsFalse(panel.Q<Label>("collection-detail-meta").text.Contains("0.02"));
+            Assert.AreEqual("得意 算数", panel.Q<Label>(className: "collection-subject-strong").text);
+            Assert.AreEqual("苦手 体育", panel.Q<Label>(className: "collection-subject-weak").text);
+            Assert.IsTrue(panel.Q<Label>("collection-passive").text.Contains("どすこい"));
+            Assert.IsFalse(panel.Q<Label>("collection-passive").text.Contains("passive.knock_plus"));
+            Assert.IsNotNull(panel.Q("collection-signatures").Q(className: "card-face"));
+            Assert.IsTrue(panel.Q<Label>(className: "collection-signature-effect").text.Contains("追加フリック"));
+
+            var stage = panel.Q("collection-stage");
+            Assert.AreEqual(170f, stage.style.width.value.value, 0.01f);
+            Assert.AreEqual(340f, stage.style.height.value.value, 0.01f);
+
+            Click(panel.Q<Button>("collection-mode-3d"));
+            Assert.AreEqual(CollectionPreviewMode.Eraser3D, shown.PreviewMode);
+            Assert.IsFalse(panel.Q("collection-eraser-3d").ClassListContains("hidden"));
+            Assert.IsTrue(panel.Q("collection-eraser-design").ClassListContains("hidden"));
+            Assert.IsTrue(panel.Q<Label>("collection-eraser-3d-slot").text.Contains("モデル枠"));
+            Assert.IsTrue(panel.Q<Label>("collection-eraser-3d-slot").text.Contains("水無月"));
+
+            Click(panel.Q<Button>("collection-mode-design"));
+            Assert.AreEqual(CollectionPreviewMode.EraserDesign, shown.PreviewMode);
+            Assert.IsTrue(panel.Q<Label>("collection-eraser-design-slot").text.Contains("デザイン枠"));
+            Assert.IsFalse(panel.Q("collection-eraser-design").ClassListContains("hidden"));
+        }
+
+        [Test]
+        public void DebugUnlockOpensEveryCharacterAndEarnedUnlocksRemain()
+        {
+            var catalog = Catalog();
+            var panel = Open();
+            var shown = new CollectionPanelController(catalog);
+            shown.Bind(panel);
+            var home = SeatHome();
+            var loadout = new HotseatLoadout();
+            loadout.EnsureDefaults(catalog);
+            var locked = catalog.FindCharacter(4);
+
+            var pick = new SeatPickController(catalog, loadout);
+            pick.Bind(home);
+            pick.Refresh(2);
+            pick.ToggleSeat(0);
+
+            Assert.IsTrue(FaceNamed(panel, "？？").ClassListContains("locked"));
+            Assert.IsFalse(loadout.TryAssignUnlocked(0, locked));
+            Assert.IsNull(home.Q("seat-option-4"));
+
+            CharacterAccess.SetDebugUnlockAll(true);
+            shown.Refresh();
+            pick.Refresh(2);
+
+            Assert.IsNotNull(FaceNamed(panel, "新人"));
+            Assert.IsFalse(FaceNamed(panel, "新人").ClassListContains("locked"));
+            Assert.IsNull(FaceNamed(panel, "新人").Q(LockMark.ElementName));
+            Assert.IsTrue(loadout.TryAssignUnlocked(0, locked));
+            Assert.AreSame(locked, loadout.Seats[0]);
+            Assert.IsNotNull(home.Q("seat-option-4"));
+
+            CharacterAccess.SetDebugUnlockAll(false);
+            loadout.ReleaseLockedSeats(catalog);
+            shown.Refresh();
+
+            Assert.AreSame(catalog.FindCharacter(0), loadout.Seats[0]);
+            Assert.IsFalse(loadout.TryAssignUnlocked(0, locked));
+            Assert.IsTrue(FaceNamed(panel, "？？").ClassListContains("locked"));
+
+            CharacterUnlocks.Grant(4);
+            shown.Refresh();
+
+            Assert.IsFalse(FaceNamed(panel, "新人").ClassListContains("locked"));
+            Assert.IsTrue(loadout.TryAssignUnlocked(1, locked));
+            Assert.AreSame(locked, loadout.Seats[1]);
+        }
+
+        ContentCatalog Catalog()
+        {
+            var catalog = ScriptableObject.CreateInstance<ContentCatalog>();
+            owned.Add(catalog);
+            var eraser = ScriptableObject.CreateInstance<EraserDefinition>();
+            owned.Add(eraser);
+            eraser.Mass = 0.02f;
+            eraser.Friction = 0.4f;
+            eraser.Power = 1f;
+            eraser.Speed = 1f;
+            eraser.PassiveKey = "passive.knock_plus";
+            var card = ScriptableObject.CreateInstance<CardDefinition>();
+            owned.Add(card);
+            card.DisplayNameJa = "もう一押し";
+            card.IsSignature = true;
+            card.FamilyKey = CardFamilies.Signature;
+            card.EffectKinds = new List<string> { "ExtraFlick" };
+            catalog.Characters = new List<CharacterDefinition>
+            {
+                Character(0, "赤星", true, CharacterArchetypes.AllOut, null, null),
+                Character(2, "水無月", true, CharacterArchetypes.SeatTake, eraser, card),
+                Character(4, "新人", false, CharacterArchetypes.Teacher, eraser, card),
+            };
+            return catalog;
+        }
+
+        CharacterDefinition Character(
+            int id,
+            string name,
+            bool unlocked,
+            string archetype,
+            EraserDefinition eraser,
+            CardDefinition signature)
+        {
+            var character = ScriptableObject.CreateInstance<CharacterDefinition>();
+            owned.Add(character);
+            character.IdValue = id;
+            character.DisplayNameJa = name;
+            character.UnlockedByDefault = unlocked;
+            character.ArchetypeKey = archetype;
+            character.Eraser = eraser;
+            character.SignatureA = signature;
+            character.Portrait = Portrait();
+            return character;
+        }
+
+        Sprite Portrait()
+        {
+            var texture = new Texture2D(40, 80);
+            owned.Add(texture);
+            var sprite = Sprite.Create(texture, new Rect(0, 0, 40, 80), new Vector2(0.5f, 0.5f));
+            owned.Add(sprite);
+            return sprite;
+        }
+
+        VisualElement SeatHome()
+        {
+            var home = new VisualElement { name = "home-stack" };
+            var picker = new VisualElement { name = "seat-picker" };
+            picker.AddToClassList("hidden");
+            picker.Add(new Label { name = "seat-picker-caption" });
+            picker.Add(new VisualElement { name = "seat-picker-row" });
+            home.Add(new VisualElement { name = "seat-strip" });
+            home.Add(picker);
+            uiHost.GetComponent<UIDocument>().rootVisualElement.Add(home);
+            return home;
+        }
+
+        VisualElement Open()
+        {
+            uiHost = new GameObject("collection-preview-ui");
+            var document = uiHost.AddComponent<UIDocument>();
+            var settings = ScriptableObject.CreateInstance<PanelSettings>();
+            owned.Add(settings);
+            document.panelSettings = settings;
+            var panel = new VisualElement { name = "collection-panel" };
+            panel.Add(new Button { name = "collection-tab-characters" });
+            panel.Add(new Button { name = "collection-tab-cards" });
+            panel.Add(new VisualElement { name = "collection-filters" });
+            panel.Add(new VisualElement { name = "collection-strip" });
+            panel.Add(new Label { name = "collection-detail-title" });
+            panel.Add(new Label { name = "collection-detail-meta" });
+            panel.Add(new Label { name = "collection-detail-body" });
+            panel.Add(new Label { name = "collection-detail-unlock" });
+            panel.Add(new VisualElement { name = "collection-portrait" });
+            document.rootVisualElement.Add(panel);
+            Assert.IsNotNull(panel.panel);
+            return panel;
+        }
+
+        static Button FaceNamed(VisualElement panel, string name)
+        {
+            var tiles = panel.Q("collection-strip").Query<Button>(className: "char-tile").ToList();
+            foreach (var tile in tiles)
+            {
+                var label = tile.Q<Label>(className: "char-tile-name");
+                if (label != null && label.text == name)
+                {
+                    return tile;
+                }
+            }
+
+            Assert.Fail("No face named " + name);
+            return null;
+        }
+
+        static void Click(Button button)
+        {
+            var field = button.clickable.GetType().GetField(
+                "clicked",
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            var handler = field?.GetValue(button.clickable) as System.Delegate;
+            Assert.IsNotNull(handler, "The preview control has no click handler.");
+            handler.DynamicInvoke();
+        }
+    }
+}

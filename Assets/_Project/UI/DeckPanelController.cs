@@ -133,7 +133,7 @@ namespace EraserWars.UI
                 button.AddToClassList("deck-item");
                 var selected = draftSeats[activeSeat] == character;
                 button.EnableInClassList("selected", selected);
-                var lockMark = character.UnlockedByDefault ? "" : "🔒 ";
+                var lockMark = CharacterAccess.IsUnlocked(character) ? "" : "🔒 ";
                 button.text =
                     $"{lockMark}{character.DisplayName}  ({CharacterArchetypes.DisplayJa(character.ArchetypeKey)})";
                 var captured = character;
