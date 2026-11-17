@@ -101,9 +101,14 @@ namespace EraserWars.Tests.EditMode
             Assert.GreaterOrEqual(stageRule, 0);
             Assert.IsTrue(uss.Substring(portrait, 500).Contains("overflow: hidden"));
             Assert.IsTrue(uss.Substring(stageRule, 300).Contains("overflow: hidden"));
-            Assert.IsTrue(uss.Contains("background-size: 520% 520%"));
+            var tileArt = uss.IndexOf(".char-tile .char-tile-art {", System.StringComparison.Ordinal);
+            Assert.GreaterOrEqual(tileArt, 0);
+            Assert.IsTrue(uss.Substring(tileArt, 180).Contains("background-size: 520% 520%"));
+            Assert.IsTrue(uss.Contains("-unity-background-scale-mode: scale-and-crop"));
             Assert.IsTrue(uss.Contains(".collection-strip .char-tile:hover"));
-            Assert.IsTrue(uss.Contains("padding-top: 16px"));
+            var stripRule = uss.IndexOf(".collection-strip {", System.StringComparison.Ordinal);
+            Assert.GreaterOrEqual(stripRule, 0);
+            Assert.IsTrue(uss.Substring(stripRule, 280).Contains("padding-top: 16px"));
         }
 
         [Test]
@@ -219,7 +224,7 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual(CollectionDisplay.CardFrameWidth, stage.style.width.value.value, 0.01f);
             Assert.AreEqual(CollectionDisplay.CardFrameHeight, stage.style.height.value.value, 0.01f);
 
-            var faces = panel.Q("collection-strip").Query<Button>(className: "card-face").ToList();
+            var faces = StripCardTiles(panel);
             Assert.AreEqual(2, faces.Count);
             Assert.IsTrue(faces[0].ClassListContains("selected"));
             Click(faces[1]);
@@ -369,6 +374,26 @@ namespace EraserWars.Tests.EditMode
             document.rootVisualElement.Add(panel);
             Assert.IsNotNull(panel.panel);
             return panel;
+        }
+
+        static List<Button> StripCardTiles(VisualElement panel)
+        {
+            var tiles = new List<Button>();
+            var strip = panel.Q("collection-strip");
+            if (strip == null)
+            {
+                return tiles;
+            }
+
+            foreach (var child in strip.Children())
+            {
+                if (child is Button button && button.ClassListContains("card-tile"))
+                {
+                    tiles.Add(button);
+                }
+            }
+
+            return tiles;
         }
 
         static Button FaceNamed(VisualElement panel, string name)
