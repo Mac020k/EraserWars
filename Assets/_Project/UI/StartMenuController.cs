@@ -60,9 +60,6 @@ namespace EraserWars.UI
         Button shakeButton;
         Button reduceMotionButton;
         Button seatPaletteButton;
-        Button uiScaleSmall;
-        Button uiScaleStandard;
-        Button uiScaleLarge;
         Button resetButton;
         bool pushingOptions;
         bool resetArmed;
@@ -203,9 +200,6 @@ namespace EraserWars.UI
             shakeButton = root.Q<Button>("opt-shake");
             reduceMotionButton = root.Q<Button>("opt-reduce-motion");
             seatPaletteButton = root.Q<Button>("opt-seat-palette");
-            uiScaleSmall = root.Q<Button>("opt-ui-80");
-            uiScaleStandard = root.Q<Button>("opt-ui-100");
-            uiScaleLarge = root.Q<Button>("opt-ui-120");
             resetButton = root.Q<Button>("opt-reset");
         }
 
@@ -238,9 +232,6 @@ namespace EraserWars.UI
                 shakeButton?.RegisterCallback<ClickEvent>(_ => ToggleCameraShake());
                 reduceMotionButton?.RegisterCallback<ClickEvent>(_ => ToggleReduceMotion());
                 seatPaletteButton?.RegisterCallback<ClickEvent>(_ => ToggleSeatPalette());
-                uiScaleSmall?.RegisterCallback<ClickEvent>(_ => SetUiScale(0.8f));
-                uiScaleStandard?.RegisterCallback<ClickEvent>(_ => SetUiScale(1f));
-                uiScaleLarge?.RegisterCallback<ClickEvent>(_ => SetUiScale(1.2f));
                 resetButton?.RegisterCallback<ClickEvent>(_ => ConfirmReset());
             }
 
@@ -361,9 +352,6 @@ namespace EraserWars.UI
 
             PaintSeatSwatches(settings.ColorblindSeats);
 
-            uiScaleSmall?.EnableInClassList("selected", settings.UiScale < 0.9f);
-            uiScaleStandard?.EnableInClassList("selected", settings.UiScale >= 0.9f && settings.UiScale < 1.1f);
-            uiScaleLarge?.EnableInClassList("selected", settings.UiScale >= 1.1f);
             if (resetButton != null)
             {
                 resetButton.text = resetArmed
@@ -476,11 +464,6 @@ namespace EraserWars.UI
 
                 swatch.style.backgroundColor = SeatPalette.Ui(i, colorblind);
             }
-        }
-
-        void SetUiScale(float scale)
-        {
-            CommitOptions(GameSettings.Current with { UiScale = scale });
         }
 
         void CommitOptions(GameSettings next)

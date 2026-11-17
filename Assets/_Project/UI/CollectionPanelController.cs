@@ -67,13 +67,11 @@ namespace EraserWars.UI
             detailUnlock = panel.Q<Label>("collection-detail-unlock");
             tabCharacters = panel.Q<Button>("collection-tab-characters");
             tabCards = panel.Q<Button>("collection-tab-cards");
-            var filterRow = panel.Q("collection-filters");
             EnsureDetailChrome();
             EnsurePreviewChrome();
 
             tabCharacters?.RegisterCallback<ClickEvent>(_ => SetMode("characters"));
             tabCards?.RegisterCallback<ClickEvent>(_ => SetMode("cards"));
-            WireFilters(filterRow);
             WirePreviewModes();
             SetMode(mode);
         }
@@ -114,8 +112,14 @@ namespace EraserWars.UI
             }
 
             mode = "characters";
-            SetMode("characters");
-            ShowCharacter(character);
+            filter = "all";
+            selectedCharacterId = character.IdValue;
+            tabCharacters?.EnableInClassList("selected", true);
+            tabCards?.EnableInClassList("selected", false);
+            SetPreviewMode(CollectionPreviewMode.Still);
+            RebuildFilters();
+            RebuildList();
+            PaintCharacterDetail(character);
         }
 
         void EnsureDetailChrome()
@@ -301,32 +305,6 @@ namespace EraserWars.UI
             ClearDetail(mode == "characters" ? "キャラを選んでください" : "カードを選んでください");
         }
 
-        void WireFilters(VisualElement filterRow)
-        {
-            if (filterRow == null)
-            {
-                return;
-            }
-
-            filterRow.RegisterCallback<ClickEvent>(evt =>
-            {
-                if (evt.target is not Button button)
-                {
-                    return;
-                }
-
-                var key = button.userData as string;
-                if (string.IsNullOrEmpty(key))
-                {
-                    return;
-                }
-
-                filter = key;
-                RebuildFilters();
-                RebuildList();
-            });
-        }
-
         void RebuildFilters()
         {
             var filterRow = panel?.Q("collection-filters");
@@ -358,15 +336,61 @@ namespace EraserWars.UI
 
         void AddFilterChip(VisualElement row, string key, string label)
         {
-            var button = new Button { text = label, userData = key };
+            var button = new Button { text = string.Empty };
             button.AddToClassList("collection-filter");
+            button.AddToClassList(FilterMotifClass(key));
             button.EnableInClassList("selected", filter == key);
             if (mode == "characters" && key != "all")
             {
-                button.Insert(0, ArchetypeMark.Create(key));
+                var icon = ArchetypeMark.Create(key);
+                icon.AddToClassList("collection-filter-icon");
+                button.Add(icon);
             }
 
+            var caption = new Label(label) { pickingMode = PickingMode.Ignore };
+            caption.AddToClassList("collection-filter-label");
+            button.Add(caption);
+            var captured = key;
+            button.clicked += () =>
+            {
+                filter = captured;
+                RebuildFilters();
+                RebuildList();
+            };
             row.Add(button);
+        }
+
+        static string FilterMotifClass(string key)
+        {
+            switch (key)
+            {
+                case "all":
+                    return "filter-all";
+                case CharacterArchetypes.AllOut:
+                    return "filter-all-out";
+                case CharacterArchetypes.SeatTake:
+                    return "filter-seat-take";
+                case CharacterArchetypes.Teacher:
+                    return "filter-teacher";
+                case CharacterArchetypes.Afterschool:
+                    return "filter-afterschool";
+                case CharacterArchetypes.DeskKing:
+                    return "filter-desk-king";
+                case CardFamilies.Kiai:
+                    return "filter-kiai";
+                case CardFamilies.Homework:
+                    return "filter-homework";
+                case CardFamilies.Seat:
+                    return "filter-seat";
+                case CardFamilies.Stationery:
+                    return "filter-stationery";
+                case CardFamilies.Cover:
+                    return "filter-cover";
+                case CardFamilies.Signature:
+                    return "filter-signature";
+                default:
+                    return "filter-all";
+            }
         }
 
         void RebuildList()
@@ -397,6 +421,7 @@ namespace EraserWars.UI
 
         void RebuildCharacterStrip()
         {
+            strip.Clear();
             var characters = catalog.Characters ?? new List<CharacterDefinition>();
             var shown = 0;
             foreach (var character in characters)
@@ -425,22 +450,20 @@ namespace EraserWars.UI
 
                 var name = new Label(unlocked ? character.DisplayName : character.MaskedDisplayName);
                 name.AddToClassList("char-tile-name");
-                var arch = new VisualElement();
-                arch.AddToClassList("char-tile-arch-row");
-                if (unlocked)
-                {
-                    arch.Add(ArchetypeMark.Create(character.ArchetypeKey));
-                }
-
-                var archetype = new Label(unlocked
-                    ? CharacterArchetypes.DisplayJa(character.ArchetypeKey)
-                    : "？？？型");
-                archetype.AddToClassList("char-tile-arch");
-                arch.Add(archetype);
+                var place = new Label(unlocked ? CharacterFlavor.TileCaption(character.IdValue) : "？？？");
+                place.AddToClassList("char-tile-place");
 
                 tile.Add(art);
+                if (unlocked)
+                {
+                    var badge = ArchetypeMark.Create(character.ArchetypeKey);
+                    badge.AddToClassList("char-tile-badge");
+                    tile.Add(badge);
+                }
+
                 tile.Add(name);
-                tile.Add(arch);
+                tile.Add(place);
+                tile.userData = character.IdValue;
                 var captured = character;
                 tile.clicked += () => ShowCharacter(captured);
                 strip.Add(tile);
@@ -515,7 +538,31 @@ namespace EraserWars.UI
         {
             selectedCharacterId = character.IdValue;
             previewMode = ReadPreviewMode();
-            RebuildCharacterStrip();
+            SyncStripSelection();
+            PaintCharacterDetail(character);
+        }
+
+        void SyncStripSelection()
+        {
+            if (strip == null)
+            {
+                return;
+            }
+
+            foreach (var child in strip.Children())
+            {
+                if (child is not Button tile || !tile.ClassListContains("char-tile"))
+                {
+                    continue;
+                }
+
+                var id = tile.userData is int value ? value : -1;
+                tile.EnableInClassList("selected", id == selectedCharacterId);
+            }
+        }
+
+        void PaintCharacterDetail(CharacterDefinition character)
+        {
             if (detailTitle == null)
             {
                 return;

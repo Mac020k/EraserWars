@@ -220,13 +220,16 @@ namespace EraserWars.UI
                 UiImageUtil.ApplyFaceCrop(art, character.Portrait);
             }
 
+            var badge = ArchetypeMark.Create(character.ArchetypeKey);
+            badge.AddToClassList("char-tile-badge");
             var name = new Label(character.DisplayName);
             name.AddToClassList("char-tile-name");
-            var archetype = new Label(CharacterArchetypes.DisplayJa(character.ArchetypeKey));
-            archetype.AddToClassList("char-tile-arch");
+            var place = new Label(CharacterFlavor.TileCaption(character.IdValue));
+            place.AddToClassList("char-tile-place");
             tile.Add(art);
+            tile.Add(badge);
             tile.Add(name);
-            tile.Add(archetype);
+            tile.Add(place);
             return tile;
         }
     }

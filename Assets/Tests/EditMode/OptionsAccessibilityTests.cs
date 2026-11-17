@@ -90,6 +90,26 @@ namespace EraserWars.Tests.EditMode
         }
 
         [Test]
+        public void UiScaleSnapsToLargeAndTheMenuOffersOnlyThatSize()
+        {
+            using var prior = new PrefGuard();
+            PlayerPrefs.SetFloat(GameSettings.Keys.UiScale, 0.8f);
+
+            var loaded = GameSettings.Load();
+            Assert.AreEqual(1.2f, loaded.UiScale, 0.001f);
+            Assert.AreEqual(1.2f, GameSettings.SnapUiScale(0.8f), 0.001f);
+            Assert.AreEqual(1.2f, GameSettings.SnapUiScale(1f), 0.001f);
+            Assert.AreEqual(GameSettings.LargeUiScale, GameSettings.DefaultUiScale);
+
+            var tree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/StartMenu.uxml");
+            var root = tree.CloneTree();
+            Assert.IsNull(root.Q("opt-ui-80"));
+            Assert.IsNull(root.Q("opt-ui-100"));
+            Assert.IsNull(root.Q<Button>("opt-ui-120"));
+            Assert.AreEqual("大", root.Q<Label>("opt-ui-120").text);
+        }
+
+        [Test]
         public void OptionsTogglesWriteThePrefsAndRepaintTheSwatches()
         {
             using var prior = new PrefGuard();

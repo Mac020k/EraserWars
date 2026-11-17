@@ -113,9 +113,11 @@ namespace EraserWars.Tests.EditMode
             var art = home.Q<Button>("seat-option-0").Q(className: "char-tile-art");
             Assert.IsTrue(art.ClassListContains("char-tile-art"));
             Assert.AreEqual(catalog.FindCharacter(0).Portrait, art.style.backgroundImage.value.sprite);
-#pragma warning disable CS0618
-            Assert.AreEqual(ScaleMode.ScaleAndCrop, art.style.unityBackgroundScaleMode.value);
-#pragma warning restore CS0618
+            Assert.AreEqual(780f, art.style.backgroundSize.value.x.value, 0.01f);
+            Assert.AreEqual(LengthUnit.Percent, art.style.backgroundSize.value.x.unit);
+            Assert.AreEqual(2f, art.style.backgroundPositionY.value.offset.value, 0.01f);
+            Assert.IsNull(home.Q<Button>("seat-option-0").Q(className: "char-tile-arch"));
+            Assert.AreSame(home.Q<Button>("seat-option-0"), home.Q<Button>("seat-option-0").Q(className: "char-tile-badge").parent);
 
             Click(home.Q<Button>("seat-option-3"));
 

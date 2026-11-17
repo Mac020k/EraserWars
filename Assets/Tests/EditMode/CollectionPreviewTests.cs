@@ -101,9 +101,9 @@ namespace EraserWars.Tests.EditMode
             Assert.GreaterOrEqual(stageRule, 0);
             Assert.IsTrue(uss.Substring(portrait, 500).Contains("overflow: hidden"));
             Assert.IsTrue(uss.Substring(stageRule, 300).Contains("overflow: hidden"));
-            Assert.IsTrue(uss.Contains("background-size: 520% 520%"));
+            Assert.IsTrue(uss.Contains("background-size: 780% 780%"));
             Assert.IsTrue(uss.Contains(".collection-strip .char-tile:hover"));
-            Assert.IsTrue(uss.Contains("padding-top: 14px"));
+            Assert.IsTrue(uss.Contains("padding-top: 16px"));
         }
 
         [Test]
@@ -113,6 +113,27 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual("算数", strong);
             Assert.AreEqual("体育", weak);
             Assert.IsFalse(CharacterFlavor.TrySubjects(99, out _, out _));
+            Assert.IsTrue(CharacterFlavor.TryPlace(0, out var school, out var homeroom));
+            Assert.AreEqual("ひまわり小学校", school);
+            Assert.AreEqual("3年2組", homeroom);
+            Assert.AreEqual("ひまわり小学校 3年2組", CharacterFlavor.TileCaption(0));
+            Assert.AreEqual("留学生の先生役", CharacterFlavor.TileCaption(7));
+            Assert.AreEqual("先生役", CharacterFlavor.TileCaption(15));
+            Assert.AreEqual(string.Empty, CharacterFlavor.TileCaption(99));
+            for (var id = 0; id <= 19; id++)
+            {
+                Assert.IsTrue(CharacterFlavor.TryPlace(id, out school, out homeroom), "place " + id);
+                Assert.IsFalse(string.IsNullOrEmpty(homeroom), "class " + id);
+                var teacher = id == 7 || id == 15 || id == 16 || id == 17;
+                if (teacher)
+                {
+                    Assert.AreEqual(string.Empty, school, "school " + id);
+                }
+                else
+                {
+                    Assert.IsTrue(school.EndsWith("小学校"), "school " + id);
+                }
+            }
 
             PassiveText.Describe("passive.knock_plus", out var name, out var effect);
             Assert.AreEqual("どすこい", name);
@@ -171,6 +192,52 @@ namespace EraserWars.Tests.EditMode
             Assert.AreEqual(CollectionPreviewMode.EraserDesign, shown.PreviewMode);
             Assert.IsTrue(panel.Q<Label>("collection-eraser-design-slot").text.Contains("デザイン枠"));
             Assert.IsFalse(panel.Q("collection-eraser-design").ClassListContains("hidden"));
+        }
+
+        [Test]
+        public void SelectingACharacterKeepsOneTilePerCharacter()
+        {
+            var catalog = Catalog();
+            var panel = Open();
+            var shown = new CollectionPanelController(catalog);
+            shown.Bind(panel);
+
+            Assert.AreEqual(3, TileCount(panel));
+            shown.SelectCharacterById(2);
+            Assert.AreEqual(3, TileCount(panel));
+            Assert.AreEqual(1, SelectedCount(panel));
+            Assert.IsTrue(FaceNamed(panel, "水無月").ClassListContains("selected"));
+
+            Click(FaceNamed(panel, "赤星"));
+            Assert.AreEqual(3, TileCount(panel));
+            Assert.AreEqual(1, SelectedCount(panel));
+            Assert.IsTrue(FaceNamed(panel, "赤星").ClassListContains("selected"));
+            Assert.IsFalse(FaceNamed(panel, "水無月").ClassListContains("selected"));
+            Assert.AreEqual("赤星", panel.Q<Label>("collection-detail-title").text);
+
+            var akaboshi = FaceNamed(panel, "赤星");
+            Assert.IsNull(akaboshi.Q(className: "char-tile-arch"));
+            var badge = akaboshi.Q(className: "char-tile-badge");
+            Assert.IsNotNull(badge);
+            Assert.AreSame(akaboshi, badge.parent);
+            Assert.AreNotSame(akaboshi.Q(className: "char-tile-art"), badge.parent);
+            Assert.AreEqual("ひまわり小学校 3年2組", akaboshi.Q<Label>(className: "char-tile-place").text);
+            Assert.AreEqual("？？？", FaceNamed(panel, "？？").Q<Label>(className: "char-tile-place").text);
+
+            var allOut = FilterNamed(panel, "全力");
+            Assert.AreEqual(string.Empty, allOut.text);
+            Assert.IsTrue(allOut.ClassListContains("filter-all-out"));
+            var icon = allOut.Q(className: "collection-filter-icon");
+            var caption = allOut.Q<Label>(className: "collection-filter-label");
+            Assert.AreEqual("全力", caption.text);
+            Assert.Less(allOut.IndexOf(icon), allOut.IndexOf(caption));
+
+            shown.ShowCards();
+            var kiai = FilterNamed(panel, "気合");
+            Assert.IsTrue(kiai.ClassListContains("filter-kiai"));
+            Assert.AreEqual("気合", kiai.Q<Label>(className: "collection-filter-label").text);
+            Assert.IsNull(kiai.Q(className: "arch-mark"));
+            Assert.AreEqual(0, TileCount(panel));
         }
 
         [Test]
@@ -309,6 +376,42 @@ namespace EraserWars.Tests.EditMode
             document.rootVisualElement.Add(panel);
             Assert.IsNotNull(panel.panel);
             return panel;
+        }
+
+        static int TileCount(VisualElement panel)
+        {
+            return panel.Q("collection-strip").Query<Button>(className: "char-tile").ToList().Count;
+        }
+
+        static int SelectedCount(VisualElement panel)
+        {
+            var selected = 0;
+            var tiles = panel.Q("collection-strip").Query<Button>(className: "char-tile").ToList();
+            for (var i = 0; i < tiles.Count; i++)
+            {
+                if (tiles[i].ClassListContains("selected"))
+                {
+                    selected++;
+                }
+            }
+
+            return selected;
+        }
+
+        static Button FilterNamed(VisualElement panel, string label)
+        {
+            var chips = panel.Q("collection-filters").Query<Button>(className: "collection-filter").ToList();
+            foreach (var chip in chips)
+            {
+                var caption = chip.Q<Label>(className: "collection-filter-label");
+                if (caption != null && caption.text == label)
+                {
+                    return chip;
+                }
+            }
+
+            Assert.Fail("No filter named " + label);
+            return null;
         }
 
         static Button FaceNamed(VisualElement panel, string name)

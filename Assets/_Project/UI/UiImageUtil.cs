@@ -4,8 +4,8 @@ using UnityEngine.UIElements;
 namespace EraserWars.UI
 {
     /// <summary>
-    /// Assigns UITK background images. Fit uses ScaleToFit; face tiles use ScaleAndCrop
-    /// with face zoom/position provided by USS (.char-tile-art).
+    /// Assigns UITK background images. Fit uses ScaleToFit. Face tiles zoom with
+    /// background-size and a top anchor so the head fills the circle.
     /// </summary>
     public static class UiImageUtil
     {
@@ -65,6 +65,9 @@ namespace EraserWars.UI
 #pragma warning restore CS0618
         }
 
+        public const float FaceZoomPercent = 780f;
+        public const float FaceAnchorPercent = 2f;
+
         public static void ApplyFaceCrop(VisualElement element, Sprite sprite)
         {
             if (element == null || sprite == null)
@@ -74,9 +77,14 @@ namespace EraserWars.UI
 
             element.style.backgroundImage = new StyleBackground(sprite);
             element.style.backgroundColor = Color.clear;
-#pragma warning disable CS0618
-            element.style.unityBackgroundScaleMode = ScaleMode.ScaleAndCrop;
-#pragma warning restore CS0618
+            element.style.backgroundRepeat = new BackgroundRepeat(Repeat.NoRepeat, Repeat.NoRepeat);
+            element.style.backgroundSize = new BackgroundSize(
+                new Length(FaceZoomPercent, LengthUnit.Percent),
+                new Length(FaceZoomPercent, LengthUnit.Percent));
+            element.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Center);
+            element.style.backgroundPositionY = new BackgroundPosition(
+                BackgroundPositionKeyword.Top,
+                new Length(FaceAnchorPercent, LengthUnit.Percent));
         }
 
         public static void Clear(VisualElement element)
