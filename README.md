@@ -36,12 +36,12 @@ Assets/
   _Project/        Game code, one assembly definition per folder
     Core/          Match state, the reducer, rule sets, flick math. No UnityEngine reference.
     Cards/         Card, eraser, character, stage and rule set definitions, card resolver
-    Gameplay/      Desk rig, eraser bodies, flick, fall and settle detection, hitstop, MatchDirector
+    Gameplay/      Desk rig, eraser bodies, flick, fall and settle detection, hitstop, MatchDirector, CPU seat turns
     Input/         Input System actions to FlickCommand
     CameraRig/     Orbit, overhead and close-up cameras
     View/          VFX, shake, fall cutscene
     UI/            HUD, hand, deck builder (UI Toolkit)
-    AI/            CPU shot planner
+    AI/            Shot-planner stub. The seat that plays a turn lives in Gameplay.
     Audio/         BGM loop, UI click and flick cues, volume prefs
     Net/           Network boundary: command validation, disconnect policy, Fish-Net spike HUD
     Steam/         Lobby and Steam transport
@@ -83,6 +83,17 @@ Points loads `RuleSet.PointsTrial`, which ends after 8 rounds. Stock loads `Rule
 The home strip `home-tip` reads "カードを1枚出して、ドラッグではじく。" until the player taps わかった. That tap writes `eraserwars.firstCoach` as `1`. Match start does not read `eraserwars.firstCoach`, and the start button stays enabled while the strip is up.
 Options writes `eraserwars.reduceMotion` as `0` or `1`. The value `1` holds the edge glow at a dim constant. `EdgeSlowmoCue.ReduceMotionPreferred` reads that key.
 Options writes `eraserwars.seatPalette` as `0` or `1`. The value `1` paints seats blue, magenta, orange, and gold on the erasers, the knock praise, and the match HUD. The HUD root gains the class `cb-seats`. The value `0` keeps red, blue, green, and yellow.
+
+## CPU seats
+
+`eraserwars.cpuSeats` is a PlayerPrefs bit mask read by `MatchDirector.StartHotseat`. Bit 0 is seat 0. The default is 0, so every hotseat seat stays human.
+`MatchDirector.SetCpuSeats` pins a mask on that director and later matches on it ignore the pref.
+A marked seat ignores aim and card play. The Pass button and the hand stay off for that seat only.
+The seat waits out the turn callout, then waits `CpuTurn.ThinkSeconds` (0.4 seconds).
+When `round + seat` is even, it flicks through `SubmitFlick` with drag `0.18`, direction `(0.15, 1)`, and contact Y `0.85`.
+When that sum is odd, it passes. Round 1 seat 0 passes. Round 1 seat 1 flicks.
+If the flick applier or the eraser body is missing, that visit passes instead.
+`Assets/_Project/AI/CpuPlanner.cs` is unused by this path.
 
 ## Match log
 
