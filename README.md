@@ -81,6 +81,7 @@ The start menu segment `mode-stock` / `mode-points` stores `eraserwars.winMode` 
 `MatchDirector.StartHotseat` reads that key for both 2-player and 4-player hotseat, then applies the saved turn time.
 Points loads `RuleSet.PointsTrial`, which ends after 8 rounds. Stock loads `RuleSet.CasualStock`. Rematch and the debug Hotseat buttons read the same key.
 The home strip `home-tip` reads "カードを1枚出して、ドラッグではじく。" until the player taps わかった. That tap writes `eraserwars.firstCoach` as `1`. Match start does not read `eraserwars.firstCoach`, and the start button stays enabled while the strip is up.
+Options keeps the UI at large scale. `GameSettings.UiScale` is `1.2`, and `SnapUiScale` folds a saved `0.8` or `1` to `1.2` on load. The options screen shows 大. It has no small or standard control.
 Options writes `eraserwars.reduceMotion` as `0` or `1`. The value `1` holds the edge glow at a dim constant. `EdgeSlowmoCue.ReduceMotionPreferred` reads that key.
 Options writes `eraserwars.seatPalette` as `0` or `1`. The value `1` paints seats blue, magenta, orange, and gold on the erasers, the knock praise, and the match HUD. The HUD root gains the class `cb-seats`. The value `0` keeps red, blue, green, and yellow.
 
@@ -216,7 +217,7 @@ Turning the toggle off clears the flag, and `HotseatLoadout.ReleaseLockedSeats` 
 An earned id stays available after the flag is off.
 The collection shows eraser mass times 1000, so 0.02 is shown as 20.
 `EraserDefinition.Mass` stays in kilograms.
-`CharacterFlavor` and `PassiveText` hold the subject pair and the passive line for that screen.
+`CharacterFlavor` holds the subject pair, the school, and the class for ids 0 through 19. `TileCaption` prints the school and class under the face. Teacher roles print the role instead, such as 留学生の先生役. `PassiveText` holds the passive line for that screen. The type mark sits on the top-right of the circle. Selecting a face updates that mark and does not add another tile.
 The still frame uses the portrait's pixel aspect, clips with `overflow: hidden`, and switches among the still, a 3D model slot, and an eraser design slot.
 
 ## Secret room stub

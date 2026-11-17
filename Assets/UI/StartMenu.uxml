@@ -80,9 +80,7 @@
                     <ui:Label name="opt-section-display" text="表示" class="options-section" />
                     <ui:Label name="opt-ui-size" text="画面の大きさ" class="options-label" />
                     <ui:VisualElement class="options-choice-row">
-                        <ui:Button name="opt-ui-80" text="小" class="options-choice" />
-                        <ui:Button name="opt-ui-100" text="標準" class="options-choice selected" />
-                        <ui:Button name="opt-ui-120" text="大" class="options-choice" />
+                        <ui:Label name="opt-ui-120" text="大" class="options-choice selected" />
                     </ui:VisualElement>
 
                     <ui:Label name="opt-section-access" text="見やすさ" class="options-section" />

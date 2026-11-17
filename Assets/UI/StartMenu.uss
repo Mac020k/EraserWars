@@ -565,23 +565,102 @@
 .collection-filter {
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     height: 36px;
     min-width: 64px;
     margin: 0 6px 6px 0;
     padding: 0 12px;
     font-size: 13px;
     background-color: rgb(48, 54, 72);
-    color: rgb(220, 220, 230);
+    color: rgb(255, 248, 240);
     border-width: 1px;
     border-color: rgb(90, 96, 120);
     border-radius: 6px;
 }
 
+.collection-filter-label {
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    color: rgb(255, 248, 240);
+    white-space: nowrap;
+}
+
+.collection-filter .collection-filter-icon {
+    margin-left: 0;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.collection-filter.filter-all {
+    background-color: rgb(48, 54, 72);
+    border-color: rgb(90, 96, 120);
+}
+
+.collection-filter.filter-all-out {
+    background-color: rgb(214, 64, 28);
+    border-color: rgb(140, 32, 12);
+}
+
+.collection-filter.filter-seat-take {
+    background-color: rgb(28, 104, 204);
+    border-color: rgb(12, 58, 130);
+}
+
+.collection-filter.filter-teacher {
+    background-color: rgb(36, 132, 72);
+    border-color: rgb(16, 78, 40);
+}
+
+.collection-filter.filter-afterschool {
+    background-color: rgb(12, 122, 132);
+    border-color: rgb(6, 72, 80);
+}
+
+.collection-filter.filter-desk-king {
+    background-color: rgb(168, 104, 28);
+    border-color: rgb(96, 56, 12);
+}
+
+.collection-filter.filter-kiai {
+    background-color: rgb(214, 24, 40);
+    border-color: rgb(120, 8, 16);
+}
+
+.collection-filter.filter-homework {
+    background-color: rgb(12, 92, 214);
+    border-color: rgb(6, 48, 120);
+}
+
+.collection-filter.filter-seat {
+    background-color: rgb(8, 150, 64);
+    border-color: rgb(4, 84, 32);
+}
+
+.collection-filter.filter-stationery {
+    background-color: rgb(214, 112, 8);
+    border-color: rgb(120, 56, 0);
+}
+
+.collection-filter.filter-cover {
+    background-color: rgb(214, 32, 104);
+    border-color: rgb(120, 8, 52);
+}
+
+.collection-filter.filter-signature {
+    background-color: rgb(196, 148, 32);
+    border-color: rgb(110, 72, 8);
+}
+
+.collection-filter.filter-signature .collection-filter-label {
+    color: rgb(48, 28, 8);
+}
+
 .collection-filter.selected {
-    background-color: rgb(90, 160, 255);
-    color: rgb(255, 255, 255);
-    border-color: rgb(30, 60, 120);
+    border-width: 3px;
+    border-color: rgb(255, 248, 220);
 }
 
 .collection-strip-scroll {
@@ -607,8 +686,9 @@
 }
 
 .char-tile {
+    position: relative;
     width: 118px;
-    height: 176px;
+    height: 188px;
     margin-right: 10px;
     flex-shrink: 0;
     padding: 8px;
@@ -668,13 +748,14 @@
     overflow: hidden;
     background-size: 280% 280%;
     background-repeat: no-repeat;
-    background-position: 50% 8%;
-    -unity-background-scale-mode: scale-and-crop;
+    background-position-x: center;
+    background-position-y: 8%;
 }
 
 .char-tile .char-tile-art {
-    background-size: 520% 520%;
-    background-position: 50% 3%;
+    background-size: 780% 780%;
+    background-position-x: center;
+    background-position-y: 2%;
 }
 
 .char-tile.locked .char-tile-art {
@@ -693,21 +774,35 @@
     color: rgb(200, 200, 210);
 }
 
-.char-tile-arch {
-    font-size: 11px;
-    color: rgb(90, 80, 70);
+.char-tile-place {
+    font-size: 10px;
+    color: rgb(110, 90, 70);
     margin-top: 2px;
+    white-space: normal;
+    -unity-text-align: middle-center;
 }
 
-.char-tile.locked .char-tile-arch {
+.char-tile.locked .char-tile-place {
     color: rgb(160, 160, 170);
 }
 
-.char-tile-arch-row {
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin-top: 2px;
+.char-tile-badge {
+    position: absolute;
+    top: 0;
+    right: 2px;
+    width: 22px;
+    height: 22px;
+    margin-left: 0;
+    margin-right: 0;
+    background-color: rgb(255, 252, 244);
+    border-radius: 11px;
+    border-width: 2px;
+    border-color: rgb(255, 120, 72);
+}
+
+.char-tile-badge .arch-diamond {
+    width: 14px;
+    height: 14px;
 }
 
 .char-lock {
@@ -806,14 +901,14 @@
 .arch-flask-neck {
     width: 4px;
     height: 5px;
-    background-color: rgb(180, 140, 255);
+    background-color: rgb(20, 150, 156);
 }
 
 .arch-flask-bowl {
     width: 14px;
     height: 9px;
     border-radius: 0 0 7px 7px;
-    background-color: rgb(150, 90, 255);
+    background-color: rgb(8, 118, 128);
 }
 
 .arch-desk-king {

@@ -10,7 +10,7 @@ namespace EraserWars.UI
     /// Match feel in PlayerPrefs. EraserWars.UI references Gameplay, so MatchDirector cannot call this type.
     /// Read Keys with PlayerPrefs. Volumes are 0..1 gains. Bgm/Se also mirror Audio.GameSettings percent keys
     /// so AudioBus and Options stay one contract. FlickScale is 0.5..1.5. TurnSeconds is 10..60.
-    /// CameraShake is 0 or 1. UiScale is 0.8, 1, or 1.2. WinMode is 0 for Stock or 1 for Points.
+    /// CameraShake is 0 or 1. UiScale is always 1.2. WinMode is 0 for Stock or 1 for Points.
     /// ReduceMotion is 0 or 1 on EdgeSlowmoCue.ReduceMotionPref. ColorblindSeats is 0 or 1 on SeatPalette.PrefKey.
     /// ApplyVolume sets AudioListener.volume. MatchDirector reads Keys.WinMode and Keys.TurnSeconds.
     /// </summary>
@@ -32,7 +32,8 @@ namespace EraserWars.UI
         public const float DefaultFlickScale = 1f;
         public const int DefaultTurnSeconds = 20;
         public const bool DefaultCameraShake = true;
-        public const float DefaultUiScale = 1f;
+        public const float LargeUiScale = 1.2f;
+        public const float DefaultUiScale = LargeUiScale;
         public const bool DefaultReduceMotion = false;
         public const bool DefaultColorblindSeats = false;
 
@@ -180,19 +181,6 @@ namespace EraserWars.UI
             return Mathf.Clamp(snapped, 10, 60);
         }
 
-        public static float SnapUiScale(float scale)
-        {
-            if (scale < 0.9f)
-            {
-                return 0.8f;
-            }
-
-            if (scale < 1.1f)
-            {
-                return 1f;
-            }
-
-            return 1.2f;
-        }
+        public static float SnapUiScale(float scale) => LargeUiScale;
     }
 }

@@ -36,6 +36,7 @@
 - 試合中 HUD は実況映え太字 ([ADR-0006](../decisions/ADR-0006-ui-direction.md))。
 - 試合前は専用フルスクリーン開始画面 ([ADR-0009](../decisions/ADR-0009-start-screen-and-classroom-look.md)、モック `docs/prototypes/ui-mock-start-fullscreen-6b.jpg`)。
 - トーンはコロコロコミック調の熱量・アイコン先行 (Q8 訂正)。文字だけの Debug OnGUI に依存しない。
+- 画面の大きさは大。UiScale は 1.2 固定。小と標準は置かない。
 
 | 案 | モック | 状態 |
 | --- | --- | --- |
