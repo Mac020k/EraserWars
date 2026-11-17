@@ -33,6 +33,7 @@ namespace EraserWars.CameraRig
         [SerializeField] float maxDistance = 7f;
 
         const float FallGlanceDistanceScale = 0.72f;
+        public const float HomeIdleYawDegreesPerSecond = 8f;
 
         Transform chaseTarget;
         Transform activeEraser;
@@ -49,8 +50,22 @@ namespace EraserWars.CameraRig
         }
 
         Mode mode = Mode.Orbit;
+        bool homeIdle;
+        bool menuBlockWheel;
+        bool menuBlockDrag;
 
         public Mode View => mode;
+
+        public void SetHomeIdle(bool on)
+        {
+            homeIdle = on;
+        }
+
+        public void SetMenuPointerPolicy(bool blockWheel, bool blockDrag)
+        {
+            menuBlockWheel = blockWheel;
+            menuBlockDrag = blockDrag;
+        }
 
         public void SetChaseTarget(Transform target)
         {
@@ -110,6 +125,15 @@ namespace EraserWars.CameraRig
 
         public void Tick(float nowUnscaled, float unscaledDelta, float scaledDelta)
         {
+            if (homeIdle
+                && mode == Mode.Orbit
+                && chaseTarget == null
+                && !FallLeaveActiveAt(nowUnscaled)
+                && unscaledDelta > 0f)
+            {
+                yaw += HomeIdleYawDegreesPerSecond * unscaledDelta;
+            }
+
             Apply(immediate: false, nowUnscaled, unscaledDelta, scaledDelta);
         }
 
@@ -170,9 +194,16 @@ namespace EraserWars.CameraRig
                 return;
             }
 
-            if (mouse.rightButton.isPressed)
+            ApplyPointerOrbit(
+                mouse.rightButton.isPressed,
+                mouse.delta.ReadValue(),
+                mouse.scroll.ReadValue().y);
+        }
+
+        public void ApplyPointerOrbit(bool rightHeld, Vector2 delta, float scrollY)
+        {
+            if (rightHeld && !menuBlockDrag)
             {
-                var delta = mouse.delta.ReadValue();
                 yaw += delta.x * mouseSensitivity;
                 if (mode == Mode.Orbit)
                 {
@@ -181,16 +212,15 @@ namespace EraserWars.CameraRig
                 }
             }
 
-            if (mode != Mode.Orbit)
+            if (menuBlockWheel || mode != Mode.Orbit)
             {
                 return;
             }
 
-            var scroll = mouse.scroll.ReadValue().y;
-            if (Mathf.Abs(scroll) > 0.01f)
+            if (Mathf.Abs(scrollY) > 0.01f)
             {
                 // Proportional zoom: same feel near and far, much snappier than the old *0.01 path.
-                var step = scroll * zoomSpeed * 0.01f * Mathf.Max(1.2f, distance);
+                var step = scrollY * zoomSpeed * 0.01f * Mathf.Max(1.2f, distance);
                 distance = Mathf.Clamp(distance - step, minDistance, maxDistance);
             }
         }

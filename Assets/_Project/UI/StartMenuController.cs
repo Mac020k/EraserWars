@@ -1,3 +1,4 @@
+using System;
 using EraserWars.Cards;
 using EraserWars.Core;
 using EraserWars.Gameplay;
@@ -42,6 +43,7 @@ namespace EraserWars.UI
         bool matchRunning;
         bool suspendedMatch;
         MenuScreen currentScreen = MenuScreen.Home;
+        bool destinationFrameBound;
         // Dev default ON; hide the options control before release.
         bool debugModeEnabled = true;
         Button debugModeButton;
@@ -591,36 +593,68 @@ namespace EraserWars.UI
 
         void Update()
         {
+            SyncHomeWheelBlock();
+
             var keyboard = Keyboard.current;
-            if (keyboard == null)
+            if (keyboard == null || !keyboard.escapeKey.wasPressedThisFrame)
             {
                 return;
             }
 
-            if (keyboard.escapeKey.wasPressedThisFrame)
+            if (seatPick != null && seatPick.ClosePicker())
             {
-                if (seatPick != null && seatPick.ClosePicker())
-                {
-                    return;
-                }
+                return;
+            }
 
-                if (currentScreen != MenuScreen.Home)
-                {
-                    GoHome();
-                    return;
-                }
+            if (currentScreen != MenuScreen.Home)
+            {
+                GoHome();
+                return;
+            }
 
-                if (IsMenuVisible && suspendedMatch)
-                {
-                    ResumeMatch();
-                    return;
-                }
+            if (IsMenuVisible && suspendedMatch)
+            {
+                ResumeMatch();
+                return;
+            }
 
-                if (matchRunning)
+            if (matchRunning)
+            {
+                ShowMenu(suspendMatch: true);
+            }
+        }
+
+        void SyncHomeWheelBlock()
+        {
+            if (currentScreen != MenuScreen.Home || director == null || root?.panel == null)
+            {
+                return;
+            }
+
+            var mouse = Mouse.current;
+            if (mouse == null)
+            {
+                return;
+            }
+
+            director.SetMenuCamera(
+                !GameSettings.Current.ReduceMotion,
+                PointerOverScroll(mouse.position.ReadValue()),
+                blockDrag: false);
+        }
+
+        bool PointerOverScroll(Vector2 screenPosition)
+        {
+            var picked = root.panel.Pick(RuntimePanelUtils.ScreenToPanel(root.panel, screenPosition));
+            for (var node = picked; node != null; node = node.parent)
+            {
+                if (node is ScrollView)
                 {
-                    ShowMenu(suspendMatch: true);
+                    return true;
                 }
             }
+
+            return false;
         }
 
         void SelectPlayers(int count)
@@ -822,44 +856,128 @@ namespace EraserWars.UI
                 FirstCoachTip.Apply(root);
             }
 
-            var page = screen switch
-            {
-                MenuScreen.Collection => collectionPanel,
-                MenuScreen.Options => optionsPanel,
-                MenuScreen.Deck => deckPanel,
-                MenuScreen.SecretRoom => secretRoomPanel,
-                MenuScreen.Home => null,
-                _ => null,
-            };
+            PresentMenuCamera(showHome);
 
+            var page = PageFor(screen);
             if (page == null)
             {
                 Debug.Log("[EraserWars] StartMenu.NavigateTo Home");
                 return;
             }
 
-            // Fixed pixel box — left/right/top/bottom stretch resolves to 0x0 on this panel.
-            // ~900x700 is the size that lays out reliably in Editor Game view.
-            const float pageW = 900f;
-            const float pageH = 700f;
-
+            WatchDestinationFrame();
             page.RemoveFromClassList("hidden");
             page.style.display = DisplayStyle.Flex;
             page.style.position = Position.Absolute;
-            page.style.left = 40;
-            page.style.top = 40;
-            page.style.right = StyleKeyword.Auto;
-            page.style.bottom = StyleKeyword.Auto;
-            page.style.width = pageW;
-            page.style.height = pageH;
-            page.style.minWidth = pageW;
-            page.style.minHeight = pageH;
             page.style.backgroundColor = DestinationBackground(screen);
             page.visible = true;
             page.BringToFront();
+            // Left/right stretch on this panel can resolve to 0×0. Measure the host when it has a size.
+            ApplyDestinationFrame(page);
             Debug.Log(
                 $"[EraserWars] StartMenu.NavigateTo {screen} " +
-                $"pageBox={pageW:0}x{pageH:0} parent={page.parent?.name} homeHidden={!showHome}");
+                $"pageStyle={page.style.width}x{page.style.height} parent={page.parent?.name} homeHidden={!showHome}");
+        }
+
+        void PresentMenuCamera(bool homeVisible)
+        {
+            if (director == null)
+            {
+                director = FindFirstObjectByType<MatchDirector>();
+            }
+
+            if (director == null)
+            {
+                return;
+            }
+
+            var idle = homeVisible && !GameSettings.Current.ReduceMotion;
+            director.SetMenuCamera(idle, blockWheel: !homeVisible, blockDrag: !homeVisible);
+        }
+
+        void WatchDestinationFrame()
+        {
+            if (destinationFrameBound || menuContent == null)
+            {
+                return;
+            }
+
+            destinationFrameBound = true;
+            menuContent.RegisterCallback<GeometryChangedEvent>(_ => RefitDestination());
+        }
+
+        void RefitDestination()
+        {
+            var page = PageFor(currentScreen);
+            if (page == null || page.ClassListContains("hidden"))
+            {
+                return;
+            }
+
+            ApplyDestinationFrame(page);
+        }
+
+        void ApplyDestinationFrame(VisualElement page)
+        {
+            const float margin = 0.04f;
+            var host = menuContent ?? page.parent;
+            var width = host != null ? host.resolvedStyle.width : 0f;
+            var height = host != null ? host.resolvedStyle.height : 0f;
+            var hostLaidOut = width > 2f && height > 2f && !float.IsNaN(width) && !float.IsNaN(height);
+            if (!hostLaidOut)
+            {
+                var inset = new Length(margin * 100f, LengthUnit.Percent);
+                page.style.left = inset;
+                page.style.right = inset;
+                page.style.top = inset;
+                page.style.bottom = inset;
+                page.style.width = StyleKeyword.Auto;
+                page.style.height = StyleKeyword.Auto;
+                page.style.minWidth = StyleKeyword.Auto;
+                page.style.minHeight = StyleKeyword.Auto;
+                return;
+            }
+
+            var marginX = width * margin;
+            var marginY = height * margin;
+            var nextWidth = Mathf.Max(1f, width - (marginX * 2f));
+            var nextHeight = Mathf.Max(1f, height - (marginY * 2f));
+            if (Mathf.Abs(page.resolvedStyle.width - nextWidth) < 1f
+                && Mathf.Abs(page.resolvedStyle.height - nextHeight) < 1f
+                && Mathf.Abs(page.resolvedStyle.left - marginX) < 1f
+                && Mathf.Abs(page.resolvedStyle.top - marginY) < 1f)
+            {
+                return;
+            }
+
+            page.style.left = marginX;
+            page.style.top = marginY;
+            page.style.right = StyleKeyword.Auto;
+            page.style.bottom = StyleKeyword.Auto;
+            page.style.width = nextWidth;
+            page.style.height = nextHeight;
+            page.style.minWidth = StyleKeyword.Auto;
+            page.style.minHeight = StyleKeyword.Auto;
+        }
+
+        VisualElement PageFor(MenuScreen screen)
+        {
+            switch (screen)
+            {
+                case MenuScreen.Home:
+                    return null;
+                case MenuScreen.Collection:
+                    return collectionPanel;
+                case MenuScreen.Options:
+                    return optionsPanel;
+                case MenuScreen.Deck:
+                    return deckPanel;
+                case MenuScreen.SecretRoom:
+                    return secretRoomPanel;
+                default:
+                    var unexpected = screen;
+                    throw new ArgumentOutOfRangeException(nameof(screen), unexpected, null);
+            }
         }
 
         void HideDestinationPages()

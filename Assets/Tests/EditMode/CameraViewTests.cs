@@ -159,6 +159,105 @@ namespace EraserWars.Tests.EditMode
             }
         }
 
+        [Test]
+        public void HomeIdleYawsEightDegreesPerSecondAndThenHolds()
+        {
+            var cameraObject = new GameObject("view-cam");
+            try
+            {
+                var camera = cameraObject.AddComponent<OrbitCamera>();
+                camera.FrameDeskOverview();
+                camera.SetHomeIdle(true);
+                var before = PlanarAngle(cameraObject.transform.position);
+                camera.Tick(0f, 1f, 1f);
+                Assert.AreEqual(8f, OrbitCamera.HomeIdleYawDegreesPerSecond, 0.001f);
+                Assert.AreEqual(8f, Mathf.DeltaAngle(before, PlanarAngle(cameraObject.transform.position)), 0.2f);
+
+                camera.SetHomeIdle(false);
+                var held = PlanarAngle(cameraObject.transform.position);
+                camera.Tick(1f, 1f, 1f);
+                Assert.AreEqual(0f, Mathf.DeltaAngle(held, PlanarAngle(cameraObject.transform.position)), 0.05f);
+            }
+            finally
+            {
+                Object.DestroyImmediate(cameraObject);
+            }
+        }
+
+        [Test]
+        public void HomeIdleStaysPutInMatchViewsAndWhileChasing()
+        {
+            var cameraObject = new GameObject("view-cam");
+            var eraser = new GameObject("eraser");
+            try
+            {
+                eraser.transform.position = new Vector3(0.4f, 0.8f, 0.2f);
+                var camera = cameraObject.AddComponent<OrbitCamera>();
+                camera.FrameDeskOverview();
+                camera.ToggleOverview();
+                camera.Snap();
+                camera.SetHomeIdle(true);
+                var topDown = cameraObject.transform.position;
+                camera.Tick(0f, 1f, 1f);
+                Assert.Less(Vector3.Distance(topDown, cameraObject.transform.position), 0.001f);
+
+                camera.ToggleOverview();
+                camera.ToggleCloseUp();
+                camera.Snap();
+                var closeUp = cameraObject.transform.position;
+                camera.Tick(1f, 1f, 1f);
+                Assert.Less(Vector3.Distance(closeUp, cameraObject.transform.position), 0.001f);
+
+                camera.ToggleCloseUp();
+                camera.SetChaseTarget(eraser.transform);
+                camera.Snap();
+                var chase = cameraObject.transform.position;
+                camera.Tick(2f, 1f, 0f);
+                Assert.Less(Vector3.Distance(chase, cameraObject.transform.position), 0.001f);
+            }
+            finally
+            {
+                Object.DestroyImmediate(eraser);
+                Object.DestroyImmediate(cameraObject);
+            }
+        }
+
+        [Test]
+        public void DestinationPointerPolicyIgnoresDragAndWheel()
+        {
+            var cameraObject = new GameObject("view-cam");
+            try
+            {
+                var camera = cameraObject.AddComponent<OrbitCamera>();
+                camera.FrameDeskOverview();
+                var parked = cameraObject.transform.position;
+                camera.SetMenuPointerPolicy(blockWheel: true, blockDrag: true);
+                camera.ApplyPointerOrbit(true, new Vector2(90f, 24f), 240f);
+                camera.Snap();
+                Assert.Less(Vector3.Distance(parked, cameraObject.transform.position), 0.001f);
+
+                camera.SetMenuPointerPolicy(blockWheel: true, blockDrag: false);
+                camera.ApplyPointerOrbit(true, new Vector2(40f, 0f), 240f);
+                camera.Snap();
+                Assert.Greater(Mathf.Abs(Mathf.DeltaAngle(PlanarAngle(parked), PlanarAngle(cameraObject.transform.position))), 1f);
+                var dragged = Vector3.Distance(cameraObject.transform.position, Vector3.zero);
+                camera.ApplyPointerOrbit(false, Vector2.zero, 240f);
+                camera.Snap();
+                Assert.AreEqual(dragged, Vector3.Distance(cameraObject.transform.position, Vector3.zero), 0.001f);
+
+                camera.SetMenuPointerPolicy(blockWheel: false, blockDrag: false);
+                camera.ApplyPointerOrbit(false, Vector2.zero, 240f);
+                camera.Snap();
+                Assert.Greater(
+                    Mathf.Abs(dragged - Vector3.Distance(cameraObject.transform.position, Vector3.zero)),
+                    0.02f);
+            }
+            finally
+            {
+                Object.DestroyImmediate(cameraObject);
+            }
+        }
+
         static float AimError(Transform camera, Vector3 point)
         {
             return Vector3.Angle(camera.forward, point - camera.position);
@@ -167,6 +266,12 @@ namespace EraserWars.Tests.EditMode
         static Vector3 Planar(Vector3 position)
         {
             return new Vector3(position.x, 0f, position.z);
+        }
+
+        static float PlanarAngle(Vector3 position)
+        {
+            var flat = Planar(position);
+            return Mathf.Atan2(flat.x, flat.z) * Mathf.Rad2Deg;
         }
     }
 }
