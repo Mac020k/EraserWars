@@ -347,8 +347,10 @@ namespace EraserWars.UI
         {
             var ended = state.Phase == Phase.MatchEnd;
             var cutInUp = director != null && director.IsCardCutInShowing;
+            var cpuSeat = director != null && director.IsCpuSeat(state.CurrentPlayerId.Value);
             passButton?.EnableInClassList(HiddenClass, ended || cutInUp);
-            passButton?.SetEnabled(state.Phase is Phase.CardSelect or Phase.Aim or Phase.TurnStart);
+            passButton?.SetEnabled(
+                !cpuSeat && state.Phase is Phase.CardSelect or Phase.Aim or Phase.TurnStart);
         }
 
         void RefreshHand(MatchState state)
@@ -358,7 +360,8 @@ namespace EraserWars.UI
                 return;
             }
 
-            var canPlay = state.Phase is Phase.CardSelect or Phase.Aim;
+            var cpuSeat = director != null && director.IsCpuSeat(state.CurrentPlayerId.Value);
+            var canPlay = !cpuSeat && state.Phase is Phase.CardSelect or Phase.Aim;
             var cutInUp = director != null && director.IsCardCutInShowing;
             if (!canPlay || cutInUp)
             {

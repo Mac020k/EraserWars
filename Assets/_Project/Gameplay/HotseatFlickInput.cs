@@ -162,13 +162,7 @@ namespace EraserWars.Gameplay
 
         bool CanTrack()
         {
-            if (director == null || director.State == null || director.IsStartMenuOpen || director.IsCardCutInShowing)
-            {
-                return false;
-            }
-
-            var matchPhase = director.State.Phase;
-            return matchPhase != Phase.MatchEnd && matchPhase != Phase.Simulating;
+            return director != null && director.AcceptsHumanAim;
         }
 
         AimPhase Step(AimPhase current)

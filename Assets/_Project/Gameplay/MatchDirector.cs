@@ -32,6 +32,11 @@ namespace EraserWars.Gameplay
         TurnYieldNotice turnYieldNotice;
         float turnYieldSecondsLeft;
         int activeSeat;
+        CpuSeatMask cpuSeats;
+        bool cpuSeatsPinned;
+        int cpuThinkSeat = -1;
+        float cpuThinkElapsed;
+        bool cpuActIssued;
 
         // Broadcast-style debug chrome: top banner stays readable on stream, side panel keeps the desk clear.
         static readonly Rect SidePanelRect = new(12f, 96f, 288f, 318f);
@@ -48,6 +53,7 @@ namespace EraserWars.Gameplay
         public IReadOnlyList<EraserBody> Erasers => erasers;
         public const string HotseatWinModeKey = "eraserwars.winMode";
         public const string HotseatTurnSecondsKey = "eraserwars.turnSeconds";
+        public const string CpuSeatsKey = "eraserwars.cpuSeats";
 
         public static RuleSet CreateHotseatRules(int winModePref, int turnSecondsPref)
         {
@@ -172,10 +178,22 @@ namespace EraserWars.Gameplay
 
         public void AdvanceMatchClock(float deltaSeconds)
         {
+            var holdCpu = HoldsCpuThink();
             TickTurnYield(deltaSeconds);
             TickCardCutIn(deltaSeconds);
             TickTurnAnnounce(deltaSeconds);
+            TickCpuSeat(holdCpu ? 0f : deltaSeconds);
             TickTurnTimer(deltaSeconds);
+        }
+
+        bool HoldsCpuThink()
+        {
+            if (IsStartMenuOpen || cardCutIn.HasValue)
+            {
+                return true;
+            }
+
+            return turnAnnounce is TurnAnnounce announce && announce.IsShowing;
         }
 
         void TickTurnAnnounce(float deltaSeconds)
@@ -237,6 +255,58 @@ namespace EraserWars.Gameplay
                 var sample = ActiveEraserCue.At(seat == cueSeat, color, timeSeconds);
                 cueView.Apply(eraser, sample, deltaSeconds);
             }
+        }
+
+        void TickCpuSeat(float deltaSeconds)
+        {
+            if (state == null || deltaSeconds <= 0f || IsStartMenuOpen || cardCutIn.HasValue)
+            {
+                return;
+            }
+
+            var seat = state.CurrentPlayerId.Value;
+            if (!cpuSeats.Contains(seat))
+            {
+                cpuThinkSeat = -1;
+                cpuThinkElapsed = 0f;
+                cpuActIssued = false;
+                return;
+            }
+
+            if (cpuThinkSeat != seat)
+            {
+                cpuThinkSeat = seat;
+                cpuThinkElapsed = 0f;
+                cpuActIssued = false;
+            }
+
+            if (cpuActIssued)
+            {
+                return;
+            }
+
+            cpuThinkElapsed += deltaSeconds;
+            var act = CpuTurn.Choose(cpuSeats, seat, state.Phase, state.Round, cpuThinkElapsed);
+            if (act.Kind == CpuActKind.Wait)
+            {
+                return;
+            }
+
+            cpuActIssued = true;
+            if (act.Kind == CpuActKind.Flick && CanApplyCpuFlick(seat))
+            {
+                SubmitFlick(act.Command);
+                return;
+            }
+
+            Pass();
+        }
+
+        bool CanApplyCpuFlick(int seat)
+        {
+            return flickApplier != null
+                && byPlayer.TryGetValue(seat, out var eraser)
+                && eraser != null;
         }
 
         void TickTurnTimer(float deltaSeconds)
@@ -366,6 +436,14 @@ namespace EraserWars.Gameplay
             cardCutIn = null;
             turnAnnounce = null;
             turnYieldSecondsLeft = 0f;
+            if (!cpuSeatsPinned)
+            {
+                cpuSeats = new CpuSeatMask(PlayerPrefs.GetInt(CpuSeatsKey, 0));
+            }
+
+            cpuThinkSeat = -1;
+            cpuThinkElapsed = 0f;
+            cpuActIssued = false;
             EnsureEdgeSlowmo();
             edgeSlowmo.BeginMatch();
             ClearErasers();
@@ -500,6 +578,36 @@ namespace EraserWars.Gameplay
             }
         }
 
+        public bool IsCpuSeat(int seat) => cpuSeats.Contains(seat);
+
+        public void SetCpuSeats(CpuSeatMask mask)
+        {
+            cpuSeats = mask;
+            cpuSeatsPinned = true;
+            cpuThinkSeat = -1;
+            cpuThinkElapsed = 0f;
+            cpuActIssued = false;
+        }
+
+        public bool AcceptsHumanAim
+        {
+            get
+            {
+                if (state == null || IsStartMenuOpen || IsCardCutInShowing)
+                {
+                    return false;
+                }
+
+                if (IsCpuSeat(state.CurrentPlayerId.Value))
+                {
+                    return false;
+                }
+
+                var phase = state.Phase;
+                return phase != Phase.MatchEnd && phase != Phase.Simulating;
+            }
+        }
+
         public void Pass()
         {
             if (cardCutIn.HasValue || state.Phase is Phase.MatchEnd or Phase.Simulating)
@@ -521,7 +629,7 @@ namespace EraserWars.Gameplay
 
         public void PlayCard(int cardId)
         {
-            if (state == null || IsStartMenuOpen)
+            if (state == null || IsStartMenuOpen || IsCpuSeat(state.CurrentPlayerId.Value))
             {
                 return;
             }
