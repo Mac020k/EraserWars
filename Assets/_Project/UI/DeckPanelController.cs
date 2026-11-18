@@ -19,6 +19,8 @@ namespace EraserWars.UI
         const string MinusMark = "－";
         const string AllFamilies = "";
 
+        static readonly Color PaperColor = new Color(1f, 0.980f, 0.933f, 1f);
+
         static readonly string[] FilterFamilies =
         {
             CardFamilies.Kiai,
@@ -74,6 +76,7 @@ namespace EraserWars.UI
                 return;
             }
 
+            deckPanel.Query(className: "deck-page").ForEach(page => UiImageUtil.ApplyRuledPaper(page, PaperColor));
             characterList = deckPanel.Q<ScrollView>("deck-character-list");
             cardList = deckPanel.Q<ScrollView>("deck-card-list");
             status = deckPanel.Q<Label>("deck-status");

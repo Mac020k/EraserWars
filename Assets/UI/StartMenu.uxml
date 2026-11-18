@@ -127,12 +127,12 @@
                 <ui:VisualElement class="destination-chrome">
                     <ui:Button name="close-deck" text="← もどる" class="destination-back" />
                     <ui:Label name="deck-title" text="デッキ" class="destination-title" />
-                </ui:VisualElement>
-                <ui:VisualElement class="deck-seats">
-                    <ui:Button name="deck-seat-0" text="P1" class="collection-tab selected" />
-                    <ui:Button name="deck-seat-1" text="P2" class="collection-tab" />
-                    <ui:Button name="deck-seat-2" text="P3" class="collection-tab" />
-                    <ui:Button name="deck-seat-3" text="P4" class="collection-tab" />
+                    <ui:VisualElement class="deck-seats">
+                        <ui:Button name="deck-seat-0" text="P1" class="collection-tab selected" />
+                        <ui:Button name="deck-seat-1" text="P2" class="collection-tab" />
+                        <ui:Button name="deck-seat-2" text="P3" class="collection-tab" />
+                        <ui:Button name="deck-seat-3" text="P4" class="collection-tab" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="deck-binder">
                     <ui:VisualElement class="deck-page deck-page-left">
@@ -167,15 +167,6 @@
                         <ui:Label name="deck-col-character" text="キャラ" class="deck-column-title deck-chip-title" />
                         <ui:ScrollView name="deck-character-list" class="deck-chip-strip" mode="Horizontal" horizontal-scroller-visibility="Auto" vertical-scroller-visibility="Hidden" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="deck-spiral">
-                        <ui:VisualElement class="deck-ring" />
-                        <ui:VisualElement class="deck-ring" />
-                        <ui:VisualElement class="deck-ring" />
-                        <ui:VisualElement class="deck-ring" />
-                        <ui:VisualElement class="deck-ring" />
-                        <ui:VisualElement class="deck-ring" />
-                        <ui:VisualElement class="deck-ring" />
-                    </ui:VisualElement>
                     <ui:VisualElement class="deck-page deck-page-right">
                         <ui:VisualElement class="deck-head">
                             <ui:VisualElement class="deck-head-copy">
@@ -207,6 +198,15 @@
                             </ui:VisualElement>
                             <ui:Button name="deck-save" text="保存" class="deck-save" />
                         </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="deck-spiral" picking-mode="Ignore">
+                        <ui:VisualElement class="deck-ring" picking-mode="Ignore" />
+                        <ui:VisualElement class="deck-ring" picking-mode="Ignore" />
+                        <ui:VisualElement class="deck-ring" picking-mode="Ignore" />
+                        <ui:VisualElement class="deck-ring" picking-mode="Ignore" />
+                        <ui:VisualElement class="deck-ring" picking-mode="Ignore" />
+                        <ui:VisualElement class="deck-ring" picking-mode="Ignore" />
+                        <ui:VisualElement class="deck-ring" picking-mode="Ignore" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

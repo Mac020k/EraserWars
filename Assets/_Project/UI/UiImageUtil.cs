@@ -10,6 +10,53 @@ namespace EraserWars.UI
     /// </summary>
     public static class UiImageUtil
     {
+        const int RuleHeight = 32;
+        static Texture2D ruledTile;
+
+        /// <summary>Fills a page with faint notebook lines. The paper color stays as given.</summary>
+        public static void ApplyRuledPaper(VisualElement page, Color paper)
+        {
+            if (page == null)
+            {
+                return;
+            }
+
+            var tile = RuledTile();
+            page.style.backgroundImage = new StyleBackground(tile);
+            page.style.backgroundColor = paper;
+            page.style.backgroundRepeat = new BackgroundRepeat(Repeat.Repeat, Repeat.Repeat);
+            page.style.backgroundSize = new BackgroundSize(
+                new Length(tile.width, LengthUnit.Pixel),
+                new Length(tile.height, LengthUnit.Pixel));
+        }
+
+        static Texture2D RuledTile()
+        {
+            if (ruledTile != null)
+            {
+                return ruledTile;
+            }
+
+            var pixels = new Color32[RuleHeight];
+            for (var y = 0; y < RuleHeight; y++)
+            {
+                pixels[y] = new Color32(0, 0, 0, 0);
+            }
+
+            pixels[1] = new Color32(150, 190, 226, 120);
+            pixels[0] = new Color32(150, 190, 226, 60);
+            ruledTile = new Texture2D(1, RuleHeight, TextureFormat.RGBA32, false)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Repeat,
+                hideFlags = HideFlags.HideAndDontSave,
+                name = "deck-ruled-paper",
+            };
+            ruledTile.SetPixels32(pixels);
+            ruledTile.Apply(false, false);
+            return ruledTile;
+        }
+
         public static void ApplyGlyph(VisualElement element, Texture2D texture)
         {
             if (element == null || texture == null)

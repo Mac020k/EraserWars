@@ -152,7 +152,8 @@ The crop table and the card spec are in `docs/decisions/ADR-0010-character-card-
 
 ## Deck save
 
-The deck screen is an open binder on a wood desk. The left page is the character. The right page is that character's common cards. The back button stays in the destination header.
+The deck screen is an open pink spiral handbook lying on the classroom desk. There is no dark board behind it: the panel itself is the pink cover, with the back button, the title, and the P1 to P4 folder tabs printed on the cover. The pages are cream paper with faint blue ruled lines (a runtime tile from `UiImageUtil.ApplyRuledPaper`), and orange coil rings straddle the fold. The left page is the character. The right page is that character's common cards.
+The cover color is set in code by `StartMenuController.DestinationBackground`, because that inline style overrides the USS background of every destination page.
 The left page has a "player Pn" ribbon, a round face portrait, the name, an archetype pill, a stat table (mass, cost cap, strong and weak subjects), the bio, the two signature cards, and a horizontal strip of character face chips.
 The right page has a headline with a status line, preset tabs 1 to 5, family filter chips, a two-column grid of common-card cells, and a footer with the cost bar and 保存.
 Each cell shows the collection face with its cost gem, the name, a family badge, a one-line summary, minus and plus buttons with the copy count, and a check mark when the card is in the deck.

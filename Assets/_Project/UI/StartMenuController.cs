@@ -1001,7 +1001,7 @@ namespace EraserWars.UI
             {
                 MenuScreen.Collection => new Color(0.18f, 0.42f, 0.28f, 1f),
                 MenuScreen.Options => new Color(0.12f, 0.14f, 0.22f, 1f),
-                MenuScreen.Deck => new Color(0.07f, 0.09f, 0.16f, 1f),
+                MenuScreen.Deck => new Color(0.925f, 0.439f, 0.573f, 1f),
                 MenuScreen.SecretRoom => new Color(0.16f, 0.10f, 0.28f, 1f),
                 MenuScreen.Home => new Color(0.07f, 0.09f, 0.16f, 1f),
                 _ => new Color(0.07f, 0.09f, 0.16f, 1f),
