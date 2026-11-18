@@ -16,6 +16,7 @@ namespace EraserWars.UI
         const string PillOutClass = "pill-out";
         const string HeartLostClass = "heart-lost";
         const string HiddenClass = "hidden";
+        const string PausedClass = "paused";
         const string HandSelectedClass = "hand-card-selected";
         const string TimerUrgentClass = "timer-urgent";
         const string TimerIdleClass = "timer-idle";
@@ -938,6 +939,7 @@ namespace EraserWars.UI
             director.SetStartMenuOpen(true);
             PaintPause(director.State);
             pauseOverlay?.EnableInClassList(HiddenClass, false);
+            root?.EnableInClassList(PausedClass, true);
         }
 
         public void ClosePause()
@@ -949,6 +951,7 @@ namespace EraserWars.UI
 
             pauseOpen = false;
             pauseOverlay?.EnableInClassList(HiddenClass, true);
+            root?.EnableInClassList(PausedClass, false);
             if (director != null && director.State != null && director.State.Phase != Phase.MatchEnd)
             {
                 director.SetStartMenuOpen(false);

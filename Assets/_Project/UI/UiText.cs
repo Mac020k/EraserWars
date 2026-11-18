@@ -303,15 +303,15 @@ namespace EraserWars.UI
         public static readonly Slot[] MatchHudSlots =
         {
             new Slot("title", UiKey.HudTitle),
-            new Slot("menu", UiKey.HudMenu),
+            new Slot("menu-label", UiKey.HudMenu),
             new Slot("timer-unit", UiKey.HudTimerUnit),
             new Slot("result-kicker", UiKey.HudResultKicker),
             new Slot("rematch", UiKey.HudRematch),
             new Slot("match-end-menu", UiKey.HudToMenu),
             new Slot("pass-label", UiKey.HudPass),
             new Slot("pause-title", UiKey.PauseTitle),
-            new Slot("pause-continue", UiKey.MenuResume),
-            new Slot("pause-main", UiKey.PauseMain),
+            new Slot("pause-continue-label", UiKey.MenuResume),
+            new Slot("pause-main-label", UiKey.PauseMain),
         };
 
         public static string Get(UiKey key)

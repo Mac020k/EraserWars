@@ -202,14 +202,14 @@ namespace EraserWars.Tests.EditMode
             var root = Mount(HudPath, host => host.AddComponent<MatchHudController>());
             uiHost.GetComponent<MatchHudController>().RefreshFromState();
 
-            Assert.AreEqual("Menu", root.Q<Button>("menu").text);
+            Assert.AreEqual("Menu", root.Q<Label>("menu-label").text);
             Assert.AreEqual("Rematch", root.Q<Button>("rematch").text);
             Assert.AreEqual("To menu", root.Q<Button>("match-end-menu").text);
             Assert.AreEqual("Pass", root.Q<Label>("pass-label").text);
             Assert.AreEqual("s", root.Q<Label>("timer-unit").text);
             Assert.AreEqual("Pause", root.Q<Label>("pause-title").text);
-            Assert.AreEqual("Resume", root.Q<Button>("pause-continue").text);
-            Assert.AreEqual("Main menu", root.Q<Button>("pause-main").text);
+            Assert.AreEqual("Resume", root.Q<Label>("pause-continue-label").text);
+            Assert.AreEqual("Main menu", root.Q<Label>("pause-main-label").text);
             Assert.AreEqual("Decided", root.Q<Label>("result-kicker").text);
         }
 

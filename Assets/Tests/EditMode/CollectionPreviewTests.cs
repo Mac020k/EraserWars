@@ -115,6 +115,20 @@ namespace EraserWars.Tests.EditMode
         }
 
         [Test]
+        public void NameFontShrinksOnlyWhenTheNameIsWide()
+        {
+            Assert.AreEqual(24f, CharacterTileBuilder.NameFontSize("赤星 熱"), 0.01f);
+            var medium = CharacterTileBuilder.NameFontSize("花咲 まどか");
+            var wide = CharacterTileBuilder.NameFontSize("鳳凰 キャプテン");
+            var latin = CharacterTileBuilder.NameFontSize("Alex Rivera");
+            Assert.Less(medium, 24f);
+            Assert.Less(wide, medium);
+            Assert.GreaterOrEqual(wide, 14f);
+            Assert.GreaterOrEqual(latin, 14f);
+            Assert.AreEqual(14f, CharacterTileBuilder.NameFontSize("とても長い名前のキャラクターさん"), 0.01f);
+        }
+
+        [Test]
         public void FlavorTablesCoverSubjectsAndPassiveNames()
         {
             Assert.IsTrue(CharacterFlavor.TrySubjects(2, out var strong, out var weak));

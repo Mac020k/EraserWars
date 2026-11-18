@@ -301,11 +301,17 @@
     bottom: 4.5%;
     width: 156px;
     height: 58px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.hud-menu-label {
     font-size: 22px;
     -unity-font-style: bold;
     color: rgb(230, 70, 120);
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 0;
     -unity-text-align: middle-center;
 }
 
@@ -427,6 +433,10 @@
     display: none;
 }
 
+.hud-root.paused .hand-dock {
+    display: none;
+}
+
 .pause-dim {
     position: absolute;
     left: 0;
@@ -485,17 +495,23 @@
     height: 58px;
     min-width: 180px;
     margin: 0 8px;
-    font-size: 20px;
-    -unity-font-style: bold;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
+    align-items: center;
+    justify-content: center;
 }
 
-.pause-continue {
+.pause-button-label {
+    font-size: 20px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.pause-continue .pause-button-label {
     color: rgb(255, 255, 255);
 }
 
-.pause-main {
+.pause-main .pause-button-label {
     color: rgb(176, 32, 84);
 }
 

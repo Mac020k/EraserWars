@@ -974,14 +974,6 @@
     -unity-text-align: upper-center;
 }
 
-.char-tile-name.long {
-    font-size: 20px;
-}
-
-.char-tile-name.longer {
-    font-size: 16px;
-}
-
 .char-tile.locked .char-tile-name {
     color: rgb(200, 200, 210);
 }

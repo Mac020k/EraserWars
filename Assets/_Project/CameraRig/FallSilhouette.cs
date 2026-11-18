@@ -35,7 +35,7 @@ namespace EraserWars.CameraRig
             }
 
             var mark = new GameObject("FallSilhouette");
-            mark.hideFlags = HideFlags.DontSave;
+            mark.hideFlags = Application.isPlaying ? HideFlags.None : HideFlags.DontSave;
             mark.transform.SetPositionAndRotation(source.transform.position, source.transform.rotation);
             mark.transform.localScale = source.transform.lossyScale;
             var mesh = mark.AddComponent<MeshFilter>();

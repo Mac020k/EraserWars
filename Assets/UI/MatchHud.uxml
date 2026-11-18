@@ -22,7 +22,9 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:Label name="pass-hint" text="" class="pass-hint hidden" picking-mode="Ignore" />
-        <ui:Button name="menu" text="メニュー" class="hud-menu-button" />
+        <ui:Button name="menu" class="hud-menu-button">
+            <ui:Label name="menu-label" text="メニュー" class="hud-menu-label" picking-mode="Ignore" />
+        </ui:Button>
         <ui:Button name="pass" class="action-chip action-pass">
             <ui:VisualElement name="pass-icon" class="action-icon" picking-mode="Ignore" />
             <ui:Label name="pass-label" text="パス" class="action-label" picking-mode="Ignore" />
@@ -63,8 +65,12 @@
                 <ui:Label name="pause-seats" text="" class="pause-seats" />
                 <ui:Label name="pause-options" text="" class="pause-copy pause-options" />
                 <ui:VisualElement class="pause-actions">
-                    <ui:Button name="pause-continue" text="つづける" class="pause-button pause-continue" />
-                    <ui:Button name="pause-main" text="メインメニューへ" class="pause-button pause-main" />
+                    <ui:Button name="pause-continue" class="pause-button pause-continue">
+                        <ui:Label name="pause-continue-label" text="つづける" class="pause-button-label" picking-mode="Ignore" />
+                    </ui:Button>
+                    <ui:Button name="pause-main" class="pause-button pause-main">
+                        <ui:Label name="pause-main-label" text="メインメニューへ" class="pause-button-label" picking-mode="Ignore" />
+                    </ui:Button>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
