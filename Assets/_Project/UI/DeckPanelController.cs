@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using EraserWars.Cards;
 using EraserWars.Core;
 using EraserWars.Persistence;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace EraserWars.UI
@@ -13,10 +14,23 @@ namespace EraserWars.UI
 
         readonly ContentCatalog catalog;
         readonly HotseatLoadout loadout;
+        const string CheckMark = "✓";
+        const string PlusMark = "＋";
+        const string MinusMark = "－";
+        const string AllFamilies = "";
+
+        static readonly string[] FilterFamilies =
+        {
+            CardFamilies.Kiai,
+            CardFamilies.Homework,
+            CardFamilies.Seat,
+            CardFamilies.Stationery,
+            CardFamilies.Cover,
+        };
+
         ScrollView characterList;
         ScrollView cardList;
         Label status;
-        Label detail;
         Label budgetLabel;
         Label budgetRemain;
         VisualElement budgetFill;
@@ -26,9 +40,15 @@ namespace EraserWars.UI
         VisualElement portrait;
         Label profileName;
         Label archetypeLabel;
-        Label statsLabel;
+        Label ribbon;
+        Label statMass;
+        Label statCap;
+        Label statSubject;
         Label flavorLabel;
         VisualElement signatures;
+        VisualElement familyBar;
+        readonly List<Button> familyChips = new();
+        string familyFilter = AllFamilies;
         Label presetName;
         readonly Button[] presetTabs = new Button[DeckPresets.SlotsPerCharacter];
         readonly Button[] seatTabs = new Button[4];
@@ -57,7 +77,6 @@ namespace EraserWars.UI
             characterList = deckPanel.Q<ScrollView>("deck-character-list");
             cardList = deckPanel.Q<ScrollView>("deck-card-list");
             status = deckPanel.Q<Label>("deck-status");
-            detail = deckPanel.Q<Label>("deck-detail");
             budgetLabel = deckPanel.Q<Label>("deck-budget-label");
             budgetRemain = deckPanel.Q<Label>("deck-budget-remain");
             budgetFill = deckPanel.Q("deck-budget-fill");
@@ -72,10 +91,17 @@ namespace EraserWars.UI
             portrait = deckPanel.Q("deck-portrait");
             profileName = deckPanel.Q<Label>("deck-profile-name");
             archetypeLabel = deckPanel.Q<Label>("deck-archetype");
-            statsLabel = deckPanel.Q<Label>("deck-stats");
+            ribbon = deckPanel.Q<Label>("deck-ribbon");
+            statMass = deckPanel.Q<Label>("deck-stat-mass");
+            statCap = deckPanel.Q<Label>("deck-stat-cap");
+            statSubject = deckPanel.Q<Label>("deck-stat-subject");
+            UiImageUtil.ApplyGlyph(deckPanel.Q("deck-stat-icon-mass"), CardIconLibrary.Icon(CardSymbol.Weight));
+            UiImageUtil.ApplyGlyph(deckPanel.Q("deck-stat-icon-cap"), CardIconLibrary.Icon(CardSymbol.Star));
+            UiImageUtil.ApplyGlyph(deckPanel.Q("deck-stat-icon-subject"), CardIconLibrary.Icon(CardSymbol.Power));
             flavorLabel = deckPanel.Q<Label>("deck-flavor");
             signatures = deckPanel.Q("deck-signatures");
             presetName = deckPanel.Q<Label>("deck-preset-name");
+            BuildFamilyBar(deckPanel.Q("deck-family-bar"));
             for (var i = 0; i < presetTabs.Length; i++)
             {
                 var slot = i;
@@ -98,6 +124,8 @@ namespace EraserWars.UI
         {
             playerCount = matchPlayerCount < 2 ? 2 : matchPlayerCount;
             loadout.EnsureDefaults(catalog);
+            familyFilter = AllFamilies;
+            PaintFamilyChips();
             CaptureSaved();
             if (activeSeat >= playerCount)
             {
@@ -158,22 +186,34 @@ namespace EraserWars.UI
                 }
 
                 shown++;
-                var button = new Button();
-                button.AddToClassList("deck-item");
-                var selected = draftSeats[activeSeat] == character;
-                button.EnableInClassList("selected", selected);
-                var lockMark = CharacterAccess.IsUnlocked(character) ? "" : "🔒 ";
-                button.text =
-                    $"{lockMark}{character.DisplayName}  ({CharacterArchetypes.DisplayJa(character.ArchetypeKey)})";
-                var captured = character;
-                button.clicked += () => SelectCharacter(captured);
-                characterList.Add(button);
+                characterList.Add(BuildCharacterChip(character));
             }
 
             if (shown == 0)
             {
                 characterList.Add(EmptyCopy("キャラがいません。"));
             }
+        }
+
+        Button BuildCharacterChip(CharacterDefinition character)
+        {
+            var chip = new Button();
+            chip.AddToClassList("deck-chip");
+            chip.EnableInClassList("selected", draftSeats[activeSeat] == character);
+            chip.EnableInClassList("locked", !CharacterAccess.IsUnlocked(character));
+            chip.tooltip = CharacterArchetypes.DisplayJa(character.ArchetypeKey);
+
+            var face = new VisualElement { pickingMode = PickingMode.Ignore };
+            face.AddToClassList("deck-chip-face");
+            UiImageUtil.ApplyFaceCrop(face, character);
+
+            var name = new Label(character.DisplayName) { pickingMode = PickingMode.Ignore };
+            name.AddToClassList("deck-chip-name");
+
+            chip.Add(face);
+            chip.Add(name);
+            chip.clicked += () => SelectCharacter(character);
+            return chip;
         }
 
         void SelectCharacter(CharacterDefinition character)
@@ -222,6 +262,7 @@ namespace EraserWars.UI
                 return;
             }
 
+            var keepOffset = cardList.scrollOffset;
             cardList.Clear();
             if (catalog?.Cards == null)
             {
@@ -238,50 +279,175 @@ namespace EraserWars.UI
                     continue;
                 }
 
+                if (familyFilter != AllFamilies && card.FamilyKey != familyFilter)
+                {
+                    continue;
+                }
+
                 shown++;
-                cardList.Add(BuildCardRow(card, CountCopies(selected, card.IdValue)));
+                cardList.Add(BuildCardCell(card, CountCopies(selected, card.IdValue)));
             }
 
             if (shown == 0)
             {
                 cardList.Add(EmptyCopy("追加できるコモンカードがありません。"));
             }
+
+            cardList.schedule.Execute(() => cardList.scrollOffset = keepOffset);
         }
 
-        VisualElement BuildCardRow(CardDefinition card, int count)
+        void BuildFamilyBar(VisualElement bar)
         {
-            var row = new VisualElement();
-            row.AddToClassList("deck-row");
-            row.EnableInClassList("deck-row-in", count > 0);
+            familyBar = bar;
+            if (bar == null)
+            {
+                return;
+            }
 
-            var face = new VisualElement();
-            CardFaceBuilder.Paint(face, card, CardSurface.Collection);
+            bar.Clear();
+            familyChips.Clear();
+            AddFamilyChip(AllFamilies, "すべて");
+            foreach (var key in FilterFamilies)
+            {
+                AddFamilyChip(key, CardFamilies.DisplayJa(key));
+            }
 
-            var copies = new Label(count > 0 ? $"{count}枚" : "");
+            PaintFamilyChips();
+        }
+
+        void AddFamilyChip(string key, string text)
+        {
+            var chip = new Button { text = text };
+            chip.AddToClassList("deck-family-chip");
+            chip.userData = key;
+            chip.clicked += () => SetFamilyFilter(key);
+            familyBar.Add(chip);
+            familyChips.Add(chip);
+        }
+
+        void SetFamilyFilter(string key)
+        {
+            if (familyFilter == key)
+            {
+                return;
+            }
+
+            familyFilter = key;
+            PaintFamilyChips();
+            if (cardList != null)
+            {
+                cardList.scrollOffset = Vector2.zero;
+            }
+
+            RebuildCardList();
+        }
+
+        void PaintFamilyChips()
+        {
+            foreach (var chip in familyChips)
+            {
+                chip.EnableInClassList("selected", (string)chip.userData == familyFilter);
+            }
+        }
+
+        VisualElement BuildCardCell(CardDefinition card, int count)
+        {
+            var cell = new VisualElement();
+            cell.AddToClassList("deck-row");
+            cell.EnableInClassList("deck-row-in", count > 0);
+
+            var name = new Label(card.DisplayName) { pickingMode = PickingMode.Ignore };
+            name.AddToClassList("deck-cell-name");
+            var badge = new Label(CardFamilies.DisplayJa(card.FamilyKey)) { pickingMode = PickingMode.Ignore };
+            badge.AddToClassList("deck-cell-badge");
+            badge.AddToClassList("badge-" + card.FamilyKey);
+            var head = new VisualElement { pickingMode = PickingMode.Ignore };
+            head.AddToClassList("deck-cell-head");
+            head.Add(name);
+            head.Add(badge);
+
+            var desc = new Label(CardDetail(card)) { pickingMode = PickingMode.Ignore };
+            desc.AddToClassList("deck-cell-desc");
+
+            var copies = new Label(count > 0 ? $"{count}枚" : "") { pickingMode = PickingMode.Ignore };
             copies.AddToClassList("deck-row-count");
-            copies.EnableInClassList("hidden", count <= 0);
-
-            var remove = new Button { text = "外す" };
+            var remove = new Button { text = MinusMark };
             remove.AddToClassList("deck-action");
             remove.AddToClassList("deck-action-remove");
-            remove.EnableInClassList("hidden", count <= 0);
-            var add = new Button { text = "追加" };
+            remove.SetEnabled(count > 0);
+            var add = new Button { text = PlusMark };
             add.AddToClassList("deck-action");
             add.AddToClassList("deck-action-add");
-
-            var captured = card;
-            remove.clicked += () => RemoveOne(captured);
-            add.clicked += () => AddOne(captured);
+            remove.clicked += () => RemoveOne(card);
+            add.clicked += () => AddOne(card);
 
             var actions = new VisualElement();
             actions.AddToClassList("deck-row-actions");
-            actions.Add(copies);
             actions.Add(remove);
+            actions.Add(copies);
             actions.Add(add);
 
-            row.Add(face);
-            row.Add(actions);
-            return row;
+            var body = new VisualElement { pickingMode = PickingMode.Ignore };
+            body.AddToClassList("deck-cell-body");
+            body.Add(head);
+            body.Add(desc);
+            body.Add(actions);
+
+            var check = new VisualElement { pickingMode = PickingMode.Ignore };
+            check.AddToClassList("deck-cell-check");
+            check.EnableInClassList("hidden", count <= 0);
+            var mark = new Label(CheckMark) { pickingMode = PickingMode.Ignore };
+            mark.AddToClassList("deck-cell-check-mark");
+            check.Add(mark);
+
+            cell.Add(BuildCardArt(card));
+            cell.Add(body);
+            cell.Add(check);
+            return cell;
+        }
+
+        static VisualElement BuildCardArt(CardDefinition card)
+        {
+            var art = new VisualElement { pickingMode = PickingMode.Ignore };
+            art.AddToClassList("deck-cell-art");
+            art.style.backgroundColor = card.IsSignature
+                ? new Color(1f, 0.886f, 0.549f, 1f)
+                : CardFaceBuilder.ArtPaper(card.FamilyKey);
+            var symbol = CardGlance.Primary(card.FamilyKey, card.EffectKinds);
+            var iconKey = CardGlance.IconKey(card.FamilyKey, card.EffectKinds);
+            UiImageUtil.ApplyGlyph(art, CardIconLibrary.Glyph(iconKey, symbol));
+
+            var gem = new VisualElement { pickingMode = PickingMode.Ignore };
+            gem.AddToClassList("deck-cell-cost");
+            var cost = new Label(card.BuildCost.ToString()) { pickingMode = PickingMode.Ignore };
+            cost.AddToClassList("deck-cell-cost-value");
+            gem.Add(cost);
+            art.Add(gem);
+            return art;
+        }
+
+        static string CardDetail(CardDefinition card)
+        {
+            var parts = new List<string>
+            {
+                CardGlance.LabelJa(CardGlance.Primary(card.FamilyKey, card.EffectKinds)),
+            };
+            if (card.UsesPerMatch > 0)
+            {
+                parts.Add($"1試合{card.UsesPerMatch}回");
+            }
+
+            if (card.CooldownTurns > 0)
+            {
+                parts.Add($"CT{card.CooldownTurns}");
+            }
+
+            if (card.DurationTurns > 1)
+            {
+                parts.Add($"{card.DurationTurns}ターン");
+            }
+
+            return string.Join(" · ", parts);
         }
 
         void AddOne(CardDefinition card)
@@ -342,8 +508,6 @@ namespace EraserWars.UI
             var selected = draftCommons[activeSeat];
             var budget = DeckBudget.From(selected, ActiveCap());
             var name = character != null ? character.DisplayName : "未選択";
-            var sigA = character?.SignatureA != null ? character.SignatureA.DisplayName : "なし";
-            var sigB = character?.SignatureB != null ? character.SignatureB.DisplayName : "なし";
             PaintBudget(budget, reject);
 
             if (status != null)
@@ -351,9 +515,9 @@ namespace EraserWars.UI
                 status.text = $"P{activeSeat + 1}: {name}  /  コモン {budget.Count}/{DeckBudget.SlotCap}";
             }
 
-            if (detail != null)
+            if (ribbon != null)
             {
-                detail.text = $"固有: {sigA} / {sigB}";
+                ribbon.text = $"プレイヤー P{activeSeat + 1}";
             }
 
             PaintProfile(character);
@@ -543,14 +707,12 @@ namespace EraserWars.UI
                     : string.Empty;
             }
 
-            if (statsLabel != null)
-            {
-                statsLabel.text = StatsLine(character);
-            }
-
+            PaintStats(character);
             if (flavorLabel != null)
             {
-                flavorLabel.text = FlavorLine(character);
+                var bio = character != null ? character.Bio : string.Empty;
+                flavorLabel.text = bio ?? string.Empty;
+                flavorLabel.EnableInClassList("hidden", string.IsNullOrWhiteSpace(bio));
             }
 
             PaintSignatures(character);
@@ -569,20 +731,53 @@ namespace EraserWars.UI
                 return;
             }
 
-            AddSignatureFace(character.SignatureA);
-            AddSignatureFace(character.SignatureB);
+            AddSignatureChip(character.SignatureA);
+            AddSignatureChip(character.SignatureB);
         }
 
-        void AddSignatureFace(CardDefinition card)
+        void AddSignatureChip(CardDefinition card)
         {
             if (card == null || signatures == null)
             {
                 return;
             }
 
-            var face = new VisualElement();
-            CardFaceBuilder.Paint(face, card, CardSurface.Collection);
-            signatures.Add(face);
+            var chip = new VisualElement();
+            chip.AddToClassList("deck-sig");
+            var name = new Label(card.DisplayName) { pickingMode = PickingMode.Ignore };
+            name.AddToClassList("deck-sig-name");
+            var note = new Label(CardDetail(card)) { pickingMode = PickingMode.Ignore };
+            note.AddToClassList("deck-sig-note");
+            var body = new VisualElement { pickingMode = PickingMode.Ignore };
+            body.AddToClassList("deck-sig-body");
+            body.Add(name);
+            body.Add(note);
+            chip.Add(BuildCardArt(card));
+            chip.Add(body);
+            signatures.Add(chip);
+        }
+
+        void PaintStats(CharacterDefinition character)
+        {
+            var eraser = character != null ? character.Eraser : null;
+            if (statMass != null)
+            {
+                statMass.text = eraser != null ? CollectionDisplay.DisplayedMass(eraser.Mass).ToString() : "—";
+            }
+
+            if (statCap != null)
+            {
+                statCap.text = eraser != null ? eraser.DeckCostCap.ToString() : "—";
+            }
+
+            if (statSubject != null)
+            {
+                var strong = string.Empty;
+                var weak = string.Empty;
+                var known = character != null
+                    && CharacterFlavor.TrySubjects(character.IdValue, out strong, out weak);
+                statSubject.text = known ? $"{strong} / {weak}" : "—";
+            }
         }
 
         void PaintPresets(CharacterDefinition character)
@@ -598,41 +793,6 @@ namespace EraserWars.UI
             {
                 presetName.text = character != null ? DeckPresets.GetName(character.IdValue, slot) : string.Empty;
             }
-        }
-
-        static string StatsLine(CharacterDefinition character)
-        {
-            var eraser = character != null ? character.Eraser : null;
-            if (eraser == null)
-            {
-                return "消しゴム未設定";
-            }
-
-            return $"質量 {CollectionDisplay.DisplayedMass(eraser.Mass)} / コスト上限 {eraser.DeckCostCap}";
-        }
-
-        static string FlavorLine(CharacterDefinition character)
-        {
-            if (character == null)
-            {
-                return string.Empty;
-            }
-
-            var subjects = CharacterFlavor.TrySubjects(character.IdValue, out var strong, out var weak)
-                ? $"得意 {strong} / 苦手 {weak}"
-                : null;
-            var hasBio = !string.IsNullOrWhiteSpace(character.BioJa);
-            if (subjects != null && hasBio)
-            {
-                return subjects + "\n" + character.Bio;
-            }
-
-            if (subjects != null)
-            {
-                return subjects;
-            }
-
-            return character.Bio;
         }
 
         static int[] IdsOf(List<CardDefinition> cards)

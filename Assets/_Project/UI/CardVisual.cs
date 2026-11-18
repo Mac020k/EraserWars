@@ -100,7 +100,7 @@ namespace EraserWars.UI
             return size;
         }
 
-        static Color ArtPaper(string familyKey)
+        public static Color ArtPaper(string familyKey)
         {
             switch (familyKey)
             {

@@ -117,8 +117,13 @@ namespace EraserWars.Tests.EditMode
             Assert.NotNull(seats.Q("seat-strip"));
 
             var cards = root.Q<ScrollView>("deck-card-list");
-            Assert.AreEqual(ScrollViewMode.VerticalAndHorizontal, cards.mode);
-            Assert.AreEqual(ScrollerVisibility.Auto, cards.horizontalScrollerVisibility);
+            Assert.AreEqual(ScrollViewMode.Vertical, cards.mode);
+            Assert.AreEqual(ScrollerVisibility.Hidden, cards.horizontalScrollerVisibility);
+            Assert.IsTrue(cards.ClassListContains("deck-grid"));
+
+            var chips = root.Q<ScrollView>("deck-character-list");
+            Assert.AreEqual(ScrollViewMode.Horizontal, chips.mode);
+            Assert.IsTrue(chips.ClassListContains("deck-chip-strip"));
 
             menu.OpenCollection();
             Layout(root);

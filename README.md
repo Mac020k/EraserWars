@@ -153,6 +153,11 @@ The crop table and the card spec are in `docs/decisions/ADR-0010-character-card-
 ## Deck save
 
 The deck screen is an open binder on a wood desk. The left page is the character. The right page is that character's common cards. The back button stays in the destination header.
+The left page has a "player Pn" ribbon, a round face portrait, the name, an archetype pill, a stat table (mass, cost cap, strong and weak subjects), the bio, the two signature cards, and a horizontal strip of character face chips.
+The right page has a headline with a status line, preset tabs 1 to 5, family filter chips, a two-column grid of common-card cells, and a footer with the cost bar and 保存.
+Each cell shows the collection face with its cost gem, the name, a family badge, a one-line summary, minus and plus buttons with the copy count, and a check mark when the card is in the deck.
+The family chips only filter the grid. They never change the deck. The grid keeps its scroll offset when a card is added or removed.
+The layout rationale is in `docs/decisions/ADR-0011-deck-binder-layout.md`. The rules, presets, cost budget, and save path are unchanged.
 `DeckRules.Evaluate` checks the working list before that list is stored.
 保存 stays disabled while the check fails, and the cost meter shows the reason.
 The check fails when the eraser is missing, when the list holds more than six commons, when one card passes its copy limit, or when the build cost passes that eraser's cap.

@@ -1480,210 +1480,6 @@
     margin-bottom: 6px;
 }
 
-.deck-column {
-    flex-grow: 1;
-    flex-basis: 0;
-    margin-right: 8px;
-    min-width: 0;
-    min-height: 0;
-}
-
-.deck-column-title {
-    font-size: 13px;
-    -unity-font-style: bold;
-    color: rgb(92, 48, 28);
-    margin-bottom: 4px;
-}
-
-.deck-list {
-    width: auto;
-    flex-grow: 1;
-    min-height: 0;
-    margin-right: 0;
-}
-
-.deck-item {
-    height: 44px;
-    margin: 0 0 4px 0;
-    padding: 0 8px;
-    font-size: 14px;
-    -unity-text-align: middle-left;
-    background-color: rgb(255, 252, 244);
-    color: rgb(32, 30, 40);
-    border-width: 1px;
-    border-color: rgb(200, 190, 170);
-    border-radius: 6px;
-}
-
-.deck-item.selected {
-    background-color: rgb(255, 230, 140);
-    border-color: rgb(40, 40, 48);
-}
-
-.deck-budget {
-    flex-shrink: 0;
-    margin-bottom: 8px;
-    padding: 10px 12px;
-    background-color: rgb(255, 236, 214);
-    border-radius: 10px;
-    border-width: 2px;
-    border-color: rgb(232, 160, 176);
-}
-
-.deck-budget-head {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-}
-
-.deck-budget-label {
-    font-size: 16px;
-    -unity-font-style: bold;
-    color: rgb(92, 48, 28);
-}
-
-.deck-budget-remain {
-    font-size: 16px;
-    -unity-font-style: bold;
-    color: rgb(140, 72, 28);
-}
-
-.deck-budget-remain.full {
-    color: rgb(190, 230, 170);
-}
-
-.deck-budget-remain.over {
-    color: rgb(255, 186, 170);
-}
-
-.deck-budget-track {
-    height: 12px;
-    background-color: rgb(255, 248, 236);
-    border-radius: 6px;
-    border-width: 1px;
-    border-color: rgb(214, 160, 140);
-    overflow: hidden;
-}
-
-.deck-budget-fill {
-    height: 100%;
-    width: 0;
-    background-color: rgb(255, 210, 80);
-    border-radius: 6px;
-}
-
-.deck-budget-fill.full {
-    background-color: rgb(120, 190, 110);
-}
-
-.deck-budget-fill.over {
-    background-color: rgb(214, 84, 68);
-}
-
-.deck-budget-warning {
-    margin-top: 8px;
-    font-size: 15px;
-    -unity-font-style: bold;
-    color: rgb(160, 40, 36);
-    white-space: normal;
-}
-
-.deck-save {
-    margin-top: 8px;
-    height: 44px;
-    font-size: 16px;
-    -unity-font-style: bold;
-    background-color: rgb(232, 104, 140);
-    color: rgb(255, 252, 244);
-    border-radius: 8px;
-    border-width: 2px;
-    border-color: rgb(140, 48, 80);
-}
-
-.deck-save:disabled {
-    background-color: rgb(90, 86, 96);
-    color: rgb(210, 206, 214);
-    border-color: rgb(70, 66, 76);
-}
-
-.deck-empty {
-    flex-shrink: 0;
-    margin: 0 0 6px 0;
-    font-size: 14px;
-    color: rgb(120, 80, 72);
-    white-space: normal;
-}
-
-.deck-row {
-    flex-direction: row;
-    align-items: center;
-    flex-shrink: 0;
-    min-width: 360px;
-    margin: 0 0 8px 0;
-    padding: 8px 6px;
-    background-color: rgb(255, 252, 244);
-    border-width: 1px;
-    border-color: rgb(200, 190, 170);
-    border-radius: 12px;
-}
-
-.deck-row.deck-row-in {
-    background-color: rgb(255, 236, 170);
-    border-color: rgb(40, 40, 48);
-}
-
-.deck-row .card-tile {
-    margin-right: 8px;
-    margin-bottom: 0;
-    flex-shrink: 0;
-}
-
-.deck-row .card-tile:hover,
-.deck-row .card-tile:active {
-    scale: 1 1;
-    translate: 0 0;
-}
-
-.deck-row-actions {
-    flex-direction: row;
-    align-items: center;
-    margin-left: auto;
-    flex-shrink: 0;
-}
-
-.deck-row-count {
-    flex-shrink: 0;
-    margin-right: 2px;
-    font-size: 15px;
-    -unity-font-style: bold;
-    color: rgb(60, 48, 36);
-    white-space: nowrap;
-}
-
-.deck-action {
-    flex-shrink: 0;
-    width: 72px;
-    height: 44px;
-    margin-left: 6px;
-    font-size: 15px;
-    -unity-font-style: bold;
-    border-radius: 8px;
-    border-width: 2px;
-}
-
-.deck-action-add {
-    background-color: rgb(255, 210, 80);
-    color: rgb(32, 28, 20);
-    border-color: rgb(120, 84, 20);
-}
-
-.deck-action-remove {
-    background-color: rgb(255, 252, 244);
-    color: rgb(90, 32, 28);
-    border-color: rgb(180, 90, 80);
-}
-
 .deck-panel.destination-page {
     background-color: rgb(176, 122, 74);
     border-color: rgb(112, 68, 36);
@@ -1729,8 +1525,8 @@
     min-height: 0;
     overflow: hidden;
     background-color: rgb(255, 248, 236);
-    border-radius: 10px;
-    padding: 10px 12px;
+    border-radius: 12px;
+    padding: 12px 16px;
 }
 
 .deck-spiral {
@@ -1750,14 +1546,53 @@
     border-color: rgb(140, 72, 28);
 }
 
+.deck-column-title {
+    flex-shrink: 0;
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(92, 48, 28);
+    margin: 6px 0 4px 0;
+}
+
+.deck-empty {
+    flex-shrink: 0;
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    color: rgb(120, 80, 72);
+    white-space: normal;
+}
+
+.deck-ribbon {
+    position: absolute;
+    left: 0;
+    top: 14px;
+    padding: 4px 18px 4px 12px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(255, 252, 244);
+    background-color: rgb(232, 104, 140);
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+}
+
+.deck-left-scroll {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.deck-left-scroll .unity-scroll-view__content-container {
+    align-items: stretch;
+    padding: 4px 6px 4px 0;
+}
+
 .deck-portrait-ring {
-    width: 120px;
-    height: 120px;
+    width: 104px;
+    height: 104px;
     align-self: center;
     flex-shrink: 0;
-    margin-bottom: 6px;
-    padding: 6px;
-    border-radius: 60px;
+    margin-bottom: 2px;
+    padding: 5px;
+    border-radius: 52px;
     background-color: rgb(255, 214, 228);
     border-width: 4px;
     border-color: rgb(232, 104, 140);
@@ -1765,92 +1600,228 @@
 
 .deck-portrait {
     flex-grow: 1;
-    border-radius: 52px;
+    border-radius: 45px;
     background-color: rgb(255, 236, 214);
 }
 
 .deck-name {
     flex-shrink: 0;
-    font-size: 22px;
+    font-size: 26px;
     -unity-font-style: bold;
     color: rgb(92, 48, 28);
-    white-space: normal;
+    white-space: nowrap;
     -unity-text-align: middle-center;
 }
 
 .deck-archetype {
     flex-shrink: 0;
-    font-size: 13px;
+    align-self: center;
+    margin: 0 0 6px 0;
+    padding: 2px 14px;
+    font-size: 15px;
     -unity-font-style: bold;
     color: rgb(196, 72, 112);
-    white-space: normal;
+    background-color: rgb(255, 228, 236);
+    border-radius: 14px;
+    border-width: 2px;
+    border-color: rgb(232, 160, 176);
     -unity-text-align: middle-center;
-    margin-bottom: 4px;
 }
 
-.deck-stats {
+.deck-stat-table {
     flex-shrink: 0;
-    margin-bottom: 4px;
-    padding: 4px 8px;
-    font-size: 13px;
-    color: rgb(72, 48, 36);
-    white-space: normal;
-    -unity-text-align: middle-center;
-    background-color: rgb(255, 236, 214);
-    border-radius: 8px;
+    padding: 2px 12px;
+    background-color: rgb(255, 252, 244);
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: rgb(232, 190, 170);
 }
 
-.deck-flavor,
-.deck-detail,
-.deck-status {
+.deck-stat-row {
+    flex-direction: row;
+    align-items: center;
+    height: 32px;
+}
+
+.deck-stat-icon {
+    width: 26px;
+    height: 26px;
+    margin-right: 10px;
     flex-shrink: 0;
-    font-size: 12px;
-    color: rgb(110, 72, 64);
-    white-space: normal;
-    -unity-text-align: middle-center;
-    margin-bottom: 4px;
 }
 
-.deck-status {
-    -unity-text-align: middle-left;
-    font-size: 13px;
+.deck-stat-label {
+    flex-grow: 1;
+    font-size: 17px;
     -unity-font-style: bold;
     color: rgb(92, 48, 28);
 }
 
+.deck-stat-value {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(176, 48, 92);
+    -unity-text-align: middle-right;
+}
+
+.deck-flavor {
+    flex-shrink: 0;
+    margin-top: 6px;
+    padding: 5px 12px;
+    font-size: 13px;
+    color: rgb(110, 72, 64);
+    white-space: normal;
+    -unity-text-align: middle-left;
+    background-color: rgb(255, 240, 244);
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: rgb(240, 180, 196);
+}
+
 .deck-signatures {
     flex-direction: row;
+    flex-wrap: wrap;
     flex-shrink: 0;
-    justify-content: center;
-    margin-bottom: 4px;
 }
 
-.deck-signatures .card-tile:hover,
-.deck-signatures .card-tile:active {
-    scale: 1 1;
-    translate: 0 0;
+.deck-sig {
+    flex-direction: row;
+    align-items: center;
+    width: 49%;
+    margin: 0 1% 6px 0;
+    padding: 6px 8px;
+    background-color: rgb(255, 244, 214);
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: rgb(214, 170, 60);
 }
 
-.deck-page .deck-list {
-    background-color: rgba(255, 255, 255, 0.45);
+.deck-sig .deck-cell-art {
+    width: 56px;
+    height: 56px;
+    margin-right: 8px;
+}
+
+.deck-sig-body {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.deck-sig-name {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(60, 40, 28);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.deck-sig-note {
+    font-size: 12px;
+    color: rgb(120, 84, 40);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.deck-chip-title {
+    margin-top: 8px;
+}
+
+.deck-chip-strip {
+    flex-shrink: 0;
+    height: 124px;
+}
+
+.deck-chip-strip .unity-scroll-view__content-container {
+    flex-direction: row;
+    padding: 2px 0 4px 0;
+}
+
+.deck-chip {
+    width: 88px;
+    height: 100px;
+    margin: 0 8px 0 0;
+    padding: 6px 4px;
+    align-items: center;
+    flex-shrink: 0;
+    background-color: rgb(255, 240, 230);
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: rgb(232, 190, 170);
+}
+
+.deck-chip.selected {
+    background-color: rgb(255, 214, 228);
+    border-color: rgb(232, 104, 140);
+}
+
+.deck-chip-face {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: rgb(255, 236, 214);
+    border-width: 3px;
+    border-color: rgb(40, 34, 44);
+}
+
+.deck-chip.locked .deck-chip-face {
+    opacity: 0.45;
+}
+
+.deck-chip-name {
+    margin-top: 4px;
+    width: 100%;
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(92, 48, 28);
+    white-space: nowrap;
+    overflow: hidden;
+    -unity-text-align: middle-center;
+}
+
+.deck-head {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-shrink: 0;
+    margin-bottom: 8px;
+}
+
+.deck-head-copy {
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.deck-headline {
+    font-size: 30px;
+    -unity-font-style: bold;
+    color: rgb(92, 48, 28);
+}
+
+.deck-status {
+    margin: 0;
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(176, 48, 92);
+    white-space: nowrap;
+    -unity-text-align: middle-left;
 }
 
 .deck-presets {
     flex-direction: row;
     flex-shrink: 0;
     align-items: center;
-    margin-bottom: 6px;
 }
 
 .deck-preset {
-    width: 36px;
-    height: 32px;
-    margin-right: 4px;
-    font-size: 14px;
+    width: 40px;
+    height: 36px;
+    margin: 0 0 0 4px;
+    padding: 0;
+    font-size: 15px;
     -unity-font-style: bold;
     background-color: rgb(255, 236, 214);
     color: rgb(92, 48, 28);
-    border-radius: 8px;
+    border-radius: 10px;
     border-width: 2px;
     border-color: rgb(232, 160, 176);
 }
@@ -1862,11 +1833,324 @@
 }
 
 .deck-preset-name {
-    margin-left: 8px;
-    font-size: 14px;
+    margin-right: 6px;
+    font-size: 15px;
     -unity-font-style: bold;
     color: rgb(92, 48, 28);
     white-space: nowrap;
+}
+
+.deck-family-bar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    margin-bottom: 4px;
+}
+
+.deck-family-chip {
+    height: 36px;
+    margin: 0 6px 4px 0;
+    padding: 0 16px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(92, 48, 28);
+    background-color: rgb(255, 236, 214);
+    border-radius: 18px;
+    border-width: 2px;
+    border-color: rgb(232, 160, 176);
+}
+
+.deck-family-chip.selected {
+    color: rgb(255, 252, 244);
+    background-color: rgb(232, 104, 140);
+    border-color: rgb(140, 48, 80);
+}
+
+.deck-grid {
+    flex-grow: 1;
+    min-height: 0;
+    background-color: rgba(255, 228, 214, 0.4);
+    border-radius: 14px;
+}
+
+.deck-grid .unity-scroll-view__content-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    padding: 8px 8px 0 8px;
+}
+
+.deck-grid .deck-empty {
+    width: 100%;
+}
+
+.deck-row {
+    flex-direction: row;
+    width: 49%;
+    height: 138px;
+    margin: 0 1% 8px 0;
+    padding: 10px 12px 10px 14px;
+    flex-shrink: 0;
+    background-color: rgb(255, 252, 244);
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: rgb(232, 200, 180);
+}
+
+.deck-row.deck-row-in {
+    background-color: rgb(255, 238, 214);
+    border-color: rgb(232, 104, 140);
+}
+
+.deck-cell-art {
+    width: 84px;
+    height: 84px;
+    align-self: center;
+    flex-shrink: 0;
+    margin-right: 12px;
+    border-radius: 16px;
+    border-width: 2px;
+    border-color: rgb(60, 44, 40);
+}
+
+.deck-cell-cost {
+    position: absolute;
+    left: -10px;
+    top: -10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    background-color: rgb(255, 210, 80);
+    border-width: 2px;
+    border-color: rgb(40, 34, 44);
+    align-items: center;
+    justify-content: center;
+}
+
+.deck-cell-cost-value {
+    font-size: 17px;
+    -unity-font-style: bold;
+    color: rgb(40, 34, 44);
+}
+
+.deck-cell-body {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    justify-content: space-between;
+}
+
+.deck-cell-head {
+    flex-direction: row;
+    flex-shrink: 0;
+    align-items: center;
+    min-height: 30px;
+}
+
+.deck-cell-name {
+    flex-shrink: 1;
+    margin-right: 8px;
+    font-size: 21px;
+    -unity-font-style: bold;
+    color: rgb(40, 32, 36);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.deck-cell-badge {
+    flex-shrink: 0;
+    padding: 1px 10px;
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(255, 252, 244);
+    background-color: rgb(150, 140, 150);
+    border-radius: 10px;
+}
+
+.deck-cell-badge.badge-kiai {
+    background-color: rgb(226, 84, 84);
+}
+
+.deck-cell-badge.badge-homework {
+    background-color: rgb(80, 130, 214);
+}
+
+.deck-cell-badge.badge-seat {
+    background-color: rgb(70, 160, 100);
+}
+
+.deck-cell-badge.badge-stationery {
+    background-color: rgb(214, 150, 30);
+}
+
+.deck-cell-badge.badge-cover {
+    background-color: rgb(214, 90, 140);
+}
+
+.deck-cell-desc {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: rgb(110, 72, 64);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.deck-row-actions {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.deck-row-count {
+    min-width: 44px;
+    font-size: 17px;
+    -unity-font-style: bold;
+    color: rgb(92, 48, 28);
+    white-space: nowrap;
+    -unity-text-align: middle-center;
+}
+
+.deck-action {
+    flex-shrink: 0;
+    width: 52px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    font-size: 24px;
+    -unity-font-style: bold;
+    border-radius: 12px;
+    border-width: 2px;
+}
+
+.deck-action-add {
+    background-color: rgb(255, 210, 80);
+    color: rgb(32, 28, 20);
+    border-color: rgb(120, 84, 20);
+}
+
+.deck-action-remove {
+    margin-right: 4px;
+    background-color: rgb(255, 252, 244);
+    color: rgb(90, 32, 28);
+    border-color: rgb(180, 90, 80);
+}
+
+.deck-cell-check {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    background-color: rgb(110, 190, 120);
+    border-width: 2px;
+    border-color: rgb(255, 252, 244);
+    align-items: center;
+    justify-content: center;
+}
+
+.deck-cell-check-mark {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.deck-budget {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: rgb(255, 236, 214);
+    border-radius: 16px;
+    border-width: 2px;
+    border-color: rgb(232, 160, 176);
+}
+
+.deck-budget-main {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+}
+
+.deck-budget-head {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.deck-budget-label {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(92, 48, 28);
+}
+
+.deck-budget-remain {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(140, 72, 28);
+}
+
+.deck-budget-remain.full {
+    color: rgb(46, 120, 60);
+}
+
+.deck-budget-remain.over {
+    color: rgb(190, 44, 36);
+}
+
+.deck-budget-track {
+    height: 14px;
+    background-color: rgb(255, 248, 236);
+    border-radius: 7px;
+    border-width: 1px;
+    border-color: rgb(214, 160, 140);
+    overflow: hidden;
+}
+
+.deck-budget-fill {
+    height: 100%;
+    width: 0;
+    background-color: rgb(255, 210, 80);
+    border-radius: 7px;
+}
+
+.deck-budget-fill.full {
+    background-color: rgb(120, 190, 110);
+}
+
+.deck-budget-fill.over {
+    background-color: rgb(214, 84, 68);
+}
+
+.deck-budget-warning {
+    margin-top: 6px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(160, 40, 36);
+    white-space: normal;
+}
+
+.deck-save {
+    flex-shrink: 0;
+    width: 150px;
+    height: 54px;
+    margin: 0 0 0 14px;
+    font-size: 20px;
+    -unity-font-style: bold;
+    background-color: rgb(232, 104, 140);
+    color: rgb(255, 252, 244);
+    border-radius: 14px;
+    border-width: 2px;
+    border-color: rgb(140, 48, 80);
+}
+
+.deck-save:disabled {
+    background-color: rgb(90, 86, 96);
+    color: rgb(210, 206, 214);
+    border-color: rgb(70, 66, 76);
 }
 
 .seat-strip-scroll {

@@ -131,8 +131,9 @@ namespace EraserWars.Tests.EditMode
             Assert.AreSame(mid, loadout.Commons[0][1]);
             Assert.AreEqual("広い", panel.Q<Label>("deck-profile-name").text);
             Assert.AreEqual("全力アタック型", panel.Q<Label>("deck-archetype").text);
-            Assert.AreEqual("質量 20 / コスト上限 8", panel.Q<Label>("deck-stats").text);
-            Assert.AreEqual("得意 体育 / 苦手 算数", panel.Q<Label>("deck-flavor").text);
+            Assert.AreEqual("20", panel.Q<Label>("deck-stat-mass").text);
+            Assert.AreEqual("8", panel.Q<Label>("deck-stat-cap").text);
+            Assert.AreEqual("体育 / 算数", panel.Q<Label>("deck-stat-subject").text);
             Assert.AreEqual("プリセット1", panel.Q<Label>("deck-preset-name").text);
 
             Click(CharacterNamed(panel.Q("deck-character-list"), "狭い"));
@@ -234,6 +235,70 @@ namespace EraserWars.Tests.EditMode
         }
 
         [Test]
+        public void GridHasOneCellPerCommonAndTheCheckFollowsTheCount()
+        {
+            var alpha = Card("甲", 1, 1, 2);
+            var beta = Card("乙", 2, 1, 2);
+            var hero = Hero("広い", 7, 8);
+            var catalog = Catalog(new[] { hero }, new[] { alpha, beta });
+            var loadout = new HotseatLoadout();
+            loadout.Seats[0] = hero;
+            loadout.Commons[0].Add(alpha);
+            var panel = Mount();
+            var deck = new DeckPanelController(catalog, loadout);
+            deck.Bind(panel);
+            deck.Refresh(2);
+            var list = panel.Q("deck-card-list");
+
+            Assert.AreEqual(2, list.Query(className: "deck-row").ToList().Count);
+            var before = CellFor(list, "乙");
+            Assert.IsTrue(before.Q(className: "deck-cell-check").ClassListContains("hidden"));
+            Assert.IsFalse(before.Q<Button>(className: "deck-action-remove").enabledSelf);
+            Assert.IsFalse(CellFor(list, "甲").Q(className: "deck-cell-check").ClassListContains("hidden"));
+
+            Click(AddFor(list, "乙"));
+            Click(AddFor(list, "乙"));
+
+            var after = CellFor(list, "乙");
+            Assert.IsFalse(after.Q(className: "deck-cell-check").ClassListContains("hidden"));
+            Assert.AreEqual("2枚", after.Q<Label>(className: "deck-row-count").text);
+            Assert.IsTrue(after.ClassListContains("deck-row-in"));
+            Assert.IsTrue(after.Q<Button>(className: "deck-action-remove").enabledSelf);
+        }
+
+        [Test]
+        public void FamilyChipsFilterTheGridWithoutTouchingTheDeck()
+        {
+            var alpha = Card("甲", 1, 1, 2);
+            var beta = Card("乙", 2, 1, 2);
+            beta.FamilyKey = CardFamilies.Cover;
+            var hero = Hero("広い", 7, 8);
+            var catalog = Catalog(new[] { hero }, new[] { alpha, beta });
+            var loadout = new HotseatLoadout();
+            loadout.Seats[0] = hero;
+            loadout.Commons[0].Add(alpha);
+            var panel = Mount();
+            var deck = new DeckPanelController(catalog, loadout);
+            deck.Bind(panel);
+            deck.Refresh(2);
+            var list = panel.Q("deck-card-list");
+
+            var chips = panel.Q("deck-family-bar").Query<Button>(className: "deck-family-chip").ToList();
+            Assert.AreEqual(6, chips.Count);
+            Assert.IsTrue(chips[0].ClassListContains("selected"));
+
+            Click(chips.Find(c => c.text == "カバー"));
+
+            var rows = list.Query(className: "deck-row").ToList();
+            Assert.AreEqual(1, rows.Count);
+            Assert.AreEqual("乙", rows[0].Q<Label>(className: "deck-cell-name").text);
+            Assert.AreEqual(1, loadout.Commons[0].Count);
+
+            Click(chips[0]);
+            Assert.AreEqual(2, list.Query(className: "deck-row").ToList().Count);
+        }
+
+        [Test]
         public void LegalDeckStaysStoredWhenAnotherCopyIsRefused()
         {
             var heavy = Card("重い", 1, 1, 1);
@@ -311,7 +376,6 @@ namespace EraserWars.Tests.EditMode
             panel.Add(new ScrollView { name = "deck-character-list" });
             panel.Add(new ScrollView { name = "deck-card-list" });
             panel.Add(new Label { name = "deck-status" });
-            panel.Add(new Label { name = "deck-detail" });
             panel.Add(new Label { name = "deck-budget-label" });
             panel.Add(new Label { name = "deck-budget-remain" });
             panel.Add(new VisualElement { name = "deck-budget-fill" });
@@ -321,8 +385,11 @@ namespace EraserWars.Tests.EditMode
             panel.Add(new VisualElement { name = "deck-portrait" });
             panel.Add(new Label { name = "deck-profile-name" });
             panel.Add(new Label { name = "deck-archetype" });
-            panel.Add(new Label { name = "deck-stats" });
+            panel.Add(new Label { name = "deck-stat-mass" });
+            panel.Add(new Label { name = "deck-stat-cap" });
+            panel.Add(new Label { name = "deck-stat-subject" });
             panel.Add(new Label { name = "deck-flavor" });
+            panel.Add(new VisualElement { name = "deck-family-bar" });
             panel.Add(new VisualElement { name = "deck-signatures" });
             panel.Add(new Label { name = "deck-preset-name" });
             for (var i = 0; i < DeckPresets.SlotsPerCharacter; i++)
@@ -341,10 +408,11 @@ namespace EraserWars.Tests.EditMode
 
         static Button CharacterNamed(VisualElement list, string name)
         {
-            var buttons = list.Query<Button>().ToList();
+            var buttons = list.Query<Button>(className: "deck-chip").ToList();
             foreach (var button in buttons)
             {
-                if (button.text != null && button.text.StartsWith(name))
+                var label = button.Q<Label>(className: "deck-chip-name");
+                if (label != null && label.text == name)
                 {
                     return button;
                 }
@@ -354,12 +422,27 @@ namespace EraserWars.Tests.EditMode
             return null;
         }
 
+        static VisualElement CellFor(VisualElement list, string cardName)
+        {
+            foreach (var row in list.Query(className: "deck-row").ToList())
+            {
+                var label = row.Q<Label>(className: "deck-cell-name");
+                if (label != null && label.text == cardName)
+                {
+                    return row;
+                }
+            }
+
+            Assert.Fail("No cell for " + cardName);
+            return null;
+        }
+
         static Button RemoveFor(VisualElement list, string cardName)
         {
             var rows = list.Query(className: "deck-row").ToList();
             foreach (var row in rows)
             {
-                var label = row.Q<Label>(className: "card-face-name");
+                var label = row.Q<Label>(className: "deck-cell-name");
                 if (label != null && label.text == cardName)
                 {
                     return row.Q<Button>(className: "deck-action-remove");
@@ -375,7 +458,7 @@ namespace EraserWars.Tests.EditMode
             var rows = list.Query(className: "deck-row").ToList();
             foreach (var row in rows)
             {
-                var label = row.Q<Label>(className: "card-face-name");
+                var label = row.Q<Label>(className: "deck-cell-name");
                 if (label != null && label.text == cardName)
                 {
                     return row.Q<Button>(className: "deck-action-add");
