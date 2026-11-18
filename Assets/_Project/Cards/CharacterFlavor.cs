@@ -78,17 +78,7 @@ namespace EraserWars.Cards
 
         public static string TileCaption(int characterId)
         {
-            if (!TryPlace(characterId, out var schoolJa, out var classJa))
-            {
-                return string.Empty;
-            }
-
-            if (string.IsNullOrEmpty(schoolJa))
-            {
-                return classJa;
-            }
-
-            return schoolJa + " " + classJa;
+            return TryPlace(characterId, out _, out var classJa) ? classJa : string.Empty;
         }
     }
 

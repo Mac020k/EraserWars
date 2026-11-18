@@ -124,9 +124,9 @@ namespace EraserWars.UI
             tag.AddToClassList("seat-chip-tag");
             var art = new VisualElement { pickingMode = PickingMode.Ignore };
             art.AddToClassList("char-tile-art");
-            if (character?.Portrait != null)
+            if (character != null)
             {
-                UiImageUtil.ApplyFaceCrop(art, character.Portrait);
+                UiImageUtil.ApplyFaceCrop(art, character);
             }
 
             var name = new Label(character != null ? character.DisplayName : "未設定")
@@ -211,26 +211,9 @@ namespace EraserWars.UI
 
         static Button BuildFaceTile(CharacterDefinition character, bool selected)
         {
-            var tile = new Button { name = $"seat-option-{character.IdValue}" };
-            tile.AddToClassList("char-tile");
+            var tile = CharacterTileBuilder.Create(character, true);
+            tile.name = $"seat-option-{character.IdValue}";
             tile.EnableInClassList("selected", selected);
-            var art = new VisualElement();
-            art.AddToClassList("char-tile-art");
-            if (character.Portrait != null)
-            {
-                UiImageUtil.ApplyFaceCrop(art, character.Portrait);
-            }
-
-            var badge = ArchetypeMark.Create(character.ArchetypeKey);
-            badge.AddToClassList("char-tile-badge");
-            var name = new Label(character.DisplayName);
-            name.AddToClassList("char-tile-name");
-            var place = new Label(CharacterFlavor.TileCaption(character.IdValue));
-            place.AddToClassList("char-tile-place");
-            tile.Add(art);
-            tile.Add(badge);
-            tile.Add(name);
-            tile.Add(place);
             return tile;
         }
     }

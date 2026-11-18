@@ -891,16 +891,16 @@
 
 .char-tile {
     position: relative;
-    width: 118px;
-    height: 188px;
+    width: 142px;
+    height: 210px;
     margin-right: 10px;
     flex-shrink: 0;
-    padding: 8px;
+    padding: 10px 6px 6px 6px;
     flex-direction: column;
     align-items: center;
-    background-color: rgb(255, 252, 244);
-    border-radius: 12px;
-    border-width: 3px;
+    background-color: rgb(255, 250, 238);
+    border-radius: 16px;
+    border-width: 7px;
     border-color: rgb(255, 170, 120);
     transition-property: scale, border-color, background-color;
     transition-duration: 0.16s;
@@ -920,8 +920,7 @@
 
 .char-tile.selected {
     border-color: rgb(255, 210, 64);
-    border-width: 4px;
-    background-color: rgb(255, 248, 220);
+    background-color: rgb(255, 246, 214);
 }
 
 .collection-strip .char-tile {
@@ -949,11 +948,13 @@
     margin-bottom: 6px;
     background-color: rgb(210, 216, 230);
     border-radius: 48px;
+    border-width: 3px;
+    border-color: rgb(20, 18, 24);
     overflow: hidden;
-    background-size: 780% 780%;
+    background-size: cover;
     background-repeat: no-repeat;
     background-position-x: center;
-    background-position-y: 2%;
+    background-position-y: top;
 }
 
 .char-tile.locked .char-tile-art {
@@ -961,11 +962,24 @@
 }
 
 .char-tile-name {
-    font-size: 13px;
+    flex-grow: 1;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 24px;
     -unity-font-style: bold;
-    color: rgb(32, 30, 40);
-    white-space: normal;
-    -unity-text-align: middle-center;
+    color: rgb(24, 20, 20);
+    white-space: nowrap;
+    overflow: hidden;
+    -unity-text-align: upper-center;
+}
+
+.char-tile-name.long {
+    font-size: 20px;
+}
+
+.char-tile-name.longer {
+    font-size: 16px;
 }
 
 .char-tile.locked .char-tile-name {
@@ -973,10 +987,13 @@
 }
 
 .char-tile-place {
-    font-size: 10px;
-    color: rgb(110, 90, 70);
-    margin-top: 2px;
-    white-space: normal;
+    width: 100%;
+    margin: 0 0 1px 0;
+    padding: 0;
+    font-size: 15px;
+    color: rgb(48, 34, 26);
+    white-space: nowrap;
+    overflow: hidden;
     -unity-text-align: middle-center;
 }
 
@@ -986,21 +1003,20 @@
 
 .char-tile-badge {
     position: absolute;
-    top: 0;
-    right: 2px;
-    width: 22px;
-    height: 22px;
-    margin-left: 0;
-    margin-right: 0;
-    background-color: rgb(255, 252, 244);
-    border-radius: 11px;
-    border-width: 2px;
-    border-color: rgb(255, 120, 72);
+    top: -4px;
+    right: -4px;
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .char-tile-badge .arch-diamond {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
+    border-width: 2px;
+    border-color: rgb(255, 255, 255);
+    border-radius: 3px;
 }
 
 .char-lock {
@@ -1918,6 +1934,7 @@
     margin-top: 2px;
     margin-bottom: 2px;
     border-radius: 22px;
+    border-width: 2px;
 }
 
 .seat-chip-name {
@@ -1934,7 +1951,7 @@
 
 .seat-picker {
     width: 100%;
-    height: 250px;
+    height: 290px;
     margin-bottom: 10px;
     padding: 8px;
     background-color: rgba(12, 22, 16, 0.45);
@@ -1954,7 +1971,7 @@
 
 .seat-picker-scroll {
     flex-grow: 1;
-    height: 210px;
+    height: 250px;
 }
 
 .seat-picker-row {
@@ -1962,7 +1979,7 @@
     align-items: flex-start;
     flex-shrink: 0;
     overflow: visible;
-    min-height: 176px;
+    min-height: 220px;
     padding-top: 16px;
     padding-bottom: 8px;
     padding-left: 8px;

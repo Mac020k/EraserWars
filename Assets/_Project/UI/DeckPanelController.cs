@@ -521,9 +521,9 @@ namespace EraserWars.UI
         {
             if (portrait != null)
             {
-                if (character?.Portrait != null)
+                if (character?.FaceSprite != null)
                 {
-                    UiImageUtil.ApplyFaceCrop(portrait, character.Portrait);
+                    UiImageUtil.ApplyFaceCrop(portrait, character);
                 }
                 else
                 {

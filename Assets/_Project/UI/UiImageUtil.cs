@@ -1,3 +1,4 @@
+using EraserWars.Cards;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -65,8 +66,14 @@ namespace EraserWars.UI
 #pragma warning restore CS0618
         }
 
-        public const float FaceZoomPercent = 780f;
-        public const float FaceAnchorPercent = 2f;
+        /// <summary>
+        /// Paints the baked square face bust (<see cref="CharacterDefinition.FaceSprite"/>) so it
+        /// fills the element without distortion. Falls back to the top of the full still.
+        /// </summary>
+        public static void ApplyFaceCrop(VisualElement element, CharacterDefinition character)
+        {
+            ApplyFaceCrop(element, character != null ? character.FaceSprite : null);
+        }
 
         public static void ApplyFaceCrop(VisualElement element, Sprite sprite)
         {
@@ -78,13 +85,9 @@ namespace EraserWars.UI
             element.style.backgroundImage = new StyleBackground(sprite);
             element.style.backgroundColor = Color.clear;
             element.style.backgroundRepeat = new BackgroundRepeat(Repeat.NoRepeat, Repeat.NoRepeat);
-            element.style.backgroundSize = new BackgroundSize(
-                new Length(FaceZoomPercent, LengthUnit.Percent),
-                new Length(FaceZoomPercent, LengthUnit.Percent));
+            element.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Cover);
             element.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Center);
-            element.style.backgroundPositionY = new BackgroundPosition(
-                BackgroundPositionKeyword.Top,
-                new Length(FaceAnchorPercent, LengthUnit.Percent));
+            element.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Top);
         }
 
         public static void Clear(VisualElement element)

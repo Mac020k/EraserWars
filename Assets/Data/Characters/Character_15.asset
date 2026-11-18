@@ -19,6 +19,7 @@ MonoBehaviour:
   UnlockHintJa: "\u653E\u9001\u5BA4\u30C1\u30E3\u30EC\u30F3\u30B8\u3092\u30AF\u30EA\u30A2"
   BioJa: "\u30C1\u30E3\u30A4\u30E0\u524D\u306E\u79D2\u8AAD\u307F\u304C\u5F97\u610F\u3002\u5236\u9650\u6642\u9593\u30AB\u30FC\u30C9\u3092\u4F38\u3070\u3059\u58F0\u3002"
   Portrait: {fileID: 21300000, guid: cbcb7cf4889cc03418618ef65f88ff17, type: 3}
+  FacePortrait: {fileID: 21300000, guid: 35dbb6b6797bba94380cd1f5d6c3e34d, type: 3}
   Eraser: {fileID: 11400000, guid: bfc6624d02b6a30478e4d0b8e87ecca1, type: 2}
   SignatureA: {fileID: 0}
   SignatureB: {fileID: 0}

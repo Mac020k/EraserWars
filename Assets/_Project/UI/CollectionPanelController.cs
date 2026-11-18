@@ -506,32 +506,9 @@ namespace EraserWars.UI
 
                 var unlocked = IsUnlocked(character);
                 var flash = BeginFaceFlash(character.IdValue);
-                var tile = new Button();
-                tile.AddToClassList("char-tile");
-                tile.EnableInClassList("locked", !unlocked);
+                var tile = CharacterTileBuilder.Create(character, unlocked);
                 tile.EnableInClassList(UnlockFlashClass, flash);
                 tile.EnableInClassList("selected", character.IdValue == selectedCharacterId);
-
-                var art = new VisualElement();
-                art.AddToClassList("char-tile-art");
-                PaintCircle(art, character, unlocked);
-
-                var name = new Label(unlocked ? character.DisplayName : character.MaskedDisplayName);
-                name.AddToClassList("char-tile-name");
-                var place = new Label(unlocked ? CharacterFlavor.TileCaption(character.IdValue) : "？？？");
-                place.AddToClassList("char-tile-place");
-
-                tile.Add(art);
-                if (unlocked)
-                {
-                    var badge = ArchetypeMark.Create(character.ArchetypeKey);
-                    badge.AddToClassList("char-tile-badge");
-                    tile.Add(badge);
-                }
-
-                tile.Add(name);
-                tile.Add(place);
-                tile.userData = character.IdValue;
                 var captured = character;
                 tile.clicked += () => ShowCharacter(captured);
                 strip.Add(tile);
@@ -546,22 +523,6 @@ namespace EraserWars.UI
             if (shown == 0)
             {
                 AddEmptyLabel(strip);
-            }
-        }
-
-        static void PaintCircle(VisualElement art, CharacterDefinition character, bool unlocked)
-        {
-            art.Clear();
-            if (!unlocked)
-            {
-                UiImageUtil.Clear(art);
-                art.Add(LockMark.Create());
-                return;
-            }
-
-            if (character.Portrait != null)
-            {
-                UiImageUtil.ApplyFaceCrop(art, character.Portrait);
             }
         }
 

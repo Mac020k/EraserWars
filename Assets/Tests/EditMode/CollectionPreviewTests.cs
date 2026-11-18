@@ -101,11 +101,13 @@ namespace EraserWars.Tests.EditMode
             Assert.GreaterOrEqual(stageRule, 0);
             Assert.IsTrue(uss.Substring(portrait, 500).Contains("overflow: hidden"));
             Assert.IsTrue(uss.Substring(stageRule, 300).Contains("overflow: hidden"));
-            var tileArt = uss.IndexOf(".char-tile-art {", System.StringComparison.Ordinal);
+            var tileArt = uss.IndexOf("\n.char-tile-art {", System.StringComparison.Ordinal);
             Assert.GreaterOrEqual(tileArt, 0);
-            var tileArtBlock = uss.Substring(tileArt, 280);
-            Assert.IsTrue(tileArtBlock.Contains("background-size: 780% 780%"));
+            var tileArtBlock = uss.Substring(tileArt, uss.IndexOf('}', tileArt) - tileArt);
+            Assert.IsTrue(tileArtBlock.Contains("background-size: cover"));
+            Assert.IsFalse(tileArtBlock.Contains("780%"));
             Assert.IsFalse(tileArtBlock.Contains("scale-and-crop"));
+            Assert.IsTrue(tileArtBlock.Contains("border-color: rgb(20, 18, 24)"));
             Assert.IsTrue(uss.Contains(".collection-strip .char-tile:hover"));
             var stripRule = uss.IndexOf(".collection-strip {", System.StringComparison.Ordinal);
             Assert.GreaterOrEqual(stripRule, 0);
@@ -122,7 +124,7 @@ namespace EraserWars.Tests.EditMode
             Assert.IsTrue(CharacterFlavor.TryPlace(0, out var school, out var homeroom));
             Assert.AreEqual("ひまわり小学校", school);
             Assert.AreEqual("3年2組", homeroom);
-            Assert.AreEqual("ひまわり小学校 3年2組", CharacterFlavor.TileCaption(0));
+            Assert.AreEqual("3年2組", CharacterFlavor.TileCaption(0));
             Assert.AreEqual("留学生の先生役", CharacterFlavor.TileCaption(7));
             Assert.AreEqual("先生役", CharacterFlavor.TileCaption(15));
             Assert.AreEqual(string.Empty, CharacterFlavor.TileCaption(99));
@@ -227,7 +229,11 @@ namespace EraserWars.Tests.EditMode
             Assert.IsNotNull(badge);
             Assert.AreSame(akaboshi, badge.parent);
             Assert.AreNotSame(akaboshi.Q(className: "char-tile-art"), badge.parent);
-            Assert.AreEqual("ひまわり小学校 3年2組", akaboshi.Q<Label>(className: "char-tile-place").text);
+            Assert.AreEqual("3年2組", akaboshi.Q<Label>(className: "char-tile-place").text);
+            var place = akaboshi.Q(className: "char-tile-place");
+            var nameLabel = akaboshi.Q(className: "char-tile-name");
+            Assert.Less(akaboshi.IndexOf(akaboshi.Q(className: "char-tile-art")), akaboshi.IndexOf(place));
+            Assert.Less(akaboshi.IndexOf(place), akaboshi.IndexOf(nameLabel));
             Assert.AreEqual("？？？", FaceNamed(panel, "？？").Q<Label>(className: "char-tile-place").text);
 
             var allOut = FilterNamed(panel, "全力");

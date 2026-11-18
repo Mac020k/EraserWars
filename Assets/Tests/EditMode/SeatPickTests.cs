@@ -112,10 +112,14 @@ namespace EraserWars.Tests.EditMode
             Assert.IsNull(home.Q("seat-option-4"));
             var art = home.Q<Button>("seat-option-0").Q(className: "char-tile-art");
             Assert.IsTrue(art.ClassListContains("char-tile-art"));
-            Assert.AreEqual(catalog.FindCharacter(0).Portrait, art.style.backgroundImage.value.sprite);
-            Assert.AreEqual(780f, art.style.backgroundSize.value.x.value, 0.01f);
-            Assert.AreEqual(LengthUnit.Percent, art.style.backgroundSize.value.x.unit);
-            Assert.AreEqual(2f, art.style.backgroundPositionY.value.offset.value, 0.01f);
+            Assert.AreEqual(catalog.FindCharacter(0).FaceSprite, art.style.backgroundImage.value.sprite);
+            Assert.AreEqual(catalog.FindCharacter(0).FacePortrait, art.style.backgroundImage.value.sprite);
+            Assert.AreEqual(BackgroundSizeType.Cover, art.style.backgroundSize.value.sizeType);
+            Assert.AreEqual(BackgroundPositionKeyword.Top, art.style.backgroundPositionY.value.keyword);
+            var tile = home.Q<Button>("seat-option-0");
+            Assert.Less(tile.IndexOf(art), tile.IndexOf(tile.Q(className: "char-tile-place")));
+            Assert.Less(tile.IndexOf(tile.Q(className: "char-tile-place")), tile.IndexOf(tile.Q(className: "char-tile-name")));
+            Assert.AreEqual("3年2組", tile.Q<Label>(className: "char-tile-place").text);
             Assert.IsNull(home.Q<Button>("seat-option-0").Q(className: "char-tile-arch"));
             Assert.AreSame(home.Q<Button>("seat-option-0"), home.Q<Button>("seat-option-0").Q(className: "char-tile-badge").parent);
 
@@ -217,6 +221,7 @@ namespace EraserWars.Tests.EditMode
             character.UnlockedByDefault = unlocked;
             character.ArchetypeKey = CharacterArchetypes.AllOut;
             character.Portrait = portrait;
+            character.FacePortrait = portrait != null ? Portrait() : null;
             return character;
         }
 

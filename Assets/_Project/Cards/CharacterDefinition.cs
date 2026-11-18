@@ -12,10 +12,14 @@ namespace EraserWars.Cards
         public string UnlockHintJa;
         [TextArea(3, 8)] public string BioJa;
         public Sprite Portrait;
+        [Tooltip("Square head-and-shoulders crop baked by tools/bake_faces.py for card faces.")]
+        public Sprite FacePortrait;
         public EraserDefinition Eraser;
         public CardDefinition SignatureA;
         public CardDefinition SignatureB;
         public bool UnlockedByDefault;
+
+        public Sprite FaceSprite => FacePortrait != null ? FacePortrait : Portrait;
 
         public string DisplayName =>
             string.IsNullOrWhiteSpace(DisplayNameJa) ? NameKey : DisplayNameJa;

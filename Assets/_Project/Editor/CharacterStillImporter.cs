@@ -8,6 +8,7 @@ namespace EraserWars.Editor
     public static class CharacterStillImporter
     {
         const string StillsDir = "Assets/Art/Characters/Stills";
+        const string FacesDir = "Assets/Art/Characters/Faces";
 
         static readonly (int id, string file)[] Map =
         {
@@ -64,6 +65,7 @@ namespace EraserWars.Editor
                 }
 
                 character.Portrait = sprite;
+                character.FacePortrait = ImportFace(file);
                 EditorUtility.SetDirty(character);
                 assigned++;
             }
@@ -71,6 +73,28 @@ namespace EraserWars.Editor
             ContentCatalogBuilder.RefreshFromDisk();
             AssetDatabase.SaveAssets();
             Debug.Log($"[EraserWars] Import Character Stills assigned={assigned}");
+        }
+
+        static Sprite ImportFace(string stillFile)
+        {
+            var faceFile = stillFile.Replace("char_still_", "char_face_").Replace(".jpg", ".png");
+            var path = $"{FacesDir}/{faceFile}";
+            if (!File.Exists(path))
+            {
+                Debug.LogWarning($"Missing baked face {path}. Run python tools/bake_faces.py");
+                return null;
+            }
+
+            AssetDatabase.ImportAsset(path);
+            if (AssetImporter.GetAtPath(path) is TextureImporter importer)
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
+                importer.mipmapEnabled = false;
+                importer.SaveAndReimport();
+            }
+
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         }
     }
 }

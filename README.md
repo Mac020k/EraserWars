@@ -142,6 +142,14 @@ Glyph vectors live in `Assets/_Project/UI/CardIcons/`.
 The running game rasterizes the same markup. It does not depend on an SVG importer.
 A contact sheet of the six families is in `docs/prototypes/card-tcg/contact-sheet.png`.
 
+## Character cards
+
+Character name cards (Collection and the seat picker) share `CharacterTileBuilder`.
+A card is portrait (142x210) with a peach border, a round face with a black ring, the class line, then the name. The archetype diamond sits in the top-right corner.
+Faces are 512 px square head-and-collar crops baked from the stills by `tools/bake_faces.py` into `Assets/Art/Characters/Faces/`.
+`EraserWars > Import Character Stills` assigns them to `CharacterDefinition.FacePortrait`, and the UI draws them with `background-size: cover`.
+The crop table and the card spec are in `docs/decisions/ADR-0010-character-card-face-crops.md`.
+
 ## Deck save
 
 The deck screen is an open binder on a wood desk. The left page is the character. The right page is that character's common cards. The back button stays in the destination header.
